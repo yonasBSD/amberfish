@@ -3,6 +3,7 @@
 
 #include "defs.h"
 #include "log.h"
+#include "info.h"
 
 typedef struct {
 	ETYMON_LOG* log;

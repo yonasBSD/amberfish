@@ -4,15 +4,94 @@
  *  Authors:  Nassib Nassar
  */
 
+/* new */
+
+#include <string.h>
+#include "util.h"
+
+FILE *afopendbf(const char *db, int type, const char *mode)
+{
+	char fn[ETYMON_MAX_PATH_SIZE];
+	FILE *f;
+
+	if (afmakefn(type, db, fn) < 0)
+		return NULL;
+	f = fopen(fn, mode);
+	return f ? f : aferrn(AFEDBIO);
+}
+
+static inline int closefile(FILE *f)
+{
+	if (f) {
+		if (fclose(f) == EOF)
+			return aferr(AFEDBIO);
+	}
+	return 0;
+}
+
+int afclosedbf(Affile *f)
+{
+	if (closefile(f->info) < 0)
+		return -1;
+	if (closefile(f->doctab) < 0)
+		return -1;
+	if (closefile(f->udict) < 0)
+		return -1;
+	if (closefile(f->upost) < 0)
+		return -1;
+	if (closefile(f->ufield) < 0)
+		return -1;
+	if (closefile(f->lpost) < 0)
+		return -1;
+	if (closefile(f->lfield) < 0)
+		return -1;
+	if (closefile(f->fdef) < 0)
+		return -1;
+	if (closefile(f->uword) < 0)
+		return -1;
+	if (closefile(f->lword) < 0)
+		return -1;
+	if (closefile(f->lock) < 0)
+		return -1;
+	return 0;
+}
+
+static inline char *getftfn(int type)
+{
+	if (type < sizeof affntab)
+		return affntab[type];
+	else
+		return aferrn(AFEUNDEF);
+}
+
+/* buf is assumed to have capacity ETYMON_MAX_PATH_SIZE */
+int afmakefn(int type, const char *db, char *buf)
+{
+	int dblen, extlen;
+	char *ext;
+
+	dblen = strlen(db);
+	memcpy(buf, db, dblen);
+	buf += dblen;
+	ext = getftfn(type);
+	if (!ext)
+		return -1;
+	extlen = strlen(ext);
+	if ((dblen + extlen) >= ETYMON_MAX_PATH_SIZE)
+		return aferr(AFEBUFOVER);
+	memcpy(buf, ext, extlen + 1);
+	return 0;
+}
+
+/* old */
+	
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "defs.h"
 
 #define ETYMON_UTIL_MAX_ARG_SIZE 4096
 
@@ -25,7 +104,7 @@
    @param buf the buffer to construct the path in (assumed to have
    capacity ETYMON_MAX_PATH_SIZE)
 */
-void etymon_db_construct_path(int ftype, char* dbname, char* buf) {
+void etymon_db_construct_path(int ftype, const char* dbname, char* buf) {
 	int leftover;  /* extra space in buf after dbname is copied in */
 	/* start with dbname as the stem */
 	strncpy(buf, dbname, ETYMON_MAX_PATH_SIZE - 1);

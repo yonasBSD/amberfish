@@ -3,6 +3,7 @@
 
 #include "defs.h"
 #include "log.h"
+#include "info.h"
 
 /* maximum number of databases that can be open simultaneously */
 #define ETYMON_AF_MAX_OPEN 255

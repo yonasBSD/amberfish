@@ -14,6 +14,7 @@
 #include "lock.h"
 #include "util.h"
 #include "stem.h"
+#include "info.h"
 
 void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 	char fn[ETYMON_MAX_PATH_SIZE];

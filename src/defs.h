@@ -6,6 +6,71 @@
 #ifndef _AF_DEFS_H
 #define _AF_DEFS_H
 
+/* new */
+
+#include <stdio.h>
+#include "err.h"
+
+/* database file type */
+
+#define AFFTINFO         (0)
+#define AFFTDOCTAB       (1)
+#define AFFTUDICT        (2)
+#define AFFTUPOST        (3)
+#define AFFTUFIELD       (4)
+#define AFFTLPOST        (5)
+#define AFFTLFIELD       (6)
+#define AFFTFDEF         (7)
+#define AFFTUWORD        (8)
+#define AFFTLWORD        (9)
+#define AFFTLOCK        (10)
+
+static char *affntab[] = {
+	".db",   /* AFFTINFO */
+	".dt",   /* AFFTDOCTAB */
+	".x0",   /* AFFTUDICT */
+	".y0",   /* AFFTUPOST */
+	".z0",   /* AFFTUFIELD */
+	".y1",   /* AFFTLPOST */
+	".z1",   /* AFFTLFIELD */
+	".fd",   /* AFFTFDEF */
+	".w0",   /* AFFTUWORD */
+	".w1",   /* AFFTLWORD */
+	".lk",   /* AFFTLOCK */
+};
+#ifdef NOTHING
+static char *ftfn[] = {
+	ETYMON_DBF_INFO_EXT,       /* AFFTINFO */
+	ETYMON_DBF_DOCTAB_EXT,   /* AFFTINFO */
+	ETYMON_DBF_UDICT_EXT,      /* AFFTUDICT */
+	ETYMON_DBF_UPOST_EXT,      /* AFFTUPOST */
+	ETYMON_DBF_UFIELD_EXT,     /* AFFTUFIELD */
+	ETYMON_DBF_LPOST_EXT,      /* AFFTLPOST */
+	ETYMON_DBF_LFIELD_EXT,     /* AFFTLFIELD */
+	ETYMON_DBF_FDEF_EXT,       /* AFFTFDEF */
+	ETYMON_DBF_UWORD_EXT,      /* AFFTUWORD */
+	ETYMON_DBF_LWORD_EXT,      /* AFFTLWORD */
+	ETYMON_DBF_LOCK_EXT,       /* AFFTLOCK */
+};
+#endif
+
+typedef struct {
+	FILE *info;
+	FILE *doctab;
+	FILE *udict;
+	FILE *upost;
+	FILE *ufield;
+	FILE *lpost;
+	FILE *lfield;
+	FILE *fdef;
+	FILE *uword;
+	FILE *lword;
+	FILE *lock;
+} Affile;
+
+/* old */
+
+#include <stdlib.h>
 #include <fcntl.h>
 #include "config.h"
 
@@ -25,52 +90,36 @@
 /* 11 is big enough to hold the default uint4 keys */
 #define ETYMON_MAX_KEY_SIZE (11)
 
-/* size of buffer to store version stamp in db info file */
-#define ETYMON_MAX_VSTAMP_SIZE (256)
-
 /* maximum char[] size for a field name (not an entire field path) */
 #define ETYMON_AF_MAX_FIELDNAME_SIZE (32)
 
 /* maximum char[] size for an error message */
 #define ETYMON_MAX_MSG_SIZE (1024)
 
-/* Maybe this should be moved to open.h eventually. */
-#define ETYMON_DBF_INFO (0)
-#define ETYMON_DBF_INFO_EXT ".db"
-#define ETYMON_DBF_DOCTABLE (1)
-#define ETYMON_DBF_DOCTABLE_EXT ".dt"
-#define ETYMON_DBF_UDICT (2)
-#define ETYMON_DBF_UDICT_EXT ".x0"
-#define ETYMON_DBF_UPOST (3)
-#define ETYMON_DBF_UPOST_EXT ".y0"
-#define ETYMON_DBF_UFIELD (4)
-#define ETYMON_DBF_UFIELD_EXT ".z0"
-#define ETYMON_DBF_LPOST (5)
-#define ETYMON_DBF_LPOST_EXT ".y1"
-#define ETYMON_DBF_LFIELD (6)
-#define ETYMON_DBF_LFIELD_EXT ".z1"
-#define ETYMON_DBF_FDEF (7)
-#define ETYMON_DBF_FDEF_EXT ".fd"
-#define ETYMON_DBF_UWORD (8)
-#define ETYMON_DBF_UWORD_EXT ".w0"
-#define ETYMON_DBF_LWORD (9)
-#define ETYMON_DBF_LWORD_EXT ".w1"
-#define ETYMON_DBF_LOCK (10)
-#define ETYMON_DBF_LOCK_EXT ".lk"
+#define ETYMON_DBF_INFO AFFTINFO
+#define ETYMON_DBF_INFO_EXT getftfn(AFFTINFO)
+#define ETYMON_DBF_DOCTABLE AFFTDOCTAB
+#define ETYMON_DBF_DOCTABLE_EXT getftfn(AFFTDOCTAB)
+#define ETYMON_DBF_UDICT AFFTUDICT
+#define ETYMON_DBF_UDICT_EXT getftfn(AFFTUDICT)
+#define ETYMON_DBF_UPOST AFFTUPOST
+#define ETYMON_DBF_UPOST_EXT getftfn(AFFTUPOST)
+#define ETYMON_DBF_UFIELD AFFTUFIELD
+#define ETYMON_DBF_UFIELD_EXT getftfn(AFFTUFIELD)
+#define ETYMON_DBF_LPOST AFFTLPOST
+#define ETYMON_DBF_LPOST_EXT getftfn(AFFTLPOST)
+#define ETYMON_DBF_LFIELD AFFTLFIELD
+#define ETYMON_DBF_LFIELD_EXT getftfn(AFFTLFIELD)
+#define ETYMON_DBF_FDEF AFFTFDEF
+#define ETYMON_DBF_FDEF_EXT getftfn(AFFTFDEF)
+#define ETYMON_DBF_UWORD AFFTUWORD
+#define ETYMON_DBF_UWORD_EXT getftfn(AFFTUWORD)
+#define ETYMON_DBF_LWORD AFFTLWORD
+#define ETYMON_DBF_LWORD_EXT getftfn(AFFTLWORD)
+#define ETYMON_DBF_LOCK AFFTLOCK
+#define ETYMON_DBF_LOCK_EXT getftfn(AFFTLOCK)
 
 #define ETYMON_DB_PERM (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
-
-/* right after uint4 magic number in db info file */
-typedef struct {
-	char version_stamp[ETYMON_MAX_VSTAMP_SIZE];
-	int doc_n; /* total number of (non-deleted) documents in
-		      database */
-	uint4 udict_root; /* root of the udict tree */
-	int optimized; /* flag: if database is optimized */
-	int phrase; /* flag: if database supports phrase searching */
-	int word_proximity; /* flag: if database supports word proximity */
-	int stemming; /* flag: if words are stemmed */
-} ETYMON_DB_INFO;
 
 typedef struct {
         unsigned char key[ETYMON_MAX_KEY_SIZE]; /* document key */

@@ -11,6 +11,8 @@
 #include "util.h"
 #include "fdef.h"
 #include "stem.h"
+#include "info.h"
+#include "linear.h"
 
 #include "text.h"
 #include "xml.h"
@@ -504,6 +506,19 @@ int etymon_index_optimize(ETYMON_INDEX_OPTIONS* opt) {
 	return 0;
 	
 } /* optimize_new() */
+
+#endif
+
+#ifdef NEWLIN
+
+int etymon_index_optimize(ETYMON_INDEX_OPTIONS *opt)
+{
+	Aflinear rq;
+
+	rq.db = opt->dbname;
+	rq.verbose = opt->verbose;
+	return aflinear(&rq);
+}
 
 #else
 
