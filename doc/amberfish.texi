@@ -1,0 +1,1194 @@
+%
+%  Copyright (C) 1999-2002 Etymon Systems, Inc.  All Rights Reserved.
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pdfpagewidth 8.5in
+\pdfpageheight 11in
+
+\pdfcompresslevel 9
+
+\pdfinfo {
+/Title (Amberfish User's Guide)
+/Author (Nassib Nassar)
+/Subject (Amberfish)
+/Keywords (Etymon Amberfish text search index retrieval information manual guide)
+}
+
+\pdfcatalog {
+/URI (http://www.etymon.com/amberfish/)
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input texinfo
+@c %**start of header
+@setfilename af-users-guide.info
+@settitle Amberfish User's Guide
+@setchapternewpage odd
+@c   @paragraphindent 0
+@c %**end of header
+
+@syncodeindex pg cp
+
+@dircategory Etymon
+@direntry
+* Amberfish: (af-users-guide).      Amberfish User's Guide.
+@end direntry
+
+@finalout
+
+@include version.texi
+
+@macro afcopyright{year}
+@emph{Copyright} @copyright{} @emph{1999--2002 by Etymon Systems, Inc.}
+@end macro
+
+@macro spsection{}
+@sp 3
+@end macro
+
+@macro permission{}
+
+@ 
+
+@sp 4
+
+This document describes Amberfish Version @value{VERSION}.  Updates and
+information are available from the Amberfish web page at
+@url{http://www.etymon.com/amberfish/} or via e-mail at
+@email{info@@etymon.com}, or by contacting:
+
+@sp 1
+
+Etymon Systems, Inc. @* P.O. Box AM @* Princeton, NJ @ 08542
+
+@vskip 0pt plus 1filll
+
+@afcopyright{}
+
+@sp 1
+
+@emph{ETYMON is a trademark of Etymon Systems, Inc.  AMBERFISH is a
+registered trademark of Etymon Systems, Inc.  ETYMON is a registered
+service mark of Etymon Systems, Inc.  UNIX is a registered trademark
+of The Open Group.  All other trademarks are the property of their
+respective owners.}
+
+@sp 1
+
+@emph{Etymon Systems, Inc.@: disclaims all warranties, either express or
+implied, including but not limited to implied warranties of
+merchantability, fitness for a particular purpose, and noninfringement
+of third-party rights, and all other remedies for breach of the above
+warranty.  Etymon Systems, Inc.@: assumes no liability with respect to
+the accuracy, adequacy, quality, and reliability of this publication.}
+
+@end macro
+
+@ifinfo
+This is a user's guide to Amberfish.
+
+@afcopyright{}
+
+@permission{}
+
+@dedication{}
+
+@end ifinfo
+
+@titlepage
+
+@title The Amberfish Text Retrieval System
+@c @subtitle Version @value{VERSION}
+@author Nassib Nassar @emph{@ Etymon Systems, Inc.}
+@page
+@permission{}
+@page
+
+@ifnothtml
+@contents
+@end ifnothtml
+
+@ifnottex
+@node Top, Tutorial, (dir), (dir)
+@top Amberfish User's Guide
+Version @value{VERSION}
+@sp 1
+@afcopyright{}  All rights reserved.
+@sp 1
+@end ifnottex
+
+
+@end titlepage
+
+
+@menu
+* Tutorial::     
+* Advanced topics::     
+* Reference::     
+* Error messages::     
+* Notes for Isearch users::     
+* Index::               
+@end menu
+
+
+@iftex
+@headings off
+@oddheading  @| @thischaptername @| @thispage
+@evenheading @thispage @| @thischaptername @|
+@end iftex
+
+
+@node Tutorial, Advanced topics, Top, Top
+@chapter Tutorial
+@cindex Tutorial
+
+@noindent
+@sc{This} document serves as an introduction to the Amberfish text
+retrieval system.  It is intended for both beginning UNIX users and
+professional system administrators.  Amberfish is text-based software
+and does not currently have a graphical user interface, although it is
+hoped that the tools provided will be easy to integrate into existing
+systems.  Except where otherwise noted, a UNIX platform is assumed.
+
+@menu
+* Introduction::          
+* Indexing::          
+* Searching::                
+* Right truncation::                
+* Phrases::                
+* Multiple documents in a file::                
+* Fields::                
+* Fields and XML::                
+* Relevance ranking::                
+* Multiple databases::                
+* Listing database information::                
+* Database status::                
+@end menu
+
+
+@spsection{}
+@node Introduction, Indexing, Tutorial, Tutorial
+@section Introduction
+
+The easiest way to understand how to use Amberfish is to index
+and search a small group of text files.
+
+@cindex Creating a database
+@cindex Indexing
+@cindex Searching
+@pindex afindex
+@pindex afsearch
+The process of @dfn{indexing} creates a set of files that collectively
+are referred to in this document as a @dfn{database}.  This task is
+performed using the @command{afindex} tool.  Once the database has been
+created, the @command{afsearch} tool allows searching of the original
+text via the database.  The @command{afadmin} tool is used to manage or
+display information about an existing database.
+
+
+@spsection{}
+@node Indexing, Searching, Introduction, Tutorial
+@section Indexing
+@cindex Indexing
+
+Here is a simple indexing command (@samp{$} is the UNIX prompt):
+
+@pindex afindex
+@pindex afindex, -d
+@pindex afindex, -C
+@pindex afindex, -f
+@pindex afindex, -v
+@example
+$ afindex -d mydb -C -f *.txt -v
+@end example
+
+@cindex Database name
+@cindex Creating a database
+@cindex Adding files to a database
+@cindex Indexing
+@noindent
+The @option{-d} option specifies the database name, in this case,
+@file{mydb}.  The @option{-C} option indicates that you want to create a
+new database (overwriting any existing database called @file{mydb}).
+The @option{-f} option supplies the names of the files you want to index
+(@file{*.txt}).  Finally, the @option{-v} option tells @command{afindex}
+to print information about the indexing process as it goes along.
+(Another option, @option{-m}, may be added to increase the amount of
+memory used for indexing, which will generally reduce indexing time.)
+
+The above example may alternatively be entered as two separate commands:
+
+@pindex afindex
+@pindex afindex, -d
+@pindex afindex, -C
+@pindex afindex, -f
+@pindex afindex, -v
+@example
+$ afindex -d mydb -C
+$ afindex -d mydb -f *.txt -v
+@end example
+
+@cindex Creating a database
+@cindex Adding files to a database
+@cindex Indexing
+@noindent
+In this case the first invocation of @command{afindex} creates the new
+database, and the second indexes the files, @file{*.txt}.
+
+The indexing process creates a group of files beginning with @file{mydb}
+(i.e.@: @file{mydb.db}, @file{mydb.dt}, and several others).  These are
+the index files that make up the database.  The @command{afsearch} tool
+uses the database to search the files we have indexed.
+
+@cindex Optimizing a database
+@cartouche
+@noindent
+@emph{Note:} The current version of @command{afsearch} is only able to
+search indexes that have been @w{@dfn{optimized}}.  To optimize the
+database created above, use the command, @w{@command{afindex -d mydb
+-O}}, after completing the indexing process.  The @option{-O} option may
+also be specified together with @option{-f} if no additional files will
+need to be indexed.
+@end cartouche
+
+@cindex Options, command tools
+@pindex afindex
+If you type @command{afindex} by itself, you will see a list of all the
+options it supports:
+
+@example
+$ afindex
+@end example
+
+@noindent
+The same is true of the @command{afsearch} and @command{afadmin} tools.
+
+
+@spsection{}
+@node Searching, Right truncation, Indexing, Tutorial
+@section Searching
+@cindex Searching
+
+Here is a simple searching command:
+
+@pindex afsearch
+@pindex afsearch, -d
+@pindex afsearch, -q
+@example
+$ afsearch -d mydb -q 'cat & (dog | mouse)'
+@end example
+
+@cindex Query, search
+@cindex Boolean expressions
+@pindex and
+@pindex or
+@noindent
+The @option{-q} option specifies the search @dfn{query}, which
+represents what you are searching for.  The entire query is enclosed
+between two apostrophes so that the UNIX shell will not modify its
+contents.  The special characters, @samp{&} and @samp{|}, are
+@dfn{Boolean operators} meaning `@dfn{and}' and `@dfn{or}' respectively.
+In other words, the above query means, ``Find all documents that contain
+the word, @samp{cat}, and that also contain either @samp{dog} or
+@samp{mouse}.''  Note that these words are `@dfn{case-insensitive}',
+meaning that @samp{cat}, @samp{CAT}, and @samp{caT} are interchangeable.
+
+The command returns a list of matching document references, each one
+taking the form:
+
+@example
+score dbname docid parent filename begin end
+@end example
+
+@noindent
+where @samp{score} is a relevance score, @samp{dbname} is the database
+name, @samp{docid} is an unique number identifying the document within
+the database, @samp{parent} is the @emph{docid} of the document that
+``contains'' this document (or 0 if no such relationship exists),
+@samp{filename} is the name of the file containing the document, and
+@samp{begin} and @samp{end} are byte offsets indicating the beginning
+and ending of the document within the file.  Often there is a one-to-one
+correspondence between files and documents, in which case the
+@samp{begin} and @samp{end} values may be ignored.  The @samp{dbname}
+value is only useful if one is searching multiple databases at once (for
+example, see @ref{Multiple databases}).
+
+In the above example the words, @samp{cat}, @samp{dog}, and
+@samp{mouse}, are each an individual query @dfn{term}.  Amberfish
+searches for each query term separately and then combines the results
+according to the Boolean operators.  In the next several examples we
+concentrate on the structure of a single query term, with the
+understanding that terms can be put together arbitrarily into Boolean
+expressions.
+
+
+@spsection{}
+@node Right truncation, Phrases, Searching, Tutorial
+@section Right truncation
+@cindex Right truncation
+
+Amberfish supports `@dfn{right truncated}' queries such as the
+following:
+
+@example
+$ afsearch -d mydb -q 'car*'
+@end example
+
+@noindent
+The query term, @samp{car*}, finds all documents containing the word,
+@samp{car}, @samp{cars}, or @samp{carpet}, or any other word that starts
+with the prefix, @samp{car}.  A term such as @samp{s*} will match any
+word that starts with the letter, @samp{s}, and it may take a while for
+Amberfish to process; not to mention the fact that it is very likely to
+match every document in the database.
+
+
+@spsection{}
+@node Phrases, Fields, Right truncation, Tutorial
+@section Phrases
+@cindex Phrases
+
+To enable phrase searching, the @option{-phrase} option must be given to
+@command{afindex}, together with @option{-C}, at the time of indexing.
+
+Here is an example of a phrase search:
+
+@example
+$ afsearch -d mydb -q '"Dinu Lipatti"'
+@end example
+
+@noindent
+This means, ``Find all documents that contain the phrase, @w{@samp{Dinu
+Lipatti}}.''  (Note that the entire phrase must be enclosed in double
+quotes and that spaces are not significant.)  Amberfish defines a phrase
+in this context as the word, @samp{Dinu}, followed by the word,
+@samp{Lipatti}, with no other words in between the two.  Phrases may
+include more than two words, as in @w{@samp{John Quincy Adams}}; and
+phrase words may be right truncated, for example, @w{@samp{Emil*
+Durkheim}}.
+
+
+@spsection{}
+@node Multiple documents in a file, Fields, Phrases, Tutorial
+@section Multiple documents in a file
+@cindex Multiple documents in a file
+
+A document can consist of an entire file or a portion of a file.
+Amberfish records @samp{begin} and @samp{end} byte offsets for each
+document as demarcation of the document within the file that contains
+it.  By default the whole file is treated as a single document.  For
+example, a file called @file{sample.txt} that is 12000 bytes in size
+will be indexed as a single document with @samp{begin} and @samp{end}
+byte offsets, 0 and 12000, respectively.
+
+The @command{afindex} tool includes the @option{-split} option as a
+method of instructing Amberfish that the files to be indexed contain
+multiple documents.  The @option{-split} option is used to specify a
+string delimiter that indicates the boundaries between documents in a
+file.  For example:
+
+@example
+$ afindex -d mydb -C -f *.txt -split '#####' -v
+@end example
+
+@noindent
+As the files, @file{*.txt}, are indexed, they are scanned for the
+string, @samp{#####}.  Each instance of @samp{#####} is interpreted as
+the beginning of a new document, and each new document is indexed
+individually.  Note that each instance of @samp{#####} is considered to
+be part of the document that follows it, as opposed to the document that
+precedes it.  If the string delimiter happens to include text, rather
+than merely @samp{#####}, it will (normally) be indexed as text.
+
+The division of files into multiple documents can be verified with
+@w{@command{afadmin -l}} after the files have been added to the database
+(see @ref{Listing database information}).
+
+Amberfish includes a small utility called @command{fetch} that simply
+prints a portion of a file to standard output:
+
+@example
+$ fetch filename begin end
+@end example
+
+@noindent
+where @samp{filename}, @samp{begin}, and @samp{end} are taken from the
+output of @command{afsearch} (see @ref{Searching}) or @command{afadmin
+-l} (see @ref{Listing database information}).
+
+The @option{-split} option does not work with the @code{xml} document
+class, which uses a different method of dividing files into documents
+(see @ref{More about XML}).
+
+
+@spsection{}
+@node Fields, Fields and XML, Multiple documents in a file, Tutorial
+@section Fields
+@cindex Fields
+
+@cindex File formats
+@cindex Document class
+@cindex Document class, default
+@pindex afindex
+@pindex afindex, -t
+@pindex text
+Amberfish allows searching on specific fields within documents.
+Support for various file formats is provided by @dfn{document class}
+modules.  The document class must be specified to @command{afindex} at
+the time of indexing, using the @option{-t} option.  Each document is
+individually associated with a document class as it gets added to the
+database.  The default document class (if none is specified) is
+@code{text}, which does not recognize any fields and therefore
+does not support field searching.
+
+@cindex Searching on fields
+Here is an example of searching on a field:
+
+@pindex afsearch
+@pindex afsearch, -d
+@pindex afsearch, -q
+@example
+$ afsearch -d mydb -q 'Title/cat'
+@end example
+
+@noindent
+This means, ``Find all documents that contain the word, @samp{cat}, in
+the @samp{Title} field.''
+
+Unlike search words, field names may be case-sensitive, so that
+@samp{Title} and @samp{title} might be two different fields.  Whether or
+not fields are case-sensitive is determined by the document class.  For
+example, XML elements and attributes are case-sensitive; therefore an
+XML document class would most likely have case-sensitive fields.  As we
+shall discuss later, it is best not to mix document classes within a
+single database if those document classes have incompatible views about
+case-sensitivity.
+
+
+@spsection{}
+@node Fields and XML, Relevance ranking, Fields, Tutorial
+@section Fields and XML
+@cindex Fields and XML
+
+XML is a good context for exploring field searching.  The following
+examples make use of the @code{xml} document class, which supports
+nested fields (i.e. fields within fields).
+
+Suppose we index the following XML data, contained in a file called,
+@file{jones.xml}:
+
+@example
+<Document>
+   <Author>
+      <Name>
+         <FirstName> Tom </FirstName>
+         <LastName> Jones </LastName>
+      </Name>
+   </Author>
+</Document>
+@end example
+
+@noindent
+with the following command:
+
+@example
+$ afindex -d mydb -C -f jones.xml -v -t xml
+@end example
+
+@noindent
+The @code{xml} document class views this document as containing two
+words, @samp{Tom} and @samp{Jones}, each located at a certain @dfn{field
+path} within the document:
+
+@example
+/Document/_c/Author/_c/Name/_c/FirstName/_c/Tom
+/Document/_c/Author/_c/Name/_c/LastName/_c/Jones
+@end example
+
+@noindent
+The character, @samp{/}, separates the field names, and in this case
+each field except for @samp{_c} corresponds to an XML element.  (Below
+we shall see an example in which a field corresponds to an XML
+attribute.)  The @samp{_c} is a special field defined by @code{xml} that
+means, ``element content.''  Thus the following search:
+
+@example
+$ afsearch -d mydb -q '/Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
+@end example
+
+@noindent
+will return @file{jones.xml} as a matching result.  These queries also
+will return a positive match:
+
+@example
+$ afsearch -d mydb -q '/.../Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../_c/Author/_c/Name/_c/LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../Author/_c/Name/_c/LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../_c/Name/_c/LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../Name/_c/LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../_c/LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../LastName/_c/Jones'
+$ afsearch -d mydb -q '/.../_c/Jones'
+$ afsearch -d mydb -q '/.../Jones'
+$ afsearch -d mydb -q 'Jones'
+@end example
+
+@noindent
+The @samp{...} is defined by Amberfish as, ``a sequence of any
+zero or more fields.''  A @samp{/.../} that begins a field path can be
+left out completely.  For example, these two queries yield the same
+results:
+
+@example
+$ afsearch -d mydb -q '/.../LastName/_c/Jones'
+$ afsearch -d mydb -q 'LastName/_c/Jones'
+@end example
+
+@noindent
+The @samp{...} can be used anywhere within a field path.  For example,
+the following queries match @file{jones.xml}:
+
+@example
+$ afsearch -d mydb -q '/Document/_c/Author/_c/Name/.../Jones'
+$ afsearch -d mydb -q 'Name/.../LastName/.../Jones'
+@end example
+
+@noindent
+The first of the two examples above will match @samp{Jones} anywhere
+within the author's name, not necessarily only his last name.  The
+second matches only a last name of Jones, but it need not be the author;
+for example, it would match a document containing the following
+fragment:
+
+@example
+<Bibliography>
+   <Reference Type="book">
+      <Title> Text searching the old fashioned way. </Title>
+      <Name>
+         <FirstName> Indiana </FirstName>
+         <LastName> Jones </LastName>
+      </Name>
+   </Reference>
+</Bibliography>
+@end example
+
+@noindent
+Other queries that would match the above fragment:
+
+@example
+$ afsearch -d mydb -q 'Reference/_a/Type/book'
+$ afsearch -d mydb -q 'Reference/_a/.../book'
+$ afsearch -d mydb -q 'Reference/.../book'
+@end example
+
+@noindent
+The @samp{_a} is another special field defined by @code{xml} that means,
+``attribute content.''  Thus @samp{_c} and @samp{_a} allow one to
+distinguish between attribute and element searching if desired.  In
+constructing queries for this document class, it is always necessary to
+specify @samp{_c}, @samp{_a}, or @samp{...}  after an element field name
+and before the next field name or the search word.
+
+Phrase searching with fields is done this way:
+
+@example
+$ afsearch -d mydb -q 'Title/.../"text searching"'
+@end example
+
+@noindent
+or in a Boolean expression:
+
+@example
+$ afsearch -d mydb -q 'Title/.../"text searching" &
+                       Name/.../Indiana & Name/.../Jones'
+@end example
+
+
+@spsection{}
+@node Relevance ranking, Multiple databases, Fields and XML, Tutorial
+@section Relevance ranking
+@cindex Relevance ranking
+
+Amberfish provides document scoring and ranking by relevance (based on
+the vector model).  The @option{-score} option instructs
+@command{afsearch} to compute relevance scores, or alternatively
+@option{-os} may be used to sort the documents by score:
+
+@example
+$ afsearch -d mydb -q '"Ludwig van Beethoven"' -score
+$ afsearch -d mydb -q '"Ludwig van Beethoven"' -os
+@end example
+
+@noindent
+In both cases, the score value (rather than the default @samp{0} value)
+is included in the output.
+
+
+@spsection{}
+@node Multiple databases, Listing database information, Relevance ranking, Tutorial
+@section Multiple databases
+@cindex Multiple databases
+
+The @command{afsearch} tool can search multiple databases, for example:
+
+@example
+$ afsearch -d patents1978 patents1979 patents1980 -q 'mousetrap'
+@end example
+
+@noindent
+The query is applied to each of the three databases, @file{patents1978},
+@file{patents1979}, @file{patents1980}, and the results are merged into
+a single result set.
+
+
+@spsection{}
+@node Listing database information, Database status, Multiple databases, Tutorial
+@section Listing database information
+@cindex Listing database information
+
+
+The @command{afadmin} tool is used to list information about an existing
+database.  The @option{-l} option lists the documents contained in a
+database:
+
+@example
+$ afadmin -d mydb -l
+@end example
+
+@noindent
+Each line of output takes the form:
+
+@example
+docid parent filename begin end dclass
+@end example
+
+@noindent
+where @samp{docid} is an unique number identifying the document within
+the database, @samp{parent} is the @emph{docid} of the document that
+``contains'' this document (or 0 if no such relationship exists),
+@samp{filename} is the name of the file containing the document,
+@samp{begin} and @samp{end} are byte offsets indicating the beginning
+and ending of the document within the file, and @samp{dclass} is the
+name of the document class associated with the document.
+
+The @option{-lf} option is used to list the names of all fields
+known to the database:
+
+@example
+$ afadmin -d mydb -lf
+@end example
+
+This list is created during the indexing process, and it is up to the
+document classes what field names get included.  A document class may
+determine in advance that a certain set of field names needs to be
+added, or it may discover the fields during the process of parsing the
+documents, or some combination of both.
+
+
+@spsection{}
+@node Database status, More about XML, Listing database information, Tutorial
+@section Database status
+@cindex Database status
+
+The @command{afadmin} tool can be used to find out whether a database is
+being modified and is therefore not available:
+
+@example
+$ afadmin -d mydb -status
+@end example
+
+@noindent
+The output is either @samp{status=ready} or @samp{status=not_ready}.  A
+status of @samp{not_ready} means either that Amberfish is
+currently modifying the database or that the database was left in an
+unusable state because the Amberfish process ended prematurely.
+
+This feature is sometimes useful for software that calls the
+Amberfish tools to index, manage, or search databases.
+
+
+@spsection{}
+@node More about XML, , Database status, Tutorial
+@section More about XML
+@cindex More about XML
+
+The @code{xml} document class contains several features related to the
+structure of XML documents.
+
+Amberfish treats an XML document as an hierarchy of nested documents,
+which can be useful because it increases the resolution of search
+results.  This is regulated with the @command{afindex} option
+@option{-dlevel}, which limits how many levels of resolution will be
+processed during indexing.  For example:
+
+@example
+$ afindex -d mydb -C -f medline.xml -v -t xml -dlevel 2
+@end example
+
+Specifying @option{-dlevel 1} will define each XML file as a single
+document, bounded by the outermost XML element.  (This is the default.)
+Specifying @option{-dlevel 2} will descend another level to the children
+of the outermost element and consider these to be documents nested
+within the outer documents, etc.  This feature should be used very
+cautiously, because of the dramatic increase in disk space and
+processing time required for progressively higher @option{-dlevel}
+values.
+
+The result of using the @option{-dlevel} option is that search results
+can be very specific.  The results returned by @command{afsearch}
+consist of the innermost documents (as allowed by @option{-dlevel}) that
+match the query.  The @option{-style} option can be used with
+@command{afsearch} to print the lineage of each result document, for
+example:
+
+@example
+$ afsearch -d mydb -q 'ArticleTitle/.../"adipose tissue"' -style lineage
+@end example
+
+@noindent
+This produces an indented hierarchy of ``ancestor'' documents above each
+result document.
+
+
+@node GNU General Public License, , More about XML, Top
+@appendix GNU General Public License
+@cindex GNU General Public License
+
+Amberfish is distributed by Etymon Systems, Inc.@: under the terms of
+version 2 of the GNU General Public License (GPL):
+
+@verbatim
+		    GNU GENERAL PUBLIC LICENSE
+		       Version 2, June 1991
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+                          675 Mass Ave, Cambridge, MA 02139, USA
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+			    Preamble
+
+  The licenses for most software are designed to take away your
+freedom to share and change it.  By contrast, the GNU General Public
+License is intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.  This
+General Public License applies to most of the Free Software
+Foundation's software and to any other program whose authors commit to
+using it.  (Some other Free Software Foundation software is covered by
+the GNU Library General Public License instead.)  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+this service if you wish), that you receive source code or can get it
+if you want it, that you can change the software or use pieces of it
+in new free programs; and that you know you can do these things.
+
+  To protect your rights, we need to make restrictions that forbid
+anyone to deny you these rights or to ask you to surrender the rights.
+These restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+  For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must give the recipients all the rights that
+you have.  You must make sure that they, too, receive or can get the
+source code.  And you must show them these terms so they know their
+rights.
+
+  We protect your rights with two steps: (1) copyright the software, and
+(2) offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+  Also, for each author's protection and ours, we want to make certain
+that everyone understands that there is no warranty for this free
+software.  If the software is modified by someone else and passed on, we
+want its recipients to know that what they have is not the original, so
+that any problems introduced by others will not reflect on the original
+authors' reputations.
+
+  Finally, any free program is threatened constantly by software
+patents.  We wish to avoid the danger that redistributors of a free
+program will individually obtain patent licenses, in effect making the
+program proprietary.  To prevent this, we have made it clear that any
+patent must be licensed for everyone's free use or not licensed at all.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+		    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License applies to any program or other work which contains
+a notice placed by the copyright holder saying it may be distributed
+under the terms of this General Public License.  The "Program", below,
+refers to any such program or work, and a "work based on the Program"
+means either the Program or any derivative work under copyright law:
+that is to say, a work containing the Program or a portion of it,
+either verbatim or with modifications and/or translated into another
+language.  (Hereinafter, translation is included without limitation in
+the term "modification".)  Each licensee is addressed as "you".
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running the Program is not restricted, and the output from the Program
+is covered only if its contents constitute a work based on the
+Program (independent of having been made by running the Program).
+Whether that is true depends on what the Program does.
+
+  1. You may copy and distribute verbatim copies of the Program's
+source code as you receive it, in any medium, provided that you
+conspicuously and appropriately publish on each copy an appropriate
+copyright notice and disclaimer of warranty; keep intact all the
+notices that refer to this License and to the absence of any warranty;
+and give any other recipients of the Program a copy of this License
+along with the Program.
+
+You may charge a fee for the physical act of transferring a copy, and
+you may at your option offer warranty protection in exchange for a fee.
+
+  2. You may modify your copy or copies of the Program or any portion
+of it, thus forming a work based on the Program, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+    a) You must cause the modified files to carry prominent notices
+    stating that you changed the files and the date of any change.
+
+    b) You must cause any work that you distribute or publish, that in
+    whole or in part contains or is derived from the Program or any
+    part thereof, to be licensed as a whole at no charge to all third
+    parties under the terms of this License.
+
+    c) If the modified program normally reads commands interactively
+    when run, you must cause it, when started running for such
+    interactive use in the most ordinary way, to print or display an
+    announcement including an appropriate copyright notice and a
+    notice that there is no warranty (or else, saying that you provide
+    a warranty) and that users may redistribute the program under
+    these conditions, and telling the user how to view a copy of this
+    License.  (Exception: if the Program itself is interactive but
+    does not normally print such an announcement, your work based on
+    the Program is not required to print an announcement.)
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Program,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Program, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Program.
+
+In addition, mere aggregation of another work not based on the Program
+with the Program (or with a work based on the Program) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+  3. You may copy and distribute the Program (or a work based on it,
+under Section 2) in object code or executable form under the terms of
+Sections 1 and 2 above provided that you also do one of the following:
+
+    a) Accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of Sections
+    1 and 2 above on a medium customarily used for software interchange; or,
+
+    b) Accompany it with a written offer, valid for at least three
+    years, to give any third party, for a charge no more than your
+    cost of physically performing source distribution, a complete
+    machine-readable copy of the corresponding source code, to be
+    distributed under the terms of Sections 1 and 2 above on a medium
+    customarily used for software interchange; or,
+
+    c) Accompany it with the information you received as to the offer
+    to distribute corresponding source code.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form with such
+    an offer, in accord with Subsection b above.)
+
+The source code for a work means the preferred form of the work for
+making modifications to it.  For an executable work, complete source
+code means all the source code for all modules it contains, plus any
+associated interface definition files, plus the scripts used to
+control compilation and installation of the executable.  However, as a
+special exception, the source code distributed need not include
+anything that is normally distributed (in either source or binary
+form) with the major components (compiler, kernel, and so on) of the
+operating system on which the executable runs, unless that component
+itself accompanies the executable.
+
+If distribution of executable or object code is made by offering
+access to copy from a designated place, then offering equivalent
+access to copy the source code from the same place counts as
+distribution of the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+  4. You may not copy, modify, sublicense, or distribute the Program
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense or distribute the Program is
+void, and will automatically terminate your rights under this License.
+However, parties who have received copies, or rights, from you under
+this License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+  5. You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Program or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Program (or any work based on the
+Program), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Program or works based on it.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the Program subject to
+these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties to
+this License.
+
+  7. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Program at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Program by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Program.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system, which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+  8. If the distribution and/or use of the Program is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Program under this License
+may add an explicit geographical distribution limitation excluding
+those countries, so that distribution is permitted only in or among
+countries not thus excluded.  In such case, this License incorporates
+the limitation as if written in the body of this License.
+
+  9. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of this License which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+this License, you may choose any version ever published by the Free Software
+Foundation.
+
+  10. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+			    NO WARRANTY
+
+  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+		     END OF TERMS AND CONDITIONS
+
+	Appendix: How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to the public, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these terms.
+
+  To do so, attach the following notices to the program.  It is safest
+to attach them to the start of each source file to most effectively
+convey the exclusion of warranty; and each file should have at least
+the "copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 19yy  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) 19yy name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type `show c' for details.
+
+The hypothetical commands `show w' and `show c' should show the appropriate
+parts of the General Public License.  Of course, the commands you use may
+be called something other than `show w' and `show c'; they could even be
+mouse-clicks or menu items--whatever suits your program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here is a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the program
+  `Gnomovision' (which makes passes at compilers) written by James Hacker.
+
+  <signature of Ty Coon>, 1 April 1989
+  Ty Coon, President of Vice
+
+This General Public License does not permit incorporating your program into
+proprietary programs.  If your program is a subroutine library, you may
+consider it more useful to permit linking proprietary applications with the
+library.  If this is what you want to do, use the GNU Library General
+Public License instead of this License.
+@end verbatim
+
+
+@node , , More about XML, Top
+@appendix
+@cindex
+
+
+
+@ignore
+
+
+@node Advanced topics, Reference, Tutorial, Top
+@chapter Advanced topics
+@cindex Advanced topics
+
+
+@node Reference, Error messages, Advanced topics, Top
+@chapter Reference
+@cindex Reference
+
+@menu
+* Tools::  
+* CGI web interface::                 
+* Document classes::                 
+@end menu
+
+
+@node Tools, CGI web interface, Reference, Reference
+@section Tools
+@cindex Tools
+
+@menu
+* afindex::  
+* afsearch::                 
+* afadmin::                 
+@end menu
+
+
+@node afindex, afsearch, Tools, Tools
+@subsection afindex
+@pindex afindex
+
+
+@node afsearch, afadmin, afindex, Tools
+@subsection afsearch
+@pindex afsearch
+
+
+@node afadmin, , afsearch, Tools
+@subsection afadmin
+@pindex afadmin
+
+
+@node CGI web interface, Document classes, Tools, Reference
+@section CGI web interface
+@cindex CGI web interface
+
+.
+
+
+@node Document classes, , CGI web interface, Reference
+@section Document classes
+@cindex Document classes
+
+.
+
+
+@node Error messages, Notes for Isearch users, Reference, Top
+@appendix Error messages
+@cindex Error messages
+
+
+@node Notes for Isearch users, Index, Error messages, Top
+@appendix Notes for Isearch users
+@cindex Notes for Isearch users
+
+
+@node Index,  , Notes for Isearch users, Top
+@unnumbered Index
+
+@printindex cp
+
+
+@end ignore
+
+
+@bye
+
+@c Local Variables: ***
+@c mode: TeXinfo ***
+@c End: ***
