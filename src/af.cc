@@ -204,7 +204,7 @@ void log_error_new(const ETYMON_AF_EXCEPTION *ex)
 	char *s = (char *)malloc(strlen(msg) + strlen(where) + 4);
 	strcpy(s, msg);
 	strcat(s, " [");
-	strcpy(s, where);
+	strcat(s, where);
 	strcat(s, "]");
 	aferror(s);
 	free(s);
