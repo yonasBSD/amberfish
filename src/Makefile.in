@@ -78,8 +78,8 @@ install:
 	mkdir -p ${PREFIXBIN}
 	cp ${BIN} ${PREFIXBIN}/.
 
-uninstall:
-	cd ${PREFIXBIN} ; rm -f ${BIN}
+#uninstall:
+#	cd ${PREFIXBIN} ; rm -f ${BIN}
 
 clean:
 	rm -f ${BIN} afd \
