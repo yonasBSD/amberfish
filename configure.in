@@ -1,5 +1,7 @@
 AC_INIT()
 
+USER_CPPFLAGS=$CPPFLAGS
+USER_LDFLAGS=$LDFLAGS
 CPPFLAGS="-I/usr/local/include $CPPFLAGS"
 LDFLAGS="-L/usr/local/lib $LDFLAGS"
 
@@ -70,8 +72,8 @@ echo ""
 echo "User options"
 echo "------------"
 echo "Install prefix            : $prefix"
-echo "CPPFLAGS                  : $CPPFLAGS"
-echo "LDFLAGS                   : $LDFLAGS"
+echo "CPPFLAGS                  : $USER_CPPFLAGS"
+echo "LDFLAGS                   : $USER_LDFLAGS"
 echo "Enable XML                : $xml"
 echo ""
 echo "Configure results"
