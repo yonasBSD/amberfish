@@ -14,11 +14,11 @@ extern "C" {
 #include "girs.h"
 }
 
-int search(const GIRS_SEARCH_REQUEST *rq, GIRS_SEARCH_RESPONSE *rs)
+int search(const Girs_search_request *rq, Girs_search_response *rs)
 {
 	/* testing only */
 	printf("Received query: [%s]\n", rq->query);
-	rs->rset_n = 321;
+	rs->results_n = 321;
 	/* end test */
 	
         return 0;
@@ -26,9 +26,9 @@ int search(const GIRS_SEARCH_REQUEST *rq, GIRS_SEARCH_RESPONSE *rs)
 
 int main(int argc, char *argv[])
 {
-	GIRS_SERVER_START server_start;
+	Girs_server_start server_start;
 
-	memset(&server_start, 0, sizeof(GIRS_SERVER_START));
+	memset(&server_start, 0, sizeof(Girs_server_start));
 	server_start.port = SERVER_PORT;
 	server_start.f_search = search;
         return girs_server_start(&server_start);
