@@ -19,6 +19,7 @@ install:
 
 uninstall:
 	cd src ; ${MAKE} uninstall
+	cd doc ; ${MAKE} uninstall
 
 clean:
 	rm -fr autom4te.cache

@@ -72,6 +72,8 @@ changed in the invocation of configure, e.g.:
 
   ./configure --prefix=/opt
 
+Amberfish can be uninstalled by typing 'gmake uninstall'.
+
 
 PORTER STEMMER
 

@@ -1,8 +1,8 @@
 PREFIX =	@prefix@
 PREFIXMAN =	${PREFIX}/man
-MAN1 =		af.1
+MAN1 =		af.1.gz
 
-all: amberfish.pdf
+all: amberfish.pdf ${MAN1}
 
 amberfish.pdf: amberfish.texi
 	texi2dvi --pdf amberfish.texi
@@ -15,13 +15,20 @@ amberfish.html: amberfish.texi version.texi
 
 install: all
 	chmod a+r ${MAN1}
+	if [ -f ${PREFIXMAN}/man1/af.1 ] ; then \
+		rm -f ${PREFIXMAN}/man1/af.1 ; \
+        fi
 	cp ${MAN1} ${PREFIXMAN}/man1/.
 
-#uninstall:
-#	cd ${PREFIXMAN}/man1 ; rm -f ${MAN1}
+uninstall:
+	if [ -d ${PREFIXMAN}/man1 ] ; then \
+		cd ${PREFIXMAN}/man1 ; \
+		rm -f ${MAN1} ; \
+	fi
 
 clean:
-	rm -f amberfish.{aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs}
+	rm -f amberfish.{aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \
+		${MAN1}
 
 distclean:
 	${MAKE} clean
