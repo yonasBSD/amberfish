@@ -4,4 +4,4 @@
  *  Authors:  Nassib Nassar
  */
 
-int aferrno;
+int aferrno = 0;
