@@ -11,6 +11,7 @@ SHELL =		/bin/sh
 CXX =		g++
 
 LIBS =		@LDFLAGS@ @LIBS@ -L. -lamberfish -lm
+PREFIX =	@prefix@
 
 LIBAMBERFISH =	libamberfish.a
 OBJ =		engine.o text.o xml.o xml_test.o syr1.o
@@ -19,7 +20,10 @@ SRC =		admin.cc docbuf.cc engine.cc explain.cc fdef.cc \
 		afadmin.cc affetch.cc afindex.cc afsearch.cc \
 		syr1.cc text.cc xml.cc xml_test.cc
 
-all: afindex afsearch afadmin affetch
+# Be careful about changing BIN; see the uninstall target below first!
+BIN =		afindex afsearch afadmin affetch
+
+all: ${BIN}
 
 depend: version.h
 	${CXX} -MM ${SRC} > makefile.depend
@@ -48,8 +52,15 @@ ${LIBAMBERFISH}: ${OBJ}
 version.h:
 	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" > version.h
 
+install:
+	mkdir -p ${PREFIX}/bin
+	cp ${BIN} ${PREFIX}/bin/.
+
+uninstall:
+	cd ${PREFIX}/bin ; rm -f ${BIN}
+
 clean:
-	rm -f afindex afsearch afadmin affetch amberfishd \
+	rm -f ${BIN} amberfishd \
 		afindex.o afsearch.o afadmin.o affetch.o amberfishd.o \
 		${OBJ} ${LIBAMBERFISH} version.h
 

@@ -14,7 +14,10 @@ build:
 	cd doc ; make all
 
 install:
-	cp -f bin/* ${BIN}/.
+	cd src ; make install
+
+uninstall:
+	cd src ; make uninstall
 
 clean:
 	rm -fr autom4te.cache

@@ -4019,7 +4019,6 @@ _ACEOF
 
 
 xml=yes
-
 # Check whether --enable-xml or --disable-xml was given.
 if test "${enable_xml+set}" = set; then
   enableval="$enable_xml"
@@ -4029,7 +4028,6 @@ if test "${enable_xml+set}" = set; then
 	fi
 
 fi;
-
 if test "$xml" = "yes"; then
 
 for ac_header in xercesc/util/XercesVersion.hpp

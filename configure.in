@@ -10,13 +10,11 @@ AC_CHECK_SIZEOF(int, 0)
 AC_CHECK_SIZEOF(long int, 0)
 
 xml=yes
-
 AC_ARG_ENABLE(xml, [  --disable-xml           disable linking with Xerces and XML support], [
 	if test "$enableval" = "no"; then
 		xml=no
 	fi
 ] )
-
 if test "$xml" = "yes"; then
 	AC_CHECK_HEADERS([xercesc/util/XercesVersion.hpp])
 	AC_CHECK_LIB(xerces-c, main)

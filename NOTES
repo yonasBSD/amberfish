@@ -1,7 +1,8 @@
 
 RELEASE NOTES
 
-1.1.10
+
+RECENT CHANGES
 
 * Fixed bug causing multiple error messages when afindex is given bad
 input files.

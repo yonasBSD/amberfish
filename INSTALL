@@ -54,7 +54,7 @@ Now compile Amberfish:
 
   make
 
-Compiled executables will be placed in the bin/ directory.
+This tries to build executables in src/ and a tutorial (PDF) in doc/.
 
 If the Xerces library is in a non-standard location, be sure that
 LD_LIBRARY_PATH points to that location before using Amberfish.
@@ -65,7 +65,7 @@ Otherwise you will get an error something like this:
   directory
 
 Typing 'make install' in this directory will attempt to install the
-Amberfish executables in /usr/local/bin/.
-
-Type 'make' in the doc/ directory to build documentation files.
+Amberfish executables in {prefix}/bin/ where {prefix} defaults to
+/usr/local and can be changed in the invocation of configure, e.g.:
+./configure --prefix=/opt
 
