@@ -145,13 +145,16 @@ Parse input files into multiple documents at points where the
 specified delimiter string is found.
 
 .TP
-.B -t, --doctype=text, --doctype=xml
+.B -t, --doctype=text, --doctype=xml, --doctype=erc
 Set the document type.  The default is
 .BR text .
 Specifying
 .B xml
 enables functions related to searching and retrieving within nested
-tags.
+tags in XML documents.  The
+.B erc
+doctype is for kernel metadata in Electronic Resource Citation (ERC)
+format.
 
 .TP
 .BI "--dlevel " level
