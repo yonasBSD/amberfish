@@ -10,7 +10,8 @@ open.o: open.cc open.h misc.h af_auto.h version.h log.h util.h lock.h
 search.o: search.cc search.h misc.h af_auto.h version.h log.h open.h \
   fdef.h index.h docbuf.h
 util.o: util.cc misc.h af_auto.h version.h
-af.o: af.cc index.h misc.h af_auto.h version.h docbuf.h admin.h util.h
+af.o: af.cc open.h misc.h af_auto.h version.h log.h index.h docbuf.h \
+  search.h admin.h explain.h util.h
 afadmin.o: afadmin.cc admin.h misc.h af_auto.h version.h open.h log.h \
   explain.h util.h
 affetch.o: affetch.cc
