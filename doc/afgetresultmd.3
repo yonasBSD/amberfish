@@ -48,7 +48,7 @@ consists of the following:
 .nf
 typedef struct {
 	Uint4 parent;
-	char *docpath;
+	char docpath[AFPATHSIZE];
 	off_t begin;
 	off_t end;
 } Afresultmd;

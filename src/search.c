@@ -1576,17 +1576,18 @@ int afgetresultmd(const Afresult *result, int resultn, Afresultmd *resultmd)
 						 sizeof(ETYMON_DOCTABLE)) == -1) {
 						perror("etymon_af_resolve_doc_id():read()");
 					}
-					resultmd[results_x].docpath = afstrdup(doctable.filename);
+/*					resultmd[results_x].docpath = afstrdup(doctable.filename);
 					if (resultmd[results_x].docpath == NULL) {
 						int x;
-						/* run through all eresult[].filename and free all results */
+						/ run through all eresult[].filename and free all results /
 						for (x = 0; x < resultn; x++) {
 							if (resultmd[x].docpath) {
 								free(resultmd[x].docpath);
 							}
 						}
 						return aferr(AFEMEM);
-					}
+					} */
+					memcpy(resultmd[results_x].docpath, doctable.filename, AFPATHSIZE);
 					resultmd[results_x].begin = doctable.begin;
 					resultmd[results_x].end = doctable.end;
 					resultmd[results_x].parent = doctable.parent;

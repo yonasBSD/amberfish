@@ -84,7 +84,8 @@ typedef struct {
 #define ETYMON_INDEX_MAGIC (4)
 
 /* maximum char[] size for an absolute path */
-#define ETYMON_MAX_PATH_SIZE (1024)
+#define AFPATHSIZE (1024)
+#define ETYMON_MAX_PATH_SIZE AFPATHSIZE
 
 /* maximum char[] key size */
 /* 11 is big enough to hold the default uint4 keys */

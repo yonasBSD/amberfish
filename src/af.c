@@ -280,11 +280,11 @@ void log_error_new(const ETYMON_AF_EXCEPTION *ex)
 
 typedef struct {
 	int score;
-	char dbname[ETYMON_MAX_PATH_SIZE];
+	char dbname[AFPATHSIZE];
 	int db_id;
 	int doc_id;
 	int parent;  /* doc_id of parent document */
-        char filename[ETYMON_MAX_PATH_SIZE]; /* document source file name */
+        char filename[AFPATHSIZE]; /* document source file name */
 	etymon_af_off_t begin; /* starting offset of document within the file */
         etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
 } AFSEARCH_RESULT;
@@ -435,7 +435,7 @@ static int exec_search()
 						ser.result[x].docid;
 					res[x].parent =
 						resultmd[x].parent;
-					strcpy(res[x].filename, resultmd[x].docpath);
+					memcpy(res[x].filename, resultmd[x].docpath, AFPATHSIZE);
 					res[x].begin = resultmd[x].begin;
 					res[x].end = resultmd[x].end;
 
@@ -459,7 +459,7 @@ static int exec_search()
 						ses_presult(res + x);
 					}
 					
-					free(resultmd[x].docpath);
+/*					free(resultmd[x].docpath);*/
 				}
 			}
 

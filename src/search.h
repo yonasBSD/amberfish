@@ -4,7 +4,7 @@
 /***** new *****/
 
 #include <fcntl.h>
-#include "config.h"
+#include "defs.h"
 
 typedef unsigned char Afchar;
 
@@ -21,7 +21,7 @@ typedef struct {
 
 typedef struct {
 	Uint4 parent;  /* docid of parent document */
-        char *docpath;  /* document source file name */
+        char docpath[AFPATHSIZE];  /* document source file name */
 	off_t begin;  /* starting offset of document within the file */
         off_t end;  /* ending offset of document within the file (one byte past end) */
 } Afresultmd;
