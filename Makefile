@@ -17,6 +17,9 @@ html:
 pdf:
 	cd doc ; ${MAKE} pdf
 
+strip:
+	cd src ; ${MAKE} ${MAKEFLAGS} strip
+
 install:
 	cd src ; ${MAKE} ${MAKEFLAGS} install
 	cd doc ; ${MAKE} ${MAKEFLAGS} install

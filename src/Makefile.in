@@ -1,11 +1,8 @@
 # Changes should be made in Makefile.in instead of Makefile,
 # or else they will be overwritten by configure.
 
-DEBUG =		-g
-STRIP =		@\#
-
 #OPT =		-O3 -funroll-loops
-#STRIP =		strip
+DEBUG =		-g
 
 LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
@@ -57,16 +54,18 @@ all: ${BIN}
 
 af: ${LIBAF} afmain.o af.o
 	${CXX} -o af afmain.o af.o ${LIBS}
-	${STRIP} af
 
 afd: ${LIBAF} ${GIRS}/src/libgirs.a afdmain.o afd.o
 	${CXX} -o afd afdmain.o afd.o ${LIBS} -L${GIRS}/src -lgirs
-	${STRIP} afd
 
 ${LIBAF}: ${LIBOBJ}
 	ar rs ${LIBAF} ${LIBOBJ}
 
+strip:
+	strip af
+
 install: all
+	make strip
 	mkdir -p ${PREFIXBIN}
 	cp ${BIN} ${PREFIXBIN}/.
 
