@@ -18,11 +18,13 @@ installation.
 AMBERFISH INSTALLATION
 
 Typing 'make' in this directory will attempt to build Amberfish.
+Compiled executables will be placed in the bin/ directory.
 
 If the Xerces library is in a non-standard location, be sure that
-LD_LIBRARY_PATH points to that location before running Amberfish
-binaries.
+LD_LIBRARY_PATH points to that location before using Amberfish.
 
-Typing 'make install' will attempt to install the Amberfish binaries
-in /usr/local/bin/.
+Typing 'make install' in this directory will attempt to install the
+Amberfish executables in /usr/local/bin/.
+
+Type 'make' in the doc/ directory to build documentation files.
 

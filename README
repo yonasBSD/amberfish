@@ -19,14 +19,12 @@ USA.
 
                                * * *
 
-See the file 'INSTALL' for installation instructions.
+See the file 'INSTALL' for installation instructions.  'NOTES'
+describes known bugs, etc.
 
 Please refer to the web site for updates:
 
 	http://sourceforge.net/projects/amberfish/
-
-See 'doc/amberfish.pdf' for the user documentation.  (You may have to
-type 'make' first in the 'doc/' subdirectory.)
 
 We hope you enjoy using Amberfish!
 

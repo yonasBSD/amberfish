@@ -1,0 +1,44 @@
+
+NOTES, BUGS, AND OUTSTANDING ISSUES
+
+* Indexing non-regular files.  There is a known bug that causes many
+  error message to be printed if afindex is used with non-regular
+  files such as directories.  For now it is best to ensure that only
+  regular files are passed to afindex.
+
+* Documentation errors.  Building the documentation generates lots of
+  errors.  They are related to navigation and are harmless for the
+  most part.
+
+* Unoptimized databases.  Amberfish can only search databases that
+  have been optimized with -O.
+
+* Optimization speed.  The optimize (-O) code is slow and needs to be
+  rewritten.
+
+* Memory leaks.  There are known memory leaks associated with
+  searching.  We could use assistance in tracking these down.
+
+* Indexing with '-t xml' apparently does not return an error message
+  (as it should) when XML support is disabled.  Not sure what it
+  actually does!
+
+* Stop words.  All words are currently indexed and searched.
+
+* Multiple documents.  The -split option specifies a delimiter string
+  to show the boundaries of multiple documents within a file.  This
+  should probably be enhanced a little bit to allow characters such as
+  '\n'.
+
+* Using '*' alone as a search term.  This is undefined and may cause
+  strange behavior.
+
+* Stability of C/C++ API.  The C/C++ interface is unstable for
+  indexing and document classes.  The interface for searching is
+  moderately stable, and the others need to be rewritten to conform to
+  it.
+
+* Phrase searching without -phrase.  Searching for a phrase in a
+  database that was created without -phrase returns no results rather
+  than an error message.  (This needs to be fixed.)
+
