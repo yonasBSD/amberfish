@@ -1,6 +1,9 @@
 
 INSTALLATION OF XML PARSER
 
+If you don't need XML support in Amberfish, you can skip to the
+section below on Amberfish installation.
+
 To use the XML features of Amberfish, you need the Xerces C++ parser.
 Xerces is available here:
 
@@ -9,19 +12,53 @@ Xerces is available here:
 If you are using Linux, you may already have Xerces installed.  Look
 for a library file like 'libxerces-c.so'.
 
-The build process for Amberfish will look for Xerces, and if Xerces
-cannot be found, then XML support will be disabled in Amberfish.  Once
-you have Xerces installed, follow the instructions below for Amberfish
-installation.
+The build process for Amberfish will look for Xerces.  If it
+determines that Xerces is missing, it will automatically disable XML
+support in Amberfish.  Once you have Xerces installed, try running
+configure in this directory:
+
+  ./configure
+
+If configure finds Xerces, it will include something like this in its
+output:
+
+  checking xercesc/util/XercesVersion.hpp usability... yes
+  checking xercesc/util/XercesVersion.hpp presence... yes
+  checking for xercesc/util/XercesVersion.hpp... yes
+  checking for main in -lxerces-c... yes
+
+If you have Xerces installed in a non-standard location and configure
+is unable to find it, you can manually specify the location of the
+include files and library, for example:
+
+  ./configure CPPFLAGS=-I/include LDFLAGS=-L/usr/lib/xerces
+
+Once you have configure saying 'yes' to Xerces, the rest of the build
+process should hopefully proceed smoothly.  If you have a very old
+version of Xerces, you may still be unable to compile Amberfish with
+it.
 
 
 AMBERFISH INSTALLATION
 
-Typing 'make' in this directory will attempt to build Amberfish.
+If you have not already done so (above), run configure in this
+directory:
+
+  ./configure
+
+Now compile Amberfish:
+
+  make
+
 Compiled executables will be placed in the bin/ directory.
 
 If the Xerces library is in a non-standard location, be sure that
 LD_LIBRARY_PATH points to that location before using Amberfish.
+Otherwise you will get an error something like this:
+
+  bin/afindex: error while loading shared libraries:
+  libxerces-c.so.25: cannot open shared object file: No such file or
+  directory
 
 Typing 'make install' in this directory will attempt to install the
 Amberfish executables in /usr/local/bin/.

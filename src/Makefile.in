@@ -6,8 +6,8 @@ CC = g++
 #DEBUG = -g
 OPT = -O3 -funroll-loops
 LARGEFILE = -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-CXXFLAGS = -Wall ${DEBUG} ${OPT} ${INCLUDE} ${LARGEFILE}
-CLEAN = *.o core *.core libxerces_auto
+CXXFLAGS = @CPPFLAGS@ -Wall ${DEBUG} ${OPT} ${INCLUDE} ${LARGEFILE}
+CLEAN = *.o core *.core
 DISTCLEAN = *~
 RM = rm -f
 BINDIR = ../bin
@@ -20,12 +20,12 @@ LIBDIR = ../lib
 #INCLUDE = -Iinclude -Iengine -Idclass -Ietc/${XERCES_DIR}/src
 INCLUDE = -Iinclude -Iengine -Idclass
 
-#LIBS=-lxerces-c
+LIBS = @LDFLAGS@ @LIBS@
 
-all: ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
-	@echo ""
-	@echo "Successful completion."
-	@echo ""
+all: include/version.h ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
+#	@echo ""
+#	@echo "Successful completion."
+#	@echo ""
 #	@echo "******************************************************************"
 #	@echo "The LD_LIBRARY_PATH environment variable should be set as follows:"
 #	@echo ""
@@ -40,14 +40,14 @@ all: ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
 #	@echo "******************************************************************"
 #	@echo ""
 
-${BINDIR}/afindex: ${LIBDIR}/${XERCES_LIB} ${LIBDIR}/libaf.a tools/afindex.o
-	${CC} -o ${BINDIR}/afindex tools/afindex.o -L${LIBDIR} -laf -lm `cat libxerces_auto`
+${BINDIR}/afindex: ${LIBDIR}/libamberfish.a tools/afindex.o
+	${CC} -o ${BINDIR}/afindex tools/afindex.o -L${LIBDIR} -lamberfish -lm ${LIBS}
 
-${BINDIR}/afsearch: ${LIBDIR}/${XERCES_LIB} ${LIBDIR}/libaf.a tools/afsearch.o
-	${CC} -o ${BINDIR}/afsearch tools/afsearch.o -L${LIBDIR} -laf -lm `cat libxerces_auto`
+${BINDIR}/afsearch: ${LIBDIR}/libamberfish.a tools/afsearch.o
+	${CC} -o ${BINDIR}/afsearch tools/afsearch.o -L${LIBDIR} -lamberfish -lm ${LIBS}
 
-${BINDIR}/afadmin: ${LIBDIR}/${XERCES_LIB} ${LIBDIR}/libaf.a tools/afadmin.o
-	${CC} -o ${BINDIR}/afadmin tools/afadmin.o -L${LIBDIR} -laf -lm `cat libxerces_auto`
+${BINDIR}/afadmin: ${LIBDIR}/libamberfish.a tools/afadmin.o
+	${CC} -o ${BINDIR}/afadmin tools/afadmin.o -L${LIBDIR} -lamberfish -lm ${LIBS}
 
 ${BINDIR}/affetch: tools/affetch.o
 	${CC} -o ${BINDIR}/affetch tools/affetch.o
@@ -94,8 +94,8 @@ OBJ = engine/engine.o \
 		dclass/xml_test.o \
 		dclass/syr1.o
 
-${LIBDIR}/libaf.a: ${OBJ}
-	ar rs ${LIBDIR}/libaf.a ${OBJ}
+${LIBDIR}/libamberfish.a: ${OBJ}
+	ar rs ${LIBDIR}/libamberfish.a ${OBJ}
 
 engine/engine.o: ${SRC}
 
@@ -107,27 +107,28 @@ dclass/xml_test.o: ${SRC}
 
 dclass/syr1.o: ${SRC}
 
-include/af_auto.h: autoconf/configure ../VERSION include/af_auto.h.in
-	cd autoconf ; CC=${CC} ./configure
-	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" >> include/af_auto.h
+include/version.h:
+	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" > include/version.h
 
-autoconf/configure: autoconf/configure.in
-	cd autoconf ; autoconf
+#include/af_auto.h: autoconf/configure ../VERSION include/af_auto.h.in
+#	cd autoconf ; CC=${CC} ./configure
+#	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" >> include/af_auto.h
+
+#autoconf/configure: autoconf/configure.in
+#	cd autoconf ; autoconf
 
 clean:
 	${RM} ${CLEAN}
-	cd autoconf ; ${RM} ${CLEAN} config.* ; ${RM} -r autom4te.cache
-	cd include ; ${RM} ${CLEAN} af_auto.h
+	cd include ; ${RM} ${CLEAN}
 	cd engine ; ${RM} ${CLEAN}
 	cd dclass ; ${RM} ${CLEAN}
 	cd tools ; ${RM} ${CLEAN}
-	cd ${LIBDIR} ; ${RM} libaf.a ${XERCES_LIB}
+	cd ${LIBDIR} ; ${RM} libamberfish.a ${XERCES_LIB}
 	cd ${BINDIR} ; ${RM} afindex afsearch afadmin affetch
 
 distclean:
 	make clean
 	${RM} ${DISTCLEAN}
-	cd autoconf ; ${RM} ${DISTCLEAN}
 	cd include ; ${RM} ${DISTCLEAN}
 	cd engine ; ${RM} ${DISTCLEAN}
 	cd dclass ; ${RM} ${DISTCLEAN}

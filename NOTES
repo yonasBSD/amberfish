@@ -42,3 +42,6 @@ NOTES, BUGS, AND OUTSTANDING ISSUES
   database that was created without -phrase returns no results rather
   than an error message.  (This needs to be fixed.)
 
+See the Bugs Tracker at http://sourceforge.net/projects/amberfish/ for
+additional outstanding problems.
+

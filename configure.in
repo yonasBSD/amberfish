@@ -1,0 +1,15 @@
+AC_INIT()
+
+AC_CONFIG_HEADER(src/include/af_auto.h)
+AC_CONFIG_FILES(src/Makefile)
+
+AC_PROG_CXX
+
+AC_CHECK_SIZEOF(short int, 0)
+AC_CHECK_SIZEOF(int, 0)
+AC_CHECK_SIZEOF(long int, 0)
+
+AC_CHECK_HEADERS([xercesc/util/XercesVersion.hpp])
+AC_CHECK_LIB(xerces-c, main)
+
+AC_OUTPUT()
