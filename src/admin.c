@@ -27,7 +27,7 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 	uint4 magic;
 
 	/* make sure database is ready */
-	if (etymon_db_ready(opt->dbname, &(opt->log)) == 0) {
+	if (etymon_db_ready(opt->dbname) == 0) {
 		int e;
 		char s[ETYMON_MAX_MSG_SIZE];
 		sprintf(s, "%s: Database not ready", opt->dbname);
@@ -177,7 +177,7 @@ int etymon_db_init(ETYMON_DB_OPTIONS* opt) {
 	uint4 magic;
 	ssize_t nbytes;
 
-	etymon_db_unlock(opt->dbname, &(opt->log));
+	etymon_db_unlock(opt->dbname);
 	etymon_db_lock(opt->dbname, &(opt->log));
 
 	/* create empty db files */
@@ -216,7 +216,7 @@ int etymon_db_init(ETYMON_DB_OPTIONS* opt) {
 	}
 	close(fd);
 
-	etymon_db_unlock(opt->dbname, &(opt->log));
+	etymon_db_unlock(opt->dbname);
 	
 	return 0;
 }

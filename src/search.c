@@ -1149,7 +1149,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 
 	/* open database files */
 	if (etymon_af_state[state->db_id]->keep_open == 0) {
-		if (etymon_af_open_files("etymon_af_search()", state->opt->log, state->db_id, O_RDONLY) == -1) {
+		if (etymon_af_open_files("etymon_af_search()", state->db_id, O_RDONLY) == -1) {
 			return -1;
 		}
 	}
@@ -1226,7 +1226,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 				}
 				/* close database files */
 				if (etymon_af_state[state->db_id]->keep_open == 0) {
-					etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+					etymon_af_close_files("etymon_af_search()", state->db_id);
 				}
 				/* free result sets */
 				while (--r_stack_p >= 0) {
@@ -1269,7 +1269,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 					       (char*)query, NULL, NULL);
 					/* close database files */
 					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+						etymon_af_close_files("etymon_af_search()", state->db_id);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
@@ -1282,7 +1282,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 				if (etymon_af_search_term(state, term, &(r_stack[r_stack_p]), &(rn_stack[r_stack_p])) == -1) {
 					/* close database files */
 					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+						etymon_af_close_files("etymon_af_search()", state->db_id);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
@@ -1307,7 +1307,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 					       (char*)query, NULL, NULL);
 					/* close database files */
 					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+						etymon_af_close_files("etymon_af_search()", state->db_id);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
@@ -1330,7 +1330,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 					       (char*)query, NULL, NULL);
 					/* close database files */
 					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+						etymon_af_close_files("etymon_af_search()", state->db_id);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
@@ -1363,7 +1363,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 						    == -1) {
 							/* close database files */
 							if (etymon_af_state[state->db_id]->keep_open == 0) {
-								etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+								etymon_af_close_files("etymon_af_search()", state->db_id);
 							}
 							/* free result sets */
 							while (--r_stack_p >= 0) {
@@ -1381,7 +1381,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 						    == -1) {
 							/* close database files */
 							if (etymon_af_state[state->db_id]->keep_open == 0) {
-								etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+								etymon_af_close_files("etymon_af_search()", state->db_id);
 							}
 							/* free result sets */
 							while (--r_stack_p >= 0) {
@@ -1409,7 +1409,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 			       (char*)query, NULL, NULL);
 			/* close database files */
 			if (etymon_af_state[state->db_id]->keep_open == 0) {
-				etymon_af_close_files("etymon_af_search()", NULL, state->db_id);
+				etymon_af_close_files("etymon_af_search()", state->db_id);
 			}
 			/* free result sets */
 			while (--r_stack_p >= 0) {
@@ -1448,7 +1448,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 	
 	/* close database files */
 	if (etymon_af_state[state->db_id]->keep_open == 0) {
-		if (etymon_af_close_files("etymon_af_search()", state->opt->log, state->db_id) == -1) {
+		if (etymon_af_close_files("etymon_af_search()", state->db_id) == -1) {
 			return -1;
 		}
 	}
@@ -1582,7 +1582,7 @@ int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_A
 					if (!files_opened) {
 						/* open database files */
 						if (etymon_af_state[db_id]->keep_open == 0) {
-							if (etymon_af_open_files("etymon_af_search()", log, db_id, O_RDONLY) == -1) {
+							if (etymon_af_open_files("etymon_af_search()", db_id, O_RDONLY) == -1) {
 								return -1;
 							}
 						}
@@ -1622,7 +1622,7 @@ int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_A
 
 			/* close database files */
 			if ( (etymon_af_state[db_id]->keep_open == 0) && (files_opened) ) {
-				if (etymon_af_close_files("etymon_af_search()", log, db_id) == -1) {
+				if (etymon_af_close_files("etymon_af_search()", db_id) == -1) {
 					return -1;
 				}
 			}

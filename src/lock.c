@@ -13,7 +13,7 @@
 #include "lock.h"
 #include "util.h"
 
-int etymon_db_ready(const char* dbname, ETYMON_LOG* log) {
+int etymon_db_ready(const char* dbname) {
 	char fn[ETYMON_MAX_PATH_SIZE];
 	int lock_fd;
 
@@ -28,7 +28,7 @@ int etymon_db_ready(const char* dbname, ETYMON_LOG* log) {
 }
 
 
-void etymon_db_unlock(const char* dbname, ETYMON_LOG* log) {
+void etymon_db_unlock(const char* dbname) {
 	char fn[ETYMON_MAX_PATH_SIZE];
 
 	etymon_db_construct_path(ETYMON_DBF_LOCK, dbname, fn);

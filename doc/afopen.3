@@ -6,7 +6,7 @@ afopen \- open a database
 
 .SH SYNOPSIS
 
-.B #include <af.h>
+.B #include "af.h"
 
 .B int afopen(const Afopen *r, Afopen_r *rr);
 
@@ -82,6 +82,10 @@ In addition to the set of default errors, this function can return:
 .TP
 .B AFEDBLOCK
 The database is locked.
+
+.TP
+.B AFEOPENLIM
+Too many open databases.
 
 .TP
 .B AFEVERSION

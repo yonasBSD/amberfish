@@ -44,7 +44,7 @@ typedef struct {
 
 static int getlock(const char *db)
 {
-	if (!etymon_db_ready(db, NULL))
+	if (!etymon_db_ready(db))
 		return aferr(AFEDBLOCK);
 	if (etymon_db_lock(db, NULL) < 0)
 		return -1;
@@ -54,7 +54,7 @@ static int getlock(const char *db)
 
 static int freelock(const char *db)
 {
-	etymon_db_unlock(db, NULL);
+	etymon_db_unlock(db);
 
 	return 0;
 }

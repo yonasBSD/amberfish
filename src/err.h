@@ -22,6 +22,7 @@ extern int aferrno;
 #define	AFEDBLOCK       (7)   /* Database locked */
 #define	AFEVERSION      (8)   /* Incompatible database version */
 #define	AFELINEAR       (9)   /* Unsupported operation on linearized database */
+#define	AFEOPENLIM     (10)   /* Too many open databases */
 
 #define AFMAXDEFERR     (6)
 #define AFMAXERR        (9)
@@ -33,9 +34,9 @@ static char* aferrmsg[] = {
 	"Buffer overflow",
 	"Invalid argument",
 	"I/O error",
+	"Corrupted database file",
 	"Database locked",
 	"Incompatible database version",
-	"Corrupted database file",
 	"Unsupported operation on linearized database"
 };
 

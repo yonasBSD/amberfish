@@ -536,7 +536,7 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 	ETYMON_INDEX_LWORD lword;
 
 	/* make sure database is ready */
-	if (etymon_db_ready(opt->dbname, &(opt->log)) == 0) {
+	if (etymon_db_ready(opt->dbname) == 0) {
 		int e;
 		char s[ETYMON_MAX_MSG_SIZE];
 		sprintf(s, "%s: Database not ready", opt->dbname);
@@ -558,7 +558,7 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 		char s[ETYMON_MAX_MSG_SIZE];
 		sprintf(s, "%s: Unable to open database", opt->dbname);
 		e = opt->log.error(s, 1);
-		etymon_db_unlock(opt->dbname, &(opt->log));
+		etymon_db_unlock(opt->dbname);
 		if (e != 0) {
 			exit(e);
 		}
@@ -576,7 +576,7 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 		sprintf(s, "%s: Database created by incompatible version", opt->dbname);
 		e = opt->log.error(s, 1);
 		close(dbinfo_fd);
-		etymon_db_unlock(opt->dbname, &(opt->log));
+		etymon_db_unlock(opt->dbname);
 		if (e != 0) {
 			exit(e);
 		}
@@ -596,7 +596,7 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 		sprintf(s, "%s: Database is already linearized", opt->dbname);
 		e = opt->log.error(s, 1);
 		close(dbinfo_fd);
-		etymon_db_unlock(opt->dbname, &(opt->log)); /* unlock the database */
+		etymon_db_unlock(opt->dbname); /* unlock the database */
 		if (e != 0) {
 			exit(e);
 		}
@@ -898,7 +898,7 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 	close(uword_fd);
 
 	/* unlock the database */
-	etymon_db_unlock(opt->dbname, &(opt->log));
+	etymon_db_unlock(opt->dbname);
 
 	return 0;
 }
@@ -1671,7 +1671,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	maxmem = ((size_t) opt->memory) * 1048576 - 1315000;
 
 	/* make sure database is ready */
-	if (etymon_db_ready(opt->dbname, &(opt->log)) == 0) {
+	if (etymon_db_ready(opt->dbname) == 0) {
 		int e;
 		char s[ETYMON_MAX_MSG_SIZE];
 		sprintf(s, "%s: Database not ready", opt->dbname);
@@ -1693,7 +1693,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		char s[ETYMON_MAX_MSG_SIZE];
 		sprintf(s, "%s: Unable to open database", opt->dbname);
 		e = opt->log.error(s, 1);
-		etymon_db_unlock(opt->dbname, &(opt->log));
+		etymon_db_unlock(opt->dbname);
 		if (e != 0) {
 			exit(e);
 		}
@@ -1711,7 +1711,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		sprintf(s, "%s: Database created by incompatible version", opt->dbname);
 		e = opt->log.error(s, 1);
 		close(dbinfo_fd);
-		etymon_db_unlock(opt->dbname, &(opt->log));
+		etymon_db_unlock(opt->dbname);
 		if (e != 0) {
 			exit(e);
 		}
@@ -2274,7 +2274,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	free(state);
 
 	/* unlock the database */
-	etymon_db_unlock(opt->dbname, &(opt->log));
+	etymon_db_unlock(opt->dbname);
 
 	return 0;
 }

@@ -42,7 +42,7 @@ typedef struct {
 	int read_only; /* open database for read-only operations */
 	int create; /* create database, overwriting if one already exists */
 	int keep_open; /* keep database files open, instead of re-opening for each operation */
-	ETYMON_AF_LOG* log;
+/*	ETYMON_AF_LOG* log;*/
 } ETYMON_AF_OPEN;
 
 typedef struct {
@@ -54,8 +54,8 @@ int etymon_af_open(ETYMON_AF_OPEN* opt);
 
 int etymon_af_close(ETYMON_AF_CLOSE* opt);
 
-int etymon_af_open_files(char* where, ETYMON_AF_LOG* log, int db_id, int flags);
+int etymon_af_open_files(char* where, int db_id, int flags);
 
-int etymon_af_close_files(char* where, ETYMON_AF_LOG* log, int db_id);
+int etymon_af_close_files(char* where, int db_id);
 
 #endif
