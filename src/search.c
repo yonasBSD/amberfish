@@ -251,7 +251,9 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 	uint4 ufieldp = 0;
 	int uwordx;
 	int upostx;
-	int postsn, postsw, postsx;
+	int postsw;
+	int postsn = 0;
+	int postsx = 0;
 	int first;
 	int donepost;
 	

@@ -29,12 +29,13 @@ static int index_stemming = 1;
 static int index_long_words = 0;
 static int index_memory = MEMORYMIN;
 static int index_dlevel = 1;
-static int index_no_linear = 0;
 static int index_no_linear_buffer = 0;
 static int index_old_linear = 0;
 static char *index_doctype = "text";
 static char *index_split = "";
 static int index_files_stdin = 0; /* deprecated */
+
+static int cmd_linearize = 0;
 
 static int cmd_search = 0;
 static char *search_query_boolean = "";
@@ -79,10 +80,6 @@ static int process_opt_long(char *opt, char *arg)
 		cmd_version = 1;
 		return 0;
 	}
-	if (!strcmp(opt, "no-linear")) {
-		index_no_linear = 1;
-		return 0;
-	}
 	if (!strcmp(opt, "no-linear-buffer")) {
 		index_no_linear_buffer = 1;
 		return 0;
@@ -107,10 +104,10 @@ static int process_opt(int argc, char *argv[])
 		{ "dlevel", 1, 0, 0 },
 		{ "doctype", 1, 0, 't' },
 		{ "index", 0, 0, 'i' },
+		{ "linearize", 0, 0, 'L' },
 		{ "list", 0, 0, 'l' },
 		{ "long-words", 0, 0, 0 },
 		{ "memory", 1, 0, 'm' },
-		{ "no-linear", 0, 0, 0 },
 		{ "no-linear-buffer", 0, 0, 0 },
 		{ "no-stem", 0, 0, 0 },
 		{ "old-linear", 0, 0, 0 },
@@ -128,7 +125,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CDFQ:d:ilm:st:v",
+				"CDFLQ:d:ilm:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -140,6 +137,9 @@ static int process_opt(int argc, char *argv[])
 			break;
 		case 'i':
 			cmd_index = 1;
+			break;
+		case 'L':
+			cmd_linearize = 1;
 			break;
 		case 's':
 			cmd_search = 1;
@@ -206,7 +206,6 @@ static void dump_opt()
 	printf("index_dlevel = %i\n", index_dlevel);
 	printf("index_doctype = %s\n", index_doctype);
 	printf("index_split = %s\n", index_split);
-	printf("index_no_linear = %i\n", index_no_linear);
 	printf("index_files_stdin = %i (deprecated)\n", index_files_stdin);
 	printf("cmd_search = %i\n", cmd_search);
 	printf("search_query_boolean = %s\n", search_query_boolean);
@@ -511,22 +510,44 @@ static int exec_index()
 			return -1;
 	}
 
-	if (!index_no_linear) {
-		if (index_old_linear) {
-			if (etymon_index_optimize_old(&index_options) == -1)
-				return -1;
-		} else {
-			Aflinear rq;
-			rq.db = *dbname;
-			rq.verbose = verbose;
-			rq.memory = index_memory;
-			rq.nobuffer = index_no_linear_buffer;
-			if (aflinear(&rq) < 0)
-				return -1;
+	return 0;
+}
+
+static int exec_linearize()
+{
+	ETYMON_INDEX_OPTIONS index_options;
+
+	/* set indexing options */
+	memset(&index_options, 0, sizeof(ETYMON_INDEX_OPTIONS));
+	index_options.log.error = log_error;
+	index_options.dbname = *dbname;
+	index_options.memory = index_memory;
+	index_options.dlevel = index_dlevel;
+	index_options.dclass = index_doctype;
+	index_options.files = nonopt_argv;
+	index_options.files_n = nonopt_argv_n;
+	index_options.files_stdin = index_files_stdin; /* deprecated */
+/*	index_options.word_proximity = 0; */
+	index_options.split = index_split;
+	index_options.verbose = verbose;
+	index_options.dc_options = ""; /*sei_options->dc_options;*/
+	index_options.long_words = index_long_words;
+	
+	if (index_old_linear) {
+		if (etymon_index_optimize_old(&index_options) == -1)
+			return -1;
+	} else {
+		Aflinear rq;
+		rq.db = *dbname;
+		rq.verbose = verbose;
+		rq.memory = index_memory;
+		rq.nobuffer = index_no_linear_buffer;
+		if (aflinear(&rq) < 0)
+			return -1;
 /*			if (etymon_index_optimize_new(&index_options) == -1)
 			return -1;*/
-		}
 	}
+
 	return 0;
 }
 
@@ -606,11 +627,16 @@ static int exec_version()
 static int validate_opt_cmd()
 {
 	if ( (!cmd_index) &&
+	     (!cmd_linearize) &&
 	     (!cmd_search) &&
 	     (!cmd_list) &&
 	     (!cmd_version) )
 		return aferror("No command option specified");
-	if ((cmd_index + cmd_search + cmd_list + cmd_version) > 1)
+	if ((cmd_index +
+	     cmd_linearize +
+	     cmd_search +
+	     cmd_list +
+	     cmd_version) > 1)
 		return aferror("Too many command options specified");
 	return 0;
 }
@@ -642,7 +668,7 @@ static int validate_opt()
 	if (validate_opt_search() < 0)
 		return -1;
 	if (dbname_n == 0) {
-		if (cmd_index || cmd_search || cmd_list)
+		if (cmd_index || cmd_linearize || cmd_search || cmd_list)
 			return aferror("No database name specified");
 	}
 	return 0;
@@ -660,6 +686,8 @@ int afmain(int argc, char *argv[])
 	
 	if (cmd_index)
 		return exec_index();
+	if (cmd_linearize)
+		return exec_linearize();
 	if (cmd_search)
 		return exec_search();
 	if (cmd_list)

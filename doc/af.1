@@ -6,22 +6,21 @@ af \- Amberfish text retrieval software
 
 .SH SYNOPSIS
 
-.B af
-.B [-i]
+.B af [-i]
 .BI [ options ]
 .BI [ file
 .IB ... ]
 .br
-.B af
-.B [-s]
+.B af [-s]
 .BI [ options ]
 .br
-.B af
-.B [-l]
+.B af [-L]
 .BI [ options ]
 .br
-.B af
-.B [--version]
+.B af [-l]
+.BI [ options ]
+.br
+.B af [--version]
 
 .SH DESCRIPTION
 
@@ -53,6 +52,15 @@ is used).
 .TP
 .B -s, --search
 Search an indexed database.
+
+.TP
+.B -L, --linearize
+Linearize an indexed database.  Linearizing is an optional step that
+can be done after indexing.  The advantages of linearizing are that it
+reduces searching time and slightly reduces the size of the index
+files.  The disadvantages are that the linearizing process is very
+slow, especially when used on large databases, and it prevents any
+additional documents from being added to the database.
 
 .TP
 .B -l, --list
@@ -150,31 +158,6 @@ they can be matched by right-truncated query terms.  By default, such
 words are discarded, i.e. not indexed at all.
 
 .TP
-.B --no-linear
-Do not linearize the indexes in the database.  By default, the
-database is automatically linearized.  Linearizing reduces searching
-time but prevents any additional documents from being added to the
-database.  It also considerably increases indexing time.  In the
-current version, a database must be linearized before it can be
-searched.  The only reason for using
-.B --no-linear
-is if one has a need to break up indexing into multiple invocations of
-.BR af .
-
-.TP
-.B --no-linear-buffer
-Do not use a memory buffer to speed up linearizing.  This option will
-be removed once the linearization buffer code is reliable.  If
-.B --old-linear
-is used, this option does not apply.
-
-.TP
-.B --old-linear
-Use the old linearization function from the stable release branch
-(1.2.x).  This option will be removed once the new linearization code
-is reliable.
-
-.TP
 .B -F
 Read list of documents to be indexed from standard input, rather than
 from the end of the command line.
@@ -196,6 +179,30 @@ Set style of printed result sets.  The default is
 Use the
 .B lineage
 style with XML to see hierarchical results.
+
+.SH LINEARIZE OPTIONS
+
+The following options can only be used together with the linearize
+.RB ( -L )
+command.
+
+.TP
+.BI "-m, --memory " maximum
+Set the maximum amount of memory in MB to use for linearizing.
+
+.TP
+.B --no-linear-buffer
+Do not use a memory buffer to speed up linearizing.  This option will
+be removed once the linearization buffer code proves to be reliable.
+If
+.B --old-linear
+is used, this option does not apply.
+
+.TP
+.B --old-linear
+Use the old linearization function from the stable release branch
+(1.2.x).  This option will be removed once the new linearization code
+proves to be reliable.
 
 .SH AUTHOR
 

@@ -245,12 +245,12 @@ have indexed.
 @cindex Linearizing a database
 @cartouche
 @noindent
-@emph{Note:} The current version of Amberfish is only able to search
-indexes that have been @w{@dfn{linearized}}.  For this reason,
-@command{af} automatically linearizes a database after indexing.
-Linearizing improves search time but also fixes the database so that
-no more documents can be added.  The @option{--no-linear} option can
-be used to suppress linearizing.
+@emph{Note:} As an optional step after indexing, the database can be
+@w{@dfn{linearized}}.  In the example above, this would be done with
+the command, @command{af -L -d mydb}.  Linearizing improves search
+time but has the disadvantage of being a very slow process.  Another
+disadvantage is that it fixes the database so that no more documents
+can be added.
 @end cartouche
 
 @ignore

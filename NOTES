@@ -5,6 +5,9 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+* Development versions 1.5.x contain experimental code that allow
+searching of unlinearized databases.
+
 * The linearizing (optimizing) code has been completely rewritten and
 is now somewhat faster.  The '--old-linear' option disables the new
 function and instead uses the old linearization function from stable
