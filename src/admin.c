@@ -117,7 +117,7 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 			printf("xml_test\n");
 			break;
 		case 100:
-			printf("syr1\n");
+			printf("erc\n");
 			break;
 		default:
 			printf("text\n");

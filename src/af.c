@@ -803,6 +803,7 @@ static int validate_opt_index()
 	if (index_phrase && !index_create)
 		return aferror("Option --phrase can only be used with -C");
 	if ( strcmp(index_doctype, "text")
+	      && strcmp(index_doctype, "erc")
 #ifdef ETYMON_AF_XML
 	      && strcmp(index_doctype, "xml")
 #endif

@@ -1897,7 +1897,7 @@ int etymon_index_add_files(Afindex *opt) {
 	else if (strcmp(opt->doctype, "xml_test") == 0) {
 		dclass_id = 2;
 	}
-	else if (strcmp(opt->doctype, "syr1") == 0) {
+	else if (strcmp(opt->doctype, "erc") == 0) {
 		dclass_id = 100;
 	} else {
 		/* need to print an error here if the input is unknown
