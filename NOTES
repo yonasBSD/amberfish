@@ -5,50 +5,32 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+* New afopen() interface.  Specific error reporting related to opening
+databases is temporarily disabled.
+
 1.5.9
 
 * Various changes related to RPM packaging.
 
 * Fixed the HTML version of the tutorial.
 
-1.5.6
-
 * The new '--fetch' option in af replaces the equivalent function in
 affetch; and affetch is no longer compiled by default.
-
-1.5.4
 
 * Disabled the '--long-words' option.  There were bugs associated with
 this that will have to be addressed in a future release.  As of 1.5.4,
 long words are again indexed by default and cannot be suppressed.
 
-1.5.3
-
 * Experimental search options, -n (--numhits), --skiphits, and
 --totalhits.
 
-1.5.2
-
 * Fixed bug in 1.5.1 that caused incremental indexing (i.e. adding to
 an existing database) not to work with -F.
-
-1.5.1
 
 * Development versions 1.5.x contain experimental code that allow
 searching of unlinearized databases.  Linearizing is no longer
 performed by default but must be specified explicitly with the '-L'
 command option.
-
-1.4.x / 1.3.x
-
-* The linearizing (optimizing) code has been completely rewritten and
-is now somewhat faster.  The '--old-linear' option disables the new
-function and instead uses the old linearization function from stable
-versions 1.2.x.
-
-* Words longer than the maximum word length, currently 32 characters,
-are no longer indexed.  To include the words (truncated), use the
-'--long-words' option.
 
 
 OTHER NOTES, BUGS, AND OUTSTANDING ISSUES

@@ -315,7 +315,9 @@ void ses_presult(AFSEARCH_RESULT *res)
 
 static int exec_search()
 {
-	ETYMON_AF_OPEN ope;
+/*	ETYMON_AF_OPEN ope; */
+	Afopen op;
+	Afopen_r opr;
 	ETYMON_AF_SEARCH sea;
 	ETYMON_AF_CLOSE clo;
 	ETYMON_AF_LOG log;
@@ -331,36 +333,18 @@ static int exec_search()
 //	AFSEARCH_RLIST* rlist_tail = 0;
 //	AFSEARCH_RLIST* rlist_p;
 */
-	
-	/* test */
-	/*
-	{
-		Afsearch rq;
-		Afsearch_r rs;
-		rq.db = dbname;
-		rq.dbn = dbname_n;
-		rq.query = (Afchar *) search_query_boolean;
-		rq.boolean = 1;
-		rq.score = 1;
-		rq.sort_score = 1;
-		afsearch(&rq, &rs);
-		printf("---\n");
-	}
-	*/
-	
-	ope.read_only = 1;
-	ope.create = 0;
-	ope.keep_open = 0;
-	ope.log = &log;
-	
-	log.write = log_error_new;
+
+	op.mode = "r";
 
 	x = 0;
 	for (x = 0; x < dbname_n; x++) {
-		ope.dbname = dbname[x];
-		if ( (db_id[x] = etymon_af_open(&ope)) == -1 ) {
+		op.db = dbname[x];
+		if (afopen(&op, &opr) < 0)
+			return afperror(argv0);
+		db_id[x] = opr.id;
+/*		if ( (db_id[x] = etymon_af_open(&ope)) == -1 ) {
 			return -1;
-		}
+		} */
 	}
 	db_id[x] = 0;
 

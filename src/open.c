@@ -4,6 +4,8 @@
  *  Authors:  Nassib Nassar
  */
 
+/***** old *****/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -337,5 +339,43 @@ int etymon_af_close(ETYMON_AF_CLOSE* opt) {
 	free(etymon_af_state[opt->db_id]);
 	etymon_af_state[opt->db_id] = NULL;
 	
+	return 0;
+}
+
+/***** new *****/
+
+static int setomode(const char *mode, ETYMON_AF_OPEN *op)
+{
+	if (mode[0] == 'r') {
+		op->read_only = mode[1] == '+' ? 0 : 1;
+		op->create = 0;
+		return 0;
+	}
+	if (mode[0] == 'w') {
+		op->read_only = 0;
+		op->create = 1;
+		return 0;
+	}
+	return aferr(AFEINVAL);
+}
+
+void logfn(const ETYMON_AF_EXCEPTION *ex)
+{
+	/* do nothing */
+}
+
+int afopen(const Afopen *r, Afopen_r *rr)
+{
+	ETYMON_AF_OPEN op;
+	ETYMON_AF_LOG log;
+	
+	op.dbname = r->db;
+	if (setomode(r->mode, &op) < 0)
+		return -1;
+	op.keep_open = 0;
+	op.log = &log;
+	log.write = logfn;
+	if ((rr->id = etymon_af_open(&op)) == -1)
+		return aferr(AFEUNKNOWN);
 	return 0;
 }

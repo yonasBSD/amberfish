@@ -61,7 +61,7 @@ static inline char *getftfn(int type)
 	if (type < sizeof affntab)
 		return affntab[type];
 	else
-		return aferrn(AFEUNDEF);
+		return aferrn(AFEINVAL);
 }
 
 /* buf is assumed to have capacity ETYMON_MAX_PATH_SIZE */

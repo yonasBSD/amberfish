@@ -1,6 +1,21 @@
 #ifndef _AF_OPEN_H
 #define _AF_OPEN_H
 
+/***** new *****/
+
+typedef struct {
+	char *db;
+	char *mode;
+} Afopen;
+
+typedef struct {
+	int id;
+} Afopen_r;
+
+int afopen(const Afopen *r, Afopen_r *rr);
+
+/***** old *****/
+
 #include "defs.h"
 #include "log.h"
 #include "info.h"
