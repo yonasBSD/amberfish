@@ -313,6 +313,23 @@ void ses_presult(AFSEARCH_RESULT *res)
 	       (long)(res->end));
 }
 
+static void printerr(const char *s)
+{
+	fprintf(stderr, "%s: %s\n", argv0, s);
+}
+
+static int searcherr()
+{
+	switch (aferrno) {
+	case AFEDBIO:
+		printerr("Unable to read database");
+		break;
+	default:
+		afperror(argv0);
+	}
+	return -1;
+}
+
 static int exec_search()
 {
 /*	ETYMON_AF_OPEN ope; */
@@ -338,9 +355,10 @@ static int exec_search()
 
 	x = 0;
 	for (x = 0; x < dbname_n; x++) {
-		op.db = dbname[x];
+		op.dbpath = dbname[x];
 		if (afopen(&op, &opr) < 0)
-			return afperror(argv0);
+			return searcherr();
+/*			return afperror(argv0);*/
 		db_id[x] = opr.dbid;
 /*		if ( (db_id[x] = etymon_af_open(&ope)) == -1 ) {
 			return -1;

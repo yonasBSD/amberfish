@@ -37,7 +37,8 @@ static char* aferrmsg[] = {
 	"Corrupted database file",
 	"Database locked",
 	"Incompatible database version",
-	"Unsupported operation on linearized database"
+	"Unsupported operation on linearized database",
+	"Too many open databases"
 };
 
 static inline int aferr(int err)

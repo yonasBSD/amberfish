@@ -4,7 +4,7 @@
 /***** new *****/
 
 typedef struct {
-	char *db;
+	char *dbpath;
 	char *mode;
 } Afopen;
 

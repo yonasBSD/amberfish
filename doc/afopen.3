@@ -23,13 +23,13 @@ specifies a set of options defined by the following structure:
 
 .nf
 typedef struct {
-	char *db;
+	char *dbpath;
 	char *mode;
 } Afopen;
 .fi
 
 The
-.I db
+.I dbpath
 option specifies the database to be opened, consisting of a path name.
 The file names that make up the database are constructed by appending
 suffixes to this path name.

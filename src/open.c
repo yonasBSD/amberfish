@@ -308,23 +308,15 @@ static int setomode(const char *mode, ETYMON_AF_OPEN *op)
 	return aferr(AFEINVAL);
 }
 
-void logfn(const ETYMON_AF_EXCEPTION *ex)
-{
-	/* do nothing */
-}
-
 int afopen(const Afopen *r, Afopen_r *rr)
 {
 	ETYMON_AF_OPEN op;
-	ETYMON_AF_LOG log;
 	
-	op.dbname = r->db;
+	op.dbname = r->dbpath;
 	if (setomode(r->mode, &op) < 0)
 		return -1;
 	op.keep_open = 0;
-/*	op.log = &log;*/
-	log.write = logfn;
 	if ((rr->dbid = etymon_af_open(&op)) == -1)
-		return aferr(AFEUNKNOWN);
+		return -1;
 	return 0;
 }
