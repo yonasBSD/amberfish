@@ -216,8 +216,12 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 	ETYMON_INDEX_PAGE_NL page_nl;
 	ETYMON_INDEX_PAGE_L page_l;
 	ETYMON_INDEX_LPOST lpost;
+	ETYMON_INDEX_LPOST *posts = NULL;
+	ETYMON_INDEX_UPOST upost;
 	ETYMON_INDEX_LFIELD lfield;
+	ETYMON_INDEX_UFIELD ufield;
 	ETYMON_INDEX_LWORD lword;
+	ETYMON_INDEX_UWORD uword;
 	ETYMON_INDEX_LWORD* lword_list;
 	int insertion;
 	int insertion_first, insertion_last;
@@ -242,7 +246,15 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 	int exists;
 	ETYMON_INDEX_LWORD* wlist_bsearch;
 	int lword_list_n;
-
+	uint4 postp;
+	uint4 uwordp = 0;
+	uint4 ufieldp = 0;
+	int uwordx;
+	int upostx;
+	int postsn, postsw, postsx;
+	int first;
+	int donepost;
+	
 	/* initialize results - I think this is where this should go */
 	*iresults_n = 0;
 	*iresults = NULL;
@@ -589,12 +601,17 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 			if (word_counter > 0) {
 				x_r0 = 0;
 			}
-			
+
+			postp = page_l.post[insertion];
+/*			printf("page_l.post_n[insertion] %lu\n", (unsigned long) page_l.post_n[insertion]);*/
 			for (x_r = 0; x_r < page_l.post_n[insertion]; x_r++) {
+/*				printf("x_r %i\n", x_r);*/
+				
 				/* read a result */
+/*				printf("Read a result\n");*/
 				if (etymon_af_state[state->db_id]->info.optimized) {
 					if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LPOST],
-						     (etymon_af_off_t)( ((etymon_af_off_t)(page_l.post[insertion] - 1 + x_r)) *
+						     (etymon_af_off_t)( ((etymon_af_off_t)(postp - 1)) *
 								 ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LPOST))) ),
 						     SEEK_SET) == -1) {
 						perror("etymon_af_search_term():lseek()");
@@ -603,10 +620,76 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 						 sizeof(ETYMON_INDEX_LPOST)) == -1) {
 						perror("etymon_af_search_term():read()");
 					}
+					postp++;
 				} else {
-				/* unoptimized - not implemented */
+					postsw = 16;
+					postsn = 0;
+					posts = (ETYMON_INDEX_LPOST *) malloc(postsw *
+									      sizeof (ETYMON_INDEX_LPOST));
+					first = 1;
+					donepost = 0;
+					lpost.doc_id = 0;
+					lpost.freq = 0;
+					lpost.fields = 0;
+					lpost.fields_n = 0;
+					lpost.word_numbers = 0;
+					lpost.word_numbers_n = 0;
+					do {
+						if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UPOST],
+								    (etymon_af_off_t)( ((etymon_af_off_t)(postp - 1)) *
+										       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UPOST))) ),
+								    SEEK_SET) == -1) {
+							perror("etymon_af_search_term():lseek()");
+						}
+						if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UPOST], &upost,
+							 sizeof(ETYMON_INDEX_UPOST)) == -1) {
+							perror("etymon_af_search_term():read()");
+						}
+/*						printf("doc_id %lu\n", (unsigned long) upost.doc_id);*/
+						if (first) {
+							first = 0;
+							lpost.doc_id = upost.doc_id;
+							postp = upost.next;
+							posts[postsn].doc_id = upost.doc_id;
+							posts[postsn].freq = upost.freq;
+							posts[postsn].fields = upost.fields;
+							posts[postsn].fields_n = upost.fields_n;
+							posts[postsn].word_numbers = upost.word_numbers;
+							posts[postsn].word_numbers_n = upost.word_numbers_n;
+							lpost.freq += upost.freq;
+							lpost.fields_n += upost.fields_n;
+							lpost.word_numbers_n += upost.word_numbers_n;
+							postsn++;
+						} else {
+							if (upost.doc_id == lpost.doc_id) {
+/*								printf("Matching docid; upost.next=%lu\n",
+								(unsigned long) upost.next);*/
+								postp = upost.next;
+								if (postsn >= postsw) {
+									postsw = postsw * 2;
+									posts = (ETYMON_INDEX_LPOST *)
+										realloc(posts, postsw *
+											sizeof (ETYMON_INDEX_LPOST));
+								}
+								posts[postsn].doc_id = upost.doc_id;
+								posts[postsn].freq = upost.freq;
+								posts[postsn].fields = upost.fields;
+								posts[postsn].fields_n = upost.fields_n;
+								posts[postsn].word_numbers = upost.word_numbers;
+								posts[postsn].word_numbers_n = upost.word_numbers_n;
+								lpost.freq += upost.freq;
+								lpost.fields_n += upost.fields_n;
+								lpost.word_numbers_n += upost.word_numbers_n;
+								postsn++;
+								x_r++;
+							} else {
+								donepost = 1;
+							}
+						}
+					} while (postp && !donepost);
 				}
-
+/*				printf("Done\n");*/
+				
 				/* if this is the first result set, store the results in r0_*[] */
 				if (word_counter == 0) {
 					exists = 0;
@@ -664,20 +747,39 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 								 r0[yy].wn[lf_counter].wn_n * sizeof(ETYMON_INDEX_LWORD)) == -1) {
 								perror("etymon_af_search_term():read()");
 							}
-							/* reverse list */
-							for (ux = 0; ux < (r0[yy].wn[lf_counter].wn_n / 2); ux++) {
-								lword = r0[yy].wn[lf_counter].wlist[ux];
-								r0[yy].wn[lf_counter].wlist[ux] =
-									r0[yy].wn[lf_counter].wlist[r0[yy].wn[lf_counter].wn_n -
-												   ux - 1];
-								r0[yy].wn[lf_counter].wlist[r0[yy].wn[lf_counter].wn_n - ux - 1] =
-									lword;
-							}
-							
+						} else {
+							postsx = 0;
+							uwordp = posts[postsx].word_numbers;
+							uwordx = 0;
+							do {
+								if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD],
+										    (etymon_af_off_t)( ((etymon_af_off_t)(uwordp - 1)) *
+												       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UWORD))) ),
+										    SEEK_SET) == -1) {
+									perror("etymon_af_search_term():lseek()");
+								}
+								if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD],
+									 &uword,
+									 sizeof(ETYMON_INDEX_UWORD)) == -1) {
+									perror("etymon_af_search_term():read()");
+								}
+/*								printf("%lu\n", (unsigned long) uword.wn);*/
+								r0[yy].wn[lf_counter].wlist[uwordx].wn = uword.wn;
+								uwordp = uword.next;
+								uwordx++;
+								while (!uwordp && postsx < (postsn - 1))
+									uwordp = posts[++postsx].word_numbers;
+							} while (uwordp);
 						}
-						
-					} else {
-						/* unoptimized - not implemented */
+						/* reverse list */
+						for (ux = 0; ux < (r0[yy].wn[lf_counter].wn_n / 2); ux++) {
+							lword = r0[yy].wn[lf_counter].wlist[ux];
+							r0[yy].wn[lf_counter].wlist[ux] =
+								r0[yy].wn[lf_counter].wlist[r0[yy].wn[lf_counter].wn_n -
+											    ux - 1];
+							r0[yy].wn[lf_counter].wlist[r0[yy].wn[lf_counter].wn_n - ux - 1] =
+								lword;
+						}
 					}
 						
 				} else { /* otherwise intersect with r0_*[] */
@@ -702,21 +804,43 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 				
 				/* validate against field array */
 				if ( (r_good != -1) && (field_mask_len > 0) ) {
-					/* this only supports optimized! */
 					field_match = 0;
 					/* check if field matches */
 					if (lpost.fields_n > 0) {
-						if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LFIELD],
-							     (etymon_af_off_t)( ((etymon_af_off_t)(lpost.fields - 1)) *
-									 ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LFIELD))) ),
-							     SEEK_SET) == -1) {
-							perror("etymon_af_search_term():lseek()");
+						if (etymon_af_state[state->db_id]->info.optimized) {
+							if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LFIELD],
+									    (etymon_af_off_t)( ((etymon_af_off_t)(lpost.fields - 1)) *
+											       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LFIELD))) ),
+									    SEEK_SET) == -1) {
+								perror("etymon_af_search_term():lseek()");
+							}
+						} else {
+							postsx = 0;
+							ufieldp = posts[postsx].fields;
 						}
 						field_x = 0;
 						do {
-							if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LFIELD],
-								 &lfield, sizeof(ETYMON_INDEX_LFIELD)) == -1) {
-								perror("etymon_af_search_term():read()");
+							if (etymon_af_state[state->db_id]->info.optimized) {
+								if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LFIELD],
+									 &lfield, sizeof(ETYMON_INDEX_LFIELD)) == -1) {
+									perror("etymon_af_search_term():read()");
+								}
+							} else {
+								if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UFIELD],
+										    (etymon_af_off_t)( ((etymon_af_off_t)(ufieldp - 1)) *
+												       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UFIELD))) ),
+										    SEEK_SET) == -1) {
+									perror("etymon_af_search_term():lseek()");
+								}
+								if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UFIELD],
+									 &ufield, sizeof(ETYMON_INDEX_UFIELD)) == -1) {
+									perror("etymon_af_search_term():read()");
+								}
+								ufieldp = ufield.next;
+								while (!ufieldp && postsx < (postsn - 1))
+									ufieldp = posts[++postsx].fields;
+								memcpy(lfield.fields, ufield.fields,
+								       sizeof (uint2) * ETYMON_MAX_FIELD_NEST);
 							}
 							/* new field search supporting general containment */
 							field_match = etymon_af_search_fields(field_mask, field_mask_len, rooted,
@@ -759,6 +883,9 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 									     SEEK_SET) == -1) {
 									perror("etymon_af_search_term():lseek()");
 								}
+							} else {
+								postsx = 0;
+								uwordp = posts[postsx].word_numbers;
 							}
 							/* loop through new word numbers and intersect with lword_list[] */
 							for (x_wn = 0; x_wn < lpost.word_numbers_n; x_wn++) {
@@ -769,7 +896,20 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 										perror("etymon_af_search_term():read()");
 									}
 								} else {
-									/* unoptimized - not implemented */
+									if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD],
+											    (etymon_af_off_t)( ((etymon_af_off_t)(uwordp - 1)) *
+													       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UWORD))) ),
+											    SEEK_SET) == -1) {
+										perror("etymon_af_search_term():lseek()");
+									}
+									if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD], &uword,
+										 sizeof(ETYMON_INDEX_UWORD)) == -1) {
+										perror("etymon_af_search_term():read()");
+									}
+									lword.wn = uword.wn;
+									uwordp = uword.next;
+									while (!uwordp && postsx < (postsn - 1))
+										uwordp = posts[++postsx].word_numbers;
 								}
 								/* determine search key based on phrase operator */
 								if (phrase_operator == 0) {
@@ -807,6 +947,9 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 					}
 					
 				}
+
+				if (!etymon_af_state[state->db_id]->info.optimized)
+					free(posts);
 				
 			} /* for: x_r */
 			
@@ -1326,12 +1469,14 @@ int etymon_af_search(ETYMON_AF_SEARCH* opt) {
 			return -1;
 		}
 		/* this is only until we support unoptimized database searching */
+/*
 		if (etymon_af_state[*p_db]->info.optimized == 0) {
 			fprintf(stderr,
 				"af: %s: The current version cannot search a non-linearized database\n",
 				etymon_af_state[*p_db]->dbname);
 			return -1;
 		}
+*/
 		if (etymon_af_state[*p_db]->info.stemming && !af_stem_available()) {
 			fprintf(stderr,
 				"af: %s: Database requires stemming support\n",
