@@ -5,27 +5,27 @@ RELEASE NOTES
 
 RECENT CHANGES
 
-* The linearization code is undergoing major changes.  If you
-encounter bugs such as crashes or wrong results, try indexing with the
-'--old-linear' option which will cause af to revert to the old
-linearization code used in stable versions 1.2.x.
+* The linearizing (optimizing) code has been completely rewritten and
+is now somewhat faster.  The '--old-linear' option disables the new
+function and instead uses the old linearization function from stable
+versions 1.2.x.
+
+* Words longer than the maximum word length, currently 32 characters,
+are no longer indexed.  To include the words (truncated), use the
+'--long-words' option.
+
+* There is a new man page for af which includes additional options not
+mentioned in the tutorial.
 
 
 OTHER NOTES, BUGS, AND OUTSTANDING ISSUES
 
-* There is a new, experimental "af" tool that combines most of the
-functions of afindex, afsearch, and afadmin.  The old tools are
-planned to be phased out over time.  Note that there are now two
-versions of the tutorial (PDF), one for the old tools and one for the
-new.  There is also a new man page for af which is updated frequently.
+* There is a new "af" tool that combines most of the functions of
+afindex, afsearch, and afadmin.  Using the old tools is deprecated.
+They are no longer compiled by default, with the exception of affetch.
+To compile them, you can use:
 
-* Experimental "afd" server.  This is part of a proof-of-concept for
-the girtools project and is not currently usable for anything.  It is
-not compiled by default.
-
-* Unoptimized databases.  Amberfish can only search databases that
-have been linearized with -O.  (The new af tool linearizes by
-default.)
+  cd src; make afindex afsearch afadmin
 
 * Memory leaks.  There seems to be a memory leak in the search code.
 We could use assistance in tracking this down.
@@ -36,10 +36,10 @@ actually does!
 
 * Stop words.  All words are currently indexed and searched.
 
-* Multiple documents.  The -split option (--split in the new af tool)
-specifies a delimiter string to show the boundaries of multiple
-documents within a file.  This should probably be enhanced a little
-bit to allow characters such as '\n'.
+* Multiple documents.  The --split option specifies a delimiter string
+to show the boundaries of multiple documents within a file.  This
+should probably be enhanced a little bit to allow characters such as
+'\n'.
 
 * Using '*' alone as a search term.  This is undefined and may cause
 strange behavior.
@@ -48,9 +48,8 @@ strange behavior.
 major changes.
 
 * Phrase searching without being enabled.  Searching for a phrase in a
-database that was created without -phrase (or --phrase in the new af
-tool) returns no results rather than an error message.  This needs to
-be fixed.
+database that was created without --phrase returns no results rather
+than an error message.  This needs to be fixed.
 
 See the Bugs Tracker at http://sourceforge.net/projects/amberfish/ for
 additional outstanding problems.
