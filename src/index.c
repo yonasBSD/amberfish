@@ -76,12 +76,15 @@ void etymon_index_expand_path(char* relative_path, char* absolute_path, char* cw
 	}
 }
 
-#ifdef NOT_DEFINED
+/*#define OPT_STDIO*/
+
+#ifdef OPT_STDIO
+
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
    in the first unoptimized pass; so it explicitly counts these values
    while building the optimized structures */
-int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt) {
+int etymon_index_optimize(ETYMON_INDEX_OPTIONS* opt) {
 	int dbinfo_fd, udict_fd, upost_fd, ufield_fd, uword_fd, lpost_fd, lfield_fd, lword_fd;
 	FILE* dbinfo_f;
 	FILE* udict_f;
@@ -290,9 +293,9 @@ int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt) {
 	
 	/* optimize! */
 	
-	if (opt->verbose >= 2) {
-		printf("Linearizing\n");
-	}
+/*	if (opt->verbose >= 2) {*/
+		printf("Linearizing (new)\n");
+/*	}*/
 	
 	/* first descend to the left-most leaf page */
 	udict_p = dbinfo.udict_root;
@@ -501,7 +504,8 @@ int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt) {
 	return 0;
 	
 } /* optimize_new() */
-#endif
+
+#else
 
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
@@ -897,6 +901,7 @@ int etymon_index_optimize(ETYMON_INDEX_OPTIONS* opt) {
 	return 0;
 }
 
+#endif
 
 void etymon_index_write_nl(int filedes, etymon_af_off_t offset, ETYMON_INDEX_PAGE_NL* page) {
 	static uint1 leaf_flag = 0;

@@ -4,6 +4,7 @@
  *  Authors:  Nassib Nassar
  */
 
+extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,6 +12,7 @@
 #include "open.h"
 #include "search.h"
 #include "util.h"
+}
 
 typedef struct {
 	char** dbname; /* list of database name */

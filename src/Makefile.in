@@ -83,6 +83,7 @@ uninstall:
 clean:
 	rm -f ${BIN} afd \
 		afmain.o af.o afdmain.o afd.o \
+		afindex afsearch afadmin affetch \
 		${BINOBJ} ${LIBOBJ} ${LIBAF}
 
 distclean:
