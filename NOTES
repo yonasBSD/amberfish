@@ -42,9 +42,6 @@ them, you can use:
 
   cd src; gmake old
 
-* Memory leaks.  There seems to be a memory leak in the search code.
-We could use assistance in tracking this down.
-
 * Stop words.  All words are currently indexed and searched.
 
 * Multiple documents.  The --split option specifies a delimiter string
@@ -55,8 +52,7 @@ should probably be enhanced a little bit to allow characters such as
 * Using '*' alone as a search term.  This is undefined and may cause
 strange behavior.
 
-* Stability of C API.  The C interface will be undergoing major
-changes.
+* Stability of C API.  The C interface is undergoing major changes.
 
 * Phrase searching without being enabled.  Searching for a phrase in a
 database that was created without --phrase returns no results rather
