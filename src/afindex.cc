@@ -291,7 +291,7 @@ void etymon_sei_execute(ETYMON_SEI_OPTIONS* sei_options) {
 	}
 
 	if (sei_options->optimize) {
-		if (etymon_index_optimize(index_options) == -1) {
+		if (etymon_index_optimize_old(index_options) == -1) {
 			free(db_options);
 			free(index_options);
 			return;

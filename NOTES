@@ -5,8 +5,10 @@ RELEASE NOTES
 
 RECENT CHANGES
 
-* The 1.3.x development track will be very unstable for a while as it
-undergoes major changes.
+* The linearization code is undergoing major changes.  If you
+encounter bugs such as crashes or wrong results, try indexing with the
+'--old-linear' option which will cause af to revert to the old
+linearization code used in stable versions 1.2.x.
 
 
 OTHER NOTES, BUGS, AND OUTSTANDING ISSUES

@@ -73,7 +73,7 @@ int etymon_index_search_keys_l(unsigned char* word, size_t word_len, ETYMON_INDE
 
 int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt);
 
-int etymon_index_optimize(ETYMON_INDEX_OPTIONS* opt);
+int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt);
 
 int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt);
 

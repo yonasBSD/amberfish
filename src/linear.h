@@ -10,6 +10,6 @@ typedef struct {
 
 int aflinear(const Aflinear *rq);
 
-int _etymon_index_optimize(ETYMON_INDEX_OPTIONS *opt);
+/*int _etymon_index_optimize(ETYMON_INDEX_OPTIONS *opt);*/
 
 #endif

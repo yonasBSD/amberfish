@@ -27,6 +27,7 @@ static int index_stemming = 1;
 static int index_memory = 3;
 static int index_dlevel = 1;
 static int index_no_linear = 0;
+static int index_old_linear = 0;
 static char *index_doctype = "text";
 static char *index_split = "";
 static int index_files_stdin = 0; /* deprecated */
@@ -78,6 +79,10 @@ static int process_opt_long(char *opt, char *arg)
 		index_no_linear = 1;
 		return 0;
 	}
+	if (!strcmp(opt, "old-linear")) {
+		index_old_linear = 1;
+		return 0;
+	}
 	return 0;
 }
 
@@ -86,6 +91,7 @@ static int process_opt(int argc, char *argv[])
 	static struct option longopts[] = {
 		{ "create", 0, 0, 'C' },
 		{ "db", 1, 0, 'd' },
+		{ "debug", 0, 0, 'D' },
 		{ "dlevel", 1, 0, 0 },
 		{ "doctype", 1, 0, 't' },
 		{ "index", 0, 0, 'i' },
@@ -93,6 +99,7 @@ static int process_opt(int argc, char *argv[])
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear", 0, 0, 0 },
 		{ "no-stem", 0, 0, 0 },
+		{ "old-linear", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
 		{ "split", 1, 0, 0 },
@@ -107,7 +114,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CFQ:d:ilm:st:v",
+				"CDFQ:d:ilm:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -128,6 +135,12 @@ static int process_opt(int argc, char *argv[])
 			break;
 		case 'v':
 			verbose++;
+			break;
+		case 'D':
+			if (verbose)
+				verbose++;
+			else
+				verbose = 5;
 			break;
 		case 'l':
 			cmd_list = 1;
@@ -482,8 +495,13 @@ static int exec_index()
 	}
 
 	if (!index_no_linear) {
-		if (etymon_index_optimize(&index_options) == -1)
-			return -1;
+		if (index_old_linear) {
+			if (etymon_index_optimize_old(&index_options) == -1)
+				return -1;
+		} else {
+			if (etymon_index_optimize_new(&index_options) == -1)
+				return -1;
+		}
 	}
 	return 0;
 }

@@ -76,8 +76,15 @@ databases.
 
 .TP
 .B -v, --verbose
-Use verbose output.  This option can be supplied multiple times to
+Show verbose output.  This option can be supplied multiple times to
 increase verbosity.
+
+.TP
+.B -D, --debug
+Show extremely verbose (debugging) output.  Using this option once is
+equivalent to
+.BR -vvvvv ,
+and it can be supplied multiple times to increase verbosity further.
 
 .SH INDEX OPTIONS
 
@@ -143,6 +150,12 @@ searched.  The only reason for using
 .B --no-linear
 is if one has a need to break up indexing into multiple invocations of
 .BR af .
+
+.TP
+.B --old-linear
+Use the old linearization function from the stable release branch
+(1.2.x).  This option will be removed once the new linearization code
+is reliable.
 
 .TP
 .B -F

@@ -11,6 +11,24 @@
 #include "util.h"
 #include "info.h"
 
+static inline void afprintvp(int verbose, int minimum)
+{
+	int x;
+	
+	for (x = 2; x < minimum; x++)
+		printf("+");
+	if (minimum > 2)
+		printf(" ");
+}
+
+static inline void afprintv(int verbose, int minimum, const char *msg)
+{
+	if (verbose >= minimum) {
+		afprintvp(verbose, minimum);
+		printf("%s\n", msg);
+	}
+}
+
 /*
 static int logerr(char *s, int e) {
 	fprintf(stderr, "%s\n", s);
@@ -218,7 +236,7 @@ static inline int seekleftleaf(Aflinst *t)
 	}
 }
 
-static inline int readleaf(Aflinst *t)
+static inline int readpagel(Aflinst *t)
 {
 	if (fseeko(t->f.udict, (off_t) (t->udictp + 1), SEEK_SET) < 0)
 		return aferr(AFEDBIO);
@@ -377,18 +395,36 @@ static inline int writepagel(Aflinst *t)
 	return 0;
 }
 
+static inline void debugpostings(Aflinst *t)
+{
+	if (t->rq->verbose >= 6) {
+		int x;
+		afprintvp(t->rq->verbose, 6);
+		printf("Read postings (key=\"");
+		for (x = t->pagel.offset[t->postx];
+		     x < t->pagel.offset[t->postx + 1];
+		     x++)
+			printf("%c", (char) t->pagel.keys[x]);
+		printf("\")\n");
+	}
+}
+
 static inline int linpost(Aflinst *t)
 {
 	for (t->postx = 0; t->postx < t->pagel.n; (t->postx)++) {
+		debugpostings(t);
 		t->pagel.post_n[t->postx] = 0;
 		t->lpostpsave = t->lpostn + 1;
 		t->upostp = t->pagel.post[t->postx];
 		t->lpost.doc_id = 0;
 		while (t->upostp) {
+			afprintv(t->rq->verbose, 6, "Read posting");
 			if (readupost(t) < 0)
 				return -1;
+			afprintv(t->rq->verbose, 6, "Linearize fields");
 			if (linfield(t) < 0)
 				return -1;
+			afprintv(t->rq->verbose, 6, "Linearize word numbers");
 			if (linwn(t) < 0)
 				return -1;
 			if (updatelpost(t) < 0)
@@ -411,20 +447,77 @@ static inline int linpost(Aflinst *t)
 	return 0;
 }
 
+static inline void debugpagel(Aflinst *t)
+{
+	if (t->rq->verbose >= 6) {
+		afprintvp(t->rq->verbose, 6);
+		printf("Leaf node: keys=\"%s\"\n",
+		       (char *) t->pagel.keys);
+	}
+}
+
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
    in the first unlinearized pass; so it explicitly counts these
    values while building the linear structures */
 static inline int linearize(Aflinst *t)
 {
+	afprintv(t->rq->verbose, 5, "Seek to leftmost leaf node");
 	if (seekleftleaf(t) < 0)
 		return -1;
 	do {
-		if (readleaf(t) < 0)
+		afprintv(t->rq->verbose, 5, "Read leaf node");
+		if (readpagel(t) < 0)
 			return -1;
+		debugpagel(t);
+		afprintv(t->rq->verbose, 5, "Linearize postings");
 		if (linpost(t) < 0)
 			return -1;
 	} while (t->udictp);
+
+	return 0;
+}
+
+static inline int linopen(Aflinst *t)
+{
+	afprintv(t->rq->verbose, 4, "Locking database");
+	if (getlock(t->rq->db) < 0)
+		return -1;
+
+	afprintv(t->rq->verbose, 4, "Opening database files");
+	if (openfiles(t->rq->db, &(t->f)) < 0)
+		return -1;
+
+	afprintv(t->rq->verbose, 4, "Reading database information");
+	if (afreadinfo(t->f.info, &(t->info)) < 0)
+		return -1;
+
+	afprintv(t->rq->verbose, 4, "Checking file sizes");
+	if (getfsizes(t) < 0)
+		return -1;
+
+	return 0;
+}
+
+static inline int linclose(Aflinst *t)
+{
+	t->info.optimized = 1;
+
+	afprintv(t->rq->verbose, 4, "Writing database information");
+	if (afwriteinfo(t->f.info, &(t->info)) < 0)
+		return -1;
+
+	afprintv(t->rq->verbose, 4, "Closing database files");
+	if (closefiles(&(t->f)) < 0)
+		return -1;
+	
+	afprintv(t->rq->verbose, 4, "Truncating unlinearized files");
+	if (truncufiles(t->rq->db) < 0)
+		return -1;
+
+	afprintv(t->rq->verbose, 4, "Unlocking database");
+	if (freelock(t->rq->db) < 0)
+		return -1;
 
 	return 0;
 }
@@ -434,44 +527,23 @@ int aflinear(const Aflinear *rq)
 	Aflinst t;
 
 	t.rq = rq;
-	if (rq->verbose >= 2)
-		printf("Linearizing (NEW)\n");
+	afprintv(rq->verbose, 2, "Linearizing");
 
-	if (rq->verbose >= 4)
-		printf("Getting database lock\n");
-	if (getlock(rq->db) < 0)
+	afprintv(rq->verbose, 3, "Opening database");
+	if (linopen(&t) < 0)
 		return -1;
-
-	if (rq->verbose >= 4)
-		printf("Opening database\n");
-	if (openfiles(rq->db, &t.f) < 0)
-		return -1;
-/*
-	if (afdbver(t.f.info) < 0)
-		return -1;
-*/
-	if (afreadinfo(t.f.info, &t.info) < 0)
-		return -1;
-
+	afprintv(rq->verbose, 4, "Checking if database is linearized");
 	/* exit if db is already linearized */
 	if (t.info.optimized)
 		return afclosedbf(&t.f);
 
-	if (getfsizes(&t) < 0)
-		return -1;
-	
+	afprintv(rq->verbose, 3, "Performing linearize process");
 	if (linearize(&t) < 0)
 		return -1;
 
-	t.info.optimized = 1;
-	if (afwriteinfo(t.f.info, &t.info) < 0)
+	afprintv(rq->verbose, 3, "Closing database");
+	if (linclose(&t) < 0)
 		return -1;
-	if (closefiles(&t.f) < 0)
-		return -1;
-	if (truncufiles(rq->db) < 0)
-		return -1;
-	if (freelock(rq->db) < 0)
-		return -1;
-		
+
 	return 0;
 }

@@ -11,7 +11,6 @@ GIRS =		/usr/local/girtools/girs
 
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function \
 		${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src
-#		-DNEWLIN
 CFLAGS =	-std=c89 -pedantic ${FLAGS}
 CXXFLAGS =	-ansi -pedantic ${FLAGS} @CPPFLAGS@
 # Not sure if we still use @CPPFLAGS@?
@@ -27,8 +26,7 @@ LIBAF =		libaf.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 		docbuf.o admin.o explain.o stem.o \
 		text.o xml.o xml_test.o syr1.o \
-		err.o info.o
-#		linear.o
+		err.o info.o linear.o
 #		search_new.o
 #		open_new.o
 BINOBJ =	afmain.o af.o
