@@ -1,11 +1,11 @@
 # Changes should be made in Makefile.in instead of Makefile,
 # or else they will be overwritten by configure.
 
-#DEBUG =		-g
-OPT =		-O3 -funroll-loops
+DEBUG =		-g
+STRIP =		@\#
 
-#STRIP =		@\#
-STRIP =		strip
+#OPT =		-O3 -funroll-loops
+#STRIP =		strip
 
 LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
