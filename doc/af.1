@@ -20,6 +20,11 @@ af \- Amberfish text retrieval software
 .B af [-l]
 .BI [ options ]
 .br
+.B af [--fetch]
+.BI [ file ]
+.BI [ begin ]
+.BI [ end ]
+.br
 .B af [--version]
 
 .SH DESCRIPTION
@@ -70,6 +75,17 @@ additional documents from being added to the database.
 .TP
 .B -l, --list
 List the documents contained in a database.
+
+.TP
+.B --fetch
+Output a portion of a file.  This command takes no other options.  The
+file name
+.IR file ,
+starting offset
+.IR begin ,
+and ending offset
+.I end
+are specified at the end of the line.
 
 .TP
 .B --version

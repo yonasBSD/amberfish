@@ -438,11 +438,11 @@ The division of files into multiple documents can be verified with
 @w{@command{af -l}} after the files have been added to the database
 (see @ref{Listing database information}).
 
-Amberfish includes a small utility called @command{affetch} that
-simply prints a portion of a file to standard output:
+The @w{@command{af --fetch}} command prints a portion of a file to
+standard output:
 
 @example
-$ affetch filename begin end
+$ af --fetch filename begin end
 @end example
 
 @noindent

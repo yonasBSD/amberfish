@@ -27,7 +27,10 @@ uninstall:
 	fi
 
 clean:
-	rm -f amberfish.{aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \
+	rm -f amberfish.aux amberfish.cp amberfish.cps amberfish.fn \
+		amberfish.fns amberfish.ky amberfish.log amberfish.pg \
+		amberfish.tmp amberfish.toc amberfish.tp amberfish.vr \
+		amberfish.vrs \
 		${MAN1}
 
 distclean:

@@ -35,11 +35,13 @@ LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 BINOBJ =	afmain.o af.o
 
 # Be careful about changing BIN; see the uninstall target below first.
-BIN =		af affetch
+BIN =		af
 
 SHELL =		/bin/sh
 
 all: ${BIN}
+
+old: afindex afsearch afadmin affetch
 
 %.d: %.cc
 	@set -e; rm -f $@; \
@@ -67,7 +69,6 @@ afadmin: ${LIBAF} afadmin.o
 
 affetch: affetch.o
 	${CXX} -o affetch affetch.o
-	${STRIP} affetch
 
 af: ${LIBAF} afmain.o af.o
 	${CXX} -o af afmain.o af.o ${LIBS}

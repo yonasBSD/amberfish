@@ -46,6 +46,8 @@ static int search_totalhits = 0;
 
 static int cmd_list = 0;
 
+static int cmd_fetch = 0;
+
 static int cmd_version = 0;
 
 static char *dbname[MAX_DBS];
@@ -89,6 +91,10 @@ static int process_opt_long(char *opt, char *arg)
 		index_stemming = 0;
 		return 0;
 	}
+	if (!strcmp(opt, "fetch")) {
+		cmd_fetch = 1;
+		return 0;
+	}
 	if (!strcmp(opt, "version")) {
 		cmd_version = 1;
 		return 0;
@@ -118,6 +124,7 @@ static int process_opt(int argc, char *argv[])
 		{ "debug", 0, 0, 'D' },
 		{ "dlevel", 1, 0, 0 },
 		{ "doctype", 1, 0, 't' },
+		{ "fetch", 0, 0, 0 },
 		{ "index", 0, 0, 'i' },
 		{ "linearize", 0, 0, 'L' },
 		{ "list", 0, 0, 'l' },
@@ -680,6 +687,47 @@ static int exec_list()
 	return 0;
 }
 
+static int exec_fetch()
+{
+	int begin, end, dsize;
+	char* filename;
+	char* buffer;
+        int fd;
+
+	filename = nonopt_argv[0];
+	begin = atoi(nonopt_argv[1]);
+	end = atoi(nonopt_argv[2]);
+	dsize = end - begin;
+
+	if (dsize < 0)
+		return aferror("Invalid begin/end offsets");
+	
+	fd = open(filename, 0);
+	if (fd == -1)
+		return aferror("Error opening file");
+		
+	buffer = (char*)(malloc(dsize));
+
+	if (buffer) {
+		if (lseek(fd, begin, SEEK_SET) == -1)
+			return aferror("File seek error");
+		
+		if (read(fd, buffer, dsize) == -1)
+			return aferror("File read error");
+
+		close(fd);
+		
+		buffer[dsize] = '\0';
+		printf("%s\n", buffer);
+		
+		free(buffer);
+	} else {
+		return aferror("Unable to allocate memory");
+	}
+
+	return 0;
+}
+
 static int exec_version()
 {
 	printf(AF_VERSION);
@@ -693,12 +741,14 @@ static int validate_opt_cmd()
 	     (!cmd_linearize) &&
 	     (!cmd_search) &&
 	     (!cmd_list) &&
+	     (!cmd_fetch) &&
 	     (!cmd_version) )
 		return aferror("No command option specified");
 	if ((cmd_index +
 	     cmd_linearize +
 	     cmd_search +
 	     cmd_list +
+	     cmd_fetch +
 	     cmd_version) > 1)
 		return aferror("Too many command options specified");
 	return 0;
@@ -710,6 +760,8 @@ static int validate_opt_index()
 		return 0;
 	if (nonopt_argv_n == 0 && !index_create && !index_files_stdin)
 		return aferror("No files specified for indexing");
+	if (index_phrase && !index_create)
+		return aferror("Option --phrase can only be used with -C");
 	if ( strcmp(index_doctype, "text")
 #ifdef ETYMON_AF_XML
 	      && strcmp(index_doctype, "xml")
@@ -729,6 +781,15 @@ static int validate_opt_search()
 	return 0;
 }
 
+static int validate_opt_fetch()
+{
+	if (!cmd_fetch)
+		return 0;
+	if (nonopt_argv_n < 3)
+		return aferror("Not enough arguments for fetch");
+	return 0;
+}
+
 static int validate_opt()
 {
 	if (validate_opt_cmd() < 0)
@@ -736,6 +797,8 @@ static int validate_opt()
 	if (validate_opt_index() < 0)
 		return -1;
 	if (validate_opt_search() < 0)
+		return -1;
+	if (validate_opt_fetch() < 0)
 		return -1;
 	if (dbname_n == 0) {
 		if (cmd_index || cmd_linearize || cmd_search || cmd_list)
@@ -762,6 +825,8 @@ int afmain(int argc, char *argv[])
 		return exec_search();
 	if (cmd_list)
 		return exec_list();
+	if (cmd_fetch)
+		return exec_fetch();
 	if (cmd_version)
 		return exec_version();
 		
