@@ -23,3 +23,6 @@ distclean:
 	cd src ; make distclean
 	rm -f src/Makefile src/include/version.h src/include/af_auto.h
 	rm -f *~
+
+changelog:
+	rcs2log > ./ChangeLog
