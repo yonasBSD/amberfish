@@ -4,6 +4,8 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <stdio.h>
 #include "index.h"
 #include "lock.h"
 #include "util.h"
@@ -74,6 +76,7 @@ void etymon_index_expand_path(char* relative_path, char* absolute_path, char* cw
 	}
 }
 
+#ifdef NOT_DEFINED
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
    in the first unoptimized pass; so it explicitly counts these values
@@ -498,6 +501,7 @@ int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt) {
 	return 0;
 	
 } /* optimize_new() */
+#endif
 
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
@@ -2194,6 +2198,15 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	}
 
 	/* write out fdef file */
+	/* re-open fdef and overwrite */
+	close(fdef_fd);
+	etymon_db_construct_path(ETYMON_DBF_FDEF, opt->dbname, fn);
+	fdef_fd = open(fn, O_WRONLY | O_CREAT | O_TRUNC | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
+	if (fdef_fd == -1) {
+		/* ERROR */
+		printf("unable to open %s for read/write\n", fn);
+		exit(1);
+	}
 	etymon_af_fdef_write_mem(fdef_fd, state->fdef_root);
 	
 	/* update dbinfo */
@@ -2424,8 +2437,11 @@ uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt) {
 	/* fill in doctable entry with new data */
 	if (opt->key == NULL) {
 		/* fill in default key, based on doctable id */
+		/*
 		snprintf((char*)(state->doctable.key), ETYMON_MAX_KEY_SIZE, "%ld",
 			(unsigned long)(state->doctable_next_id));
+		*/
+		state->doctable.key[0] = '\0';
 	} else {
 		strncpy((char*)(state->doctable.key), (char*)(opt->key), ETYMON_MAX_KEY_SIZE - 1);
 		state->doctable.key[ETYMON_MAX_KEY_SIZE - 1] = '\0';

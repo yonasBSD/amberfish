@@ -2,7 +2,8 @@
 #define _AF_DOCBUF_H
 
 #include <unistd.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "config.h"
 
 typedef struct {

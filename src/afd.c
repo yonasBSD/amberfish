@@ -10,9 +10,7 @@
 
 #define SERVER_PORT (6145)
 
-extern "C" {
 #include "girs.h"
-}
 
 int search(const Girs_search_request *rq, Girs_search_response *rs)
 {
@@ -24,7 +22,7 @@ int search(const Girs_search_request *rq, Girs_search_response *rs)
         return 0;
 }
 
-int main(int argc, char *argv[])
+int afdmain(int argc, char *argv[])
 {
 	Girs_server_start server_start;
 

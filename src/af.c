@@ -233,13 +233,13 @@ typedef struct {
 
 typedef struct AFSEARCH_RLIST_STRUCT {
 	AFSEARCH_RESULT r;
-	AFSEARCH_RLIST_STRUCT* next;
+	struct AFSEARCH_RLIST_STRUCT* next;
 } AFSEARCH_RLIST;
 
 typedef struct AFSEARCH_RTREE_STRUCT {
 	AFSEARCH_RESULT r;
-	AFSEARCH_RTREE_STRUCT* next;
-	AFSEARCH_RTREE_STRUCT* child;
+	struct AFSEARCH_RTREE_STRUCT* next;
+	struct AFSEARCH_RTREE_STRUCT* child;
 } AFSEARCH_RTREE;
 
 
@@ -267,10 +267,12 @@ static int exec_search()
 	char** p;
 	AFSEARCH_RESULT* res;
 	int res_n;
+/*
 //	AFSEARCH_RLIST* rlist_head = 0;
 //	AFSEARCH_RLIST* rlist_tail = 0;
 //	AFSEARCH_RLIST* rlist_p;
-
+*/
+	
 	/* test */
 	/*
 	{
@@ -368,12 +370,12 @@ static int exec_search()
 
 		if ( (search_style == 1) ||
 		     (search_style == 2) ) {
-			// style == (lineage || tree)
+			/* style == (lineage || tree) */
 			int y, z;
-//			AFSEARCH_RTREE* rtrees[res_n];
+/*			AFSEARCH_RTREE* rtrees[res_n]; */
 			AFSEARCH_RTREE* rtree_head;
 			AFSEARCH_RTREE* rtree_p;
-			//AFSEARCH_RTREE* rtree_p_new;
+			/* AFSEARCH_RTREE* rtree_p_new; */
 			ETYMON_AF_RESULT* results =
 				(ETYMON_AF_RESULT*)(malloc(2 * sizeof(ETYMON_AF_RESULT)));
 			eresults = (ETYMON_AF_ERESULT*)(malloc(2 * sizeof(ETYMON_AF_ERESULT)));
@@ -386,8 +388,10 @@ static int exec_search()
 				rtree_head->next = 0;
 				rtree_head->child = 0;
 				while (rtree_head->r.parent) {
-//					printf("Back... (db_id=%i)\n",
-//					       rtree_head->r.db_id);
+					/*
+					printf("Back... (db_id=%i)\n",
+					       rtree_head->r.db_id);
+					*/
 					results->db_id = rtree_head->r.db_id;
 					results->doc_id = rtree_head->r.parent;
 					results->score = rtree_head->r.score;
@@ -461,7 +465,7 @@ static int exec_index()
 	index_options.files = nonopt_argv;
 	index_options.files_n = nonopt_argv_n;
 	index_options.files_stdin = index_files_stdin; /* deprecated */
-//	index_options.word_proximity = 0;
+/*	index_options.word_proximity = 0; */
 	index_options.split = index_split;
 	index_options.verbose = verbose;
 	index_options.dc_options = ""; /*sei_options->dc_options;*/
@@ -602,7 +606,7 @@ static int validate_opt()
 	return 0;
 }
 
-int main(int argc, char *argv[])
+int afmain(int argc, char *argv[])
 {
 	argv0 = argv[0];
 	if (process_opt(argc, argv) < 0)

@@ -15,6 +15,18 @@
 #include "index.h"
 #include "stem.h"
 
+char *afstrdup(const char *s)
+{
+	int n;
+	char *t;
+
+	n = strlen(s) + 1;
+	t = (char *) malloc(n);
+	if (t)
+		memcpy(t, s, n);
+	return t;
+}
+
 extern ETYMON_AF_STATE* etymon_af_state[];
 
 typedef struct {
@@ -1441,7 +1453,7 @@ int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_A
 						 sizeof(ETYMON_DOCTABLE)) == -1) {
 						perror("etymon_af_resolve_doc_id():read()");
 					}
-					eresults[results_x].filename = strdup(doctable.filename);
+					eresults[results_x].filename = afstrdup(doctable.filename);
 					if (eresults[results_x].filename == NULL) {
 						int x;
 						etymon_af_log(log, EL_CRITICAL, EX_MEMORY, "etymon_af_resolve_results()",

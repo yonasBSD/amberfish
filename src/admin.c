@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <string.h>
 #include "admin.h"
 #include "lock.h"
@@ -126,6 +128,8 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 
 
 int etymon_db_delete(ETYMON_DB_OPTIONS* opt) {
+	int leftover;
+	
 	/* need to read the db info file to determine which files to delete */
 	/* for now we just roughly construct the file names to delete */
 	char path[ETYMON_MAX_PATH_SIZE];
@@ -139,10 +143,10 @@ int etymon_db_delete(ETYMON_DB_OPTIONS* opt) {
 	   xml document class; this needs to be integrated into the
 	   above */
 #ifndef BELIST_USEMEM
-	// temporary file name construction
+	/* temporary file name construction */
 	strncpy(path, opt->dbname, ETYMON_MAX_PATH_SIZE - 1);
 	path[ETYMON_MAX_PATH_SIZE - 1] = '\0';
-	int leftover = ETYMON_MAX_PATH_SIZE - strlen(path) - 1;
+	leftover = ETYMON_MAX_PATH_SIZE - strlen(path) - 1;
 	strncat(path, ".xm", leftover);
 	unlink(path);
 #endif

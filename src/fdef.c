@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <string.h>
 #include "fdef.h"
 
@@ -73,13 +75,17 @@ void etymon_af_fdef_write_mem(int fdef_fd, ETYMON_AF_FDEF_MEM* root) {
 	ETYMON_AF_FDEF_MEM* p;
 	
 	/* seek to the beginning of the file and truncate to 0 length */
+	/* no need to do this anymore since we are now close and reopen the
+	   file in index.c */
+	/*
 	if (etymon_af_lseek(fdef_fd, (etymon_af_off_t)0, SEEK_SET) == -1) {
 		perror("fdef_write_mem():lseek()");
 	}
 	if (etymon_af_ftruncate(fdef_fd, (etymon_af_off_t)0) == -1) {
 		perror("fdef_write_mem():ftruncate()");
 	}
-
+	*/
+	
 	p = root;
 	while (p != NULL) {
 		memcpy(fdef_disk_buf.name, p->name, ETYMON_AF_MAX_FIELDNAME_SIZE);

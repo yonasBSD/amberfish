@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "defs.h"
 
 #define ETYMON_UTIL_MAX_ARG_SIZE 4096
