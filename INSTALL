@@ -1,72 +1,27 @@
 
-COMPILING (SIMPLE)
+INSTALLATION OF XML PARSER
 
-Typing 'make' in this directory will attempt to build Amberfish.  By
-default this will NOT include XML support.  Please see below for
-installing XML support.
-
-NOTE: Unfortunantely, if you already have Xerces installed, the build
-process may find it and try to link with it.  This is a problem
-because Amberfish needs a patched, non-standard version of Xerces in
-order to work.  If you run into this problem, you might consider
-installing the patched version of Xerces as described below.
-
-Typing 'make install' will attempt to install the Amberfish binaries
-in /usr/local/bin/.
-
-
-COMPILING WITH XML SUPPORT
-
-Enabling XML support in Amberfish requires downloading, patching, and
-compiling the 'Xerces C++' parser.  Patching is required because
-recent versions of Xerces changed a method needed by Amberfish from
-'public' to 'protected'.  Here are instructions for getting Xerces
-working with Amberfish:
-
-* If you already have a version of Xerces installed, it is recommended
-that you uninstall it (if possible) before continuing.  This will
-simplify matters and avoid confusion.
-
-* Download a recent Xerces source release from:
+To use the XML features of Amberfish, you need the Xerces C++ parser.
+Xerces is available here:
 
   http://xml.apache.org/xerces-c/
 
-* Unpack the Xerces package and 'cd' into the package's top level
-directory.
+If you are using Linux, you may already have Xerces installed.  Look
+for a library file like 'libxerces-c.so'.
 
-* Apply the patch (src/xerces.patch) to Xerces.  This should be done
-from within the Xerces top level directory (or, if you downloaded a
-'nightly build', in c/ under the top level directory).  For example,
-if you unpacked the current version of Xerces into the src/ directory
-of Amberfish, type:
+The build process for Amberfish will look for Xerces, and if Xerces
+cannot be found, then XML support will be disabled in Amberfish.  Once
+you have Xerces installed, follow the instructions below for Amberfish
+installation.
 
-    patch -p0 < ../xerces.patch
 
-NOTE: The patch was tested with a recent version of Xerces at the time
-this release was put together.  We hope it also works with later
-versions of Xerces.  If not, the point of the patch is to make
-XMLScanner::getScanner() public instead of protected.  You can make
-that simple change by hand in src/xercesc/parsers/SAXParser.hpp .
+AMBERFISH INSTALLATION
 
-* Build Xerces, following its build instructions.  On Linux running
-bash, you may find this to work:
+Typing 'make' in this directory will attempt to build Amberfish.
 
-  cd src/xercesc
-  autoconf
-  export XERCESCROOT=`pwd`/../..
-  runConfigure -plinux
-  gmake
-
-* Install Xerces.  You can either do a system-wide installation or
-copy the needed files where Amberfish can find them.  Amberfish needs
-the src/xercesc directory placed in the include path
-(e.g. /usr/include) and the Xerces libraries (lib/libxerces-c.so*)
-placed in the library path (e.g. /usr/lib).
-
-* Recompile Amberfish, from this directory:
-
-  make clean ; make
-
-* Be sure LD_LIBRARY_PATH points to the Xerces library before running
+Be sure LD_LIBRARY_PATH points to the Xerces library before running
 Amberfish binaries.
+
+Typing 'make install' will attempt to install the Amberfish binaries
+in /usr/local/bin/.
 

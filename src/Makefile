@@ -7,7 +7,7 @@ CC = g++
 OPT = -O3 -funroll-loops
 LARGEFILE = -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 CXXFLAGS = -Wall ${DEBUG} ${OPT} ${INCLUDE} ${LARGEFILE}
-CLEAN = *.o core *.core
+CLEAN = *.o core *.core libxerces_auto
 DISTCLEAN = *~
 RM = rm -f
 BINDIR = ../bin
@@ -20,7 +20,7 @@ LIBDIR = ../lib
 #INCLUDE = -Iinclude -Iengine -Idclass -Ietc/${XERCES_DIR}/src
 INCLUDE = -Iinclude -Iengine -Idclass
 
-LIBS=-lxerces-c
+#LIBS=-lxerces-c
 
 all: ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
 	@echo ""
@@ -41,13 +41,13 @@ all: ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
 #	@echo ""
 
 ${BINDIR}/afindex: ${LIBDIR}/${XERCES_LIB} ${LIBDIR}/libaf.a tools/afindex.o
-	${CC} -o ${BINDIR}/afindex tools/afindex.o -L${LIBDIR} -laf -lm ${LIBS}
+	${CC} -o ${BINDIR}/afindex tools/afindex.o -L${LIBDIR} -laf -lm `cat libxerces_auto`
 
 ${BINDIR}/afsearch: ${LIBDIR}/${XERCES_LIB} ${LIBDIR}/libaf.a tools/afsearch.o
-	${CC} -o ${BINDIR}/afsearch tools/afsearch.o -L${LIBDIR} -laf -lm ${LIBS}
+	${CC} -o ${BINDIR}/afsearch tools/afsearch.o -L${LIBDIR} -laf -lm `cat libxerces_auto`
 
 ${BINDIR}/afadmin: ${LIBDIR}/${XERCES_LIB} ${LIBDIR}/libaf.a tools/afadmin.o
-	${CC} -o ${BINDIR}/afadmin tools/afadmin.o -L${LIBDIR} -laf -lm ${LIBS}
+	${CC} -o ${BINDIR}/afadmin tools/afadmin.o -L${LIBDIR} -laf -lm `cat libxerces_auto`
 
 ${BINDIR}/affetch: tools/affetch.o
 	${CC} -o ${BINDIR}/affetch tools/affetch.o
