@@ -49,6 +49,12 @@ typedef struct {
         etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
 } ETYMON_AF_ERESULT;
 
+typedef struct {
+	int db_id;
+	ETYMON_AF_SEARCH* opt;
+	uint4 corpus_doc_n;
+} ETYMON_AF_SEARCH_STATE;
+
 int etymon_af_search(ETYMON_AF_SEARCH* opt);
 
 int etymon_af_search_term_compare(const void* a, const void* b);

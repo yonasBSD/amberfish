@@ -9,6 +9,10 @@
 #include <string.h>
 #include "search_new.h"
 #include "open.h"
+#include "search.h"
+#include "stem.h"
+
+extern ETYMON_AF_STATE* etymon_af_state[];
 
 static void _log_error(const ETYMON_AF_EXCEPTION *ex)
 {
@@ -63,7 +67,7 @@ static inline int _close_dbs(int *db_id)
 	return 0;
 }
 
-static inline uint2 _reverse_lookup(uint2 *db_r, int db_id)
+static inline uint2 _reverse_lookup(const uint2 *db_r, int db_id)
 {
 	return db_r[db_id];
 }
@@ -126,7 +130,8 @@ static inline uint2 *_init_reverse_lookup(int *db_id, int db_id_n)
 	return table;
 }
 
-int afsearch(const Afsearch *rq, Afsearch_r *rs)
+/*
+int _afsearch(const Afsearch *rq, Afsearch_r *rs)
 {
 	int db_id[rq->dbn + 1];
 	uint2 *db_r;
@@ -143,7 +148,7 @@ int afsearch(const Afsearch *rq, Afsearch_r *rs)
 	if (_close_dbs(db_id) < 0)
 		return -1;
 
-	/* test */
+// test
 	{
 		int x;
 		for (x = 0; x < rs->resultn; x++)
@@ -155,3 +160,87 @@ int afsearch(const Afsearch *rq, Afsearch_r *rs)
 	
 	return 0;
 }
+*/
+
+/******************************** New interface ********************************/
+
+static inline int open_dbs(char **db, int dbn, int *db_id)
+{
+	int x;
+	ETYMON_AF_OPEN op;
+	ETYMON_AF_LOG log;
+
+	op.read_only = 1;
+	op.create = 0;
+	op.keep_open = 0;
+	op.log = &log;
+	log.write = _log_error;
+	for (x = 0; x < dbn; x++) {
+		op.dbname = db[x];
+		if ((db_id[x] = etymon_af_open(&op)) < 0)
+			return -1;
+	}
+	
+	return 0;
+}
+
+static inline int close_dbs(int *db_id)
+{
+	int *p;
+	ETYMON_AF_CLOSE c;
+	ETYMON_AF_LOG log;
+
+	c.log = &log;
+	log.write = _log_error;
+	for (p = db_id; *p; p++) {
+		c.db_id = *p;
+		if (etymon_af_close(&c) < 0)
+			return -1;
+	}
+
+	return 0;
+}
+
+static inline int validate_dbs(const char **db, const int *db_id, int dbn)
+{
+	int x;
+	
+	for (x = 0; x < dbn; x++) {
+		if (etymon_af_state[db_id[x]]->info.optimized == 0) {
+			fprintf(stderr,
+				"af: %s: The current version cannot search a non-linearized database\n",
+				db[x]);
+			return -1;
+		}
+		if (etymon_af_state[db_id[x]]->info.stemming && !af_stem_available()) {
+			fprintf(stderr, "af: %s: Database requires stemming support\n",
+				db[x]);
+			return -1;
+		}
+	}
+	return 0;
+}
+
+/*
+int afsearch(const Afsearch *rq, Afsearch_r *rs)
+{
+	int x;
+	int db_id[rq->dbn];
+	ETYMON_AF_SEARCH_STATE state;
+
+	if (open_dbs(rq->db, rq->dbn, db_id) < 0)
+		return -1;
+
+	if (validate_dbs(rq->db, db_id) < 0)
+		return -1;
+	
+	if (af_search_db(db_id, db_r, rq->query, rq->score,
+			rq->sort_score, &rs->result, &rs->resultn) < 0)
+		return -1;
+
+	if (close_dbs(db_id) < 0)
+		return -1;
+	
+	return 0;
+}
+*/

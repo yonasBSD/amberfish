@@ -10,8 +10,7 @@ GIRS =		/usr/local/girtools/girs
 LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 CXXFLAGS =	-ansi -pedantic \
 		-Wall -Wno-unused-variable -Wno-unused-function \
-		${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src \
-		@CPPFLAGS@
+		${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src @CPPFLAGS@
 SHELL =		/bin/sh
 CXX =		g++
 
@@ -22,8 +21,9 @@ PREFIXBIN =	${PREFIX}/bin
 LIBAMBERFISH =	libamberfish.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 		docbuf.o admin.o explain.o stem.o \
-		text.o xml.o xml_test.o syr1.o
-#		open_new.o search_new.o
+		text.o xml.o xml_test.o syr1.o \
+		search_new.o
+#		open_new.o
 BINOBJ =	af.o afindex.o afsearch.o afadmin.o affetch.o
 
 # Be careful about changing BIN; see the uninstall target below first.

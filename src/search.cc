@@ -18,12 +18,6 @@
 extern ETYMON_AF_STATE* etymon_af_state[];
 
 typedef struct {
-	int db_id;
-	ETYMON_AF_SEARCH* opt;
-	uint4 corpus_doc_n;
-} ETYMON_AF_SEARCH_STATE;
-
-typedef struct {
 	int doc_id;
 	int score;
 } ETYMON_AF_IRESULT;
