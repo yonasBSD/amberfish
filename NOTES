@@ -5,6 +5,12 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+* There is a new experimental C/C++ API, documented in man pages under
+doc/.
+
+* The old tools, afindex, afsearch, afadmin, and affetch, have been
+removed.
+
 1.5.9
 
 * Various changes related to RPM packaging.
@@ -32,16 +38,6 @@ command option.
 
 OTHER NOTES, BUGS, AND OUTSTANDING ISSUES
 
-* There is a new man page for af in doc/ which includes additional
-options not mentioned in the tutorial.
-
-* There is a new "af" tool that combines most of the functions of
-afindex, afsearch, afadmin, and affetch.  Using the old tools is
-deprecated, and they are no longer compiled by default.  To compile
-them, you can use:
-
-  cd src; gmake old
-
 * Stop words.  All words are currently indexed and searched.
 
 * Multiple documents.  The --split option specifies a delimiter string
@@ -51,8 +47,6 @@ should probably be enhanced a little bit to allow characters such as
 
 * Using '*' alone as a search term.  This is undefined and may cause
 strange behavior.
-
-* Stability of C API.  The C interface is undergoing major changes.
 
 * Phrase searching without being enabled.  Searching for a phrase in a
 database that was created without --phrase returns no results rather

@@ -40,8 +40,6 @@ SHELL =		/bin/sh
 
 all: ${BIN}
 
-old: afindex afsearch afadmin affetch
-
 %.d: %.cc
 	@set -e; rm -f $@; \
 		${CXX} -MM ${CXXFLAGS} $< > $@.$$$$; \
@@ -56,18 +54,6 @@ old: afindex afsearch afadmin affetch
 
 -include $(LIBOBJ:.o=.d)
 -include $(BINOBJ:.o=.d)
-
-afindex: ${LIBAF} afindex.o
-	${CXX} -o afindex afindex.o ${LIBS}
-
-afsearch: ${LIBAF} afsearch.o
-	${CXX} -o afsearch afsearch.o ${LIBS}
-
-afadmin: ${LIBAF} afadmin.o
-	${CXX} -o afadmin afadmin.o ${LIBS}
-
-affetch: affetch.o
-	${CXX} -o affetch affetch.o
 
 af: ${LIBAF} afmain.o af.o
 	${CXX} -o af afmain.o af.o ${LIBS}
@@ -93,7 +79,6 @@ uninstall:
 clean:
 	rm -f ${BIN} afd \
 		afmain.o af.o afdmain.o afd.o \
-		afindex afsearch afadmin affetch \
 		${BINOBJ} ${LIBOBJ} ${LIBAF}
 
 distclean:
