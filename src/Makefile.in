@@ -100,4 +100,5 @@ clean:
 
 distclean:
 	${MAKE} clean
+	rm -f *.d
 	rm -f *~ *#
