@@ -25,7 +25,7 @@
 static int cmd_index = 0;
 static int index_create = 0;
 static int index_phrase = 0;
-static int index_stemming = 1;
+static int index_stem = 1;
 static int index_long_words = 1;
 static int index_memory = MEMORYMIN;
 static int index_dlevel = 1;
@@ -87,7 +87,7 @@ static int process_opt_long(char *opt, char *arg)
 		return 0;
 	}
 	if (!strcmp(opt, "no-stem")) {
-		index_stemming = 0;
+		index_stem = 0;
 		return 0;
 	}
 	if (!strcmp(opt, "fetch")) {
@@ -225,7 +225,7 @@ static void dump_opt()
 	printf("cmd_index = %i\n", cmd_index);
 	printf("index_create = %i\n", index_create);
 	printf("index_phrase = %i\n", index_phrase);
-	printf("index_stemming = %i\n", index_stemming);
+	printf("index_stem = %i\n", index_stem);
 	printf("index_memory = %i\n", index_memory);
 	printf("index_dlevel = %i\n", index_dlevel);
 	printf("index_doctype = %s\n", index_doctype);
@@ -540,7 +540,7 @@ static int exec_search()
 
 static int exec_index()
 {
-	ETYMON_DB_OPTIONS db_options;
+	/*ETYMON_DB_OPTIONS db_options;*/
 	Afindex index_options;
 	Afopen op;
 	Afopen_r opr;
@@ -549,16 +549,20 @@ static int exec_index()
 
 	op.dbpath = *dbname;
 	op.mode = index_create ? "w+" : "r+";
+	op.phrase = index_phrase;
+	op.stem = index_stem;
 	if (afopen(&op, &opr) < 0)
 		return searcherr();
 
 	/* set db options */
+	/*
 	memset(&db_options, 0, sizeof(ETYMON_DB_OPTIONS));
 	db_options.log.error = log_error;
 	db_options.dbname = *dbname;
 	db_options.memory = index_memory;
 	db_options.phrase = index_phrase;
-	db_options.stemming = index_stemming;
+	db_options.stem = index_stem;
+	*/
 	/* set indexing options */
 	memset(&index_options, 0, sizeof index_options);
 	index_options.dbid = opr.dbid;

@@ -17,6 +17,7 @@
 #include "open.h"
 #include "util.h"
 #include "lock.h"
+#include "stem.h"
 
 static int etymon_af_init_flag = 0;
 
@@ -127,9 +128,9 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 		etymon_af_state[db_id]->info.udict_root = 0;
 		etymon_af_state[db_id]->info.doc_n = 0;
 		etymon_af_state[db_id]->info.optimized = 0;
-		etymon_af_state[db_id]->info.phrase = 0;
+		etymon_af_state[db_id]->info.phrase = opt->phrase;
 		etymon_af_state[db_id]->info.word_proximity = 0;
-		etymon_af_state[db_id]->info.stemming = 0;
+		etymon_af_state[db_id]->info.stemming = af_stem_available() ? opt->stem : 0;
 		/* write db info */
 		nbytes = write(etymon_af_state[db_id]->fd[ETYMON_DBF_INFO], &(etymon_af_state[db_id]->info), sizeof(ETYMON_DB_INFO));
 		if (nbytes != sizeof(ETYMON_DB_INFO)) {
@@ -299,6 +300,8 @@ int afopen(const Afopen *r, Afopen_r *rr)
 	if (setomode(r->mode, &op) < 0)
 		return -1;
 	op.keep_open = 0;
+	op.phrase = r->phrase;
+	op.stem = r->stem;
 	if ((x = etymon_af_open(&op)) == -1)
 		return -1;
 	rr->dbid = x;

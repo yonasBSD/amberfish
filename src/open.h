@@ -8,6 +8,8 @@
 typedef struct {
 	char *dbpath;
 	char *mode;
+	int phrase;
+	int stem;
 } Afopen;
 
 typedef struct {
@@ -54,6 +56,8 @@ typedef struct {
 	int read_only; /* open database for read-only operations */
 	int create; /* create database, overwriting if one already exists */
 	int keep_open; /* keep database files open, instead of re-opening for each operation */
+	int phrase;
+	int stem;
 } ETYMON_AF_OPEN;
 
 typedef struct {
