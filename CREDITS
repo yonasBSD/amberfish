@@ -1,10 +1,14 @@
 
-Amberfish was developed by Nassib Nassar in 1998, and since then many
-people have contributed in various ways.  Please let us know of any
-omissions in this list of acknowledgments.
+ACKNOWLEDGEMENTS
 
-BINARY PACKAGES
+Amberfish was developed by Nassib Nassar starting in 1998.  Many
+people have contributed to the project in various ways, and we would
+like to thank them here.  Please let us know if we have omitted
+anyone.
+
+LINUX PACKAGING
 Dimitri Tarassenko
+Joao Cruz
 
 TESTING
 Kevin Gamiel
