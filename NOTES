@@ -5,10 +5,19 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+1.5.2
+
+* Fixed bug in 1.5.1 that caused incremental indexing (i.e. adding to
+an existing database) not to work with -F.
+
+1.5.1
+
 * Development versions 1.5.x contain experimental code that allow
 searching of unlinearized databases.  Linearizing is no longer
 performed by default but must be specified explicitly with the '-L'
 command option.
+
+1.4.x / 1.3.x
 
 * The linearizing (optimizing) code has been completely rewritten and
 is now somewhat faster.  The '--old-linear' option disables the new
