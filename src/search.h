@@ -4,9 +4,8 @@
 /***** new *****/
 
 #include <fcntl.h>
+#include "config.h"
 #include "defs.h"
-
-typedef unsigned char Afchar;
 
 #define AFQUERYBOOLEAN (1)
 

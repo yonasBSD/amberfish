@@ -30,7 +30,6 @@ static int index_long_words = 1;
 static int index_memory = MEMORYMIN;
 static int index_dlevel = 1;
 static int index_no_linear_buffer = 0;
-static int index_old_linear = 0;
 static char *index_doctype = "text";
 static char *index_split = "";
 static int index_files_stdin = 0;
@@ -103,10 +102,6 @@ static int process_opt_long(char *opt, char *arg)
 		index_no_linear_buffer = 1;
 		return 0;
 	}
-	if (!strcmp(opt, "old-linear")) {
-		index_old_linear = 1;
-		return 0;
-	}
 /*
 	if (!strcmp(opt, "long-words")) {
 		index_long_words = 1;
@@ -133,7 +128,6 @@ static int process_opt(int argc, char *argv[])
 		{ "no-linear-buffer", 0, 0, 0 },
 		{ "no-stem", 0, 0, 0 },
 		{ "numhits", 1, 0, 'n' },
-		{ "old-linear", 0, 0, 0 },
 		{ "phrase", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
@@ -547,7 +541,16 @@ static int exec_search()
 static int exec_index()
 {
 	ETYMON_DB_OPTIONS db_options;
-	ETYMON_INDEX_OPTIONS index_options;
+	Afindex index_options;
+	Afopen op;
+	Afopen_r opr;
+	Afclose cl;
+	Afclose_r clr;
+
+	op.dbpath = *dbname;
+	op.mode = index_create ? "w+" : "r+";
+	if (afopen(&op, &opr) < 0)
+		return searcherr();
 
 	/* set db options */
 	memset(&db_options, 0, sizeof(ETYMON_DB_OPTIONS));
@@ -557,25 +560,25 @@ static int exec_index()
 	db_options.phrase = index_phrase;
 	db_options.stemming = index_stemming;
 	/* set indexing options */
-	memset(&index_options, 0, sizeof(ETYMON_INDEX_OPTIONS));
-	index_options.log.error = log_error;
-	index_options.dbname = *dbname;
+	memset(&index_options, 0, sizeof index_options);
+	index_options.dbid = opr.dbid;
 	index_options.memory = index_memory;
 	index_options.dlevel = index_dlevel;
-	index_options.dclass = index_doctype;
-	index_options.files = nonopt_argv;
-	index_options.files_n = nonopt_argv_n;
-	index_options.files_stdin = index_files_stdin;
+	index_options.doctype = index_doctype;
+	index_options.source = nonopt_argv;
+	index_options.sourcen = nonopt_argv_n;
+	index_options._stdin = index_files_stdin;
 /*	index_options.word_proximity = 0; */
-	index_options.split = index_split;
+	index_options.split = (Afchar *) index_split;
 	index_options.verbose = verbose;
-	index_options.dc_options = ""; /*sei_options->dc_options;*/
-	index_options.long_words = index_long_words;
+	index_options._longwords = index_long_words;
 	
 	/* first check if we are to create a new database */
+/*
 	if (index_create) {
 		etymon_db_create(&db_options);
 	}
+*/
 
 	/* index input files */
 	if ( (nonopt_argv_n != 0) || (index_files_stdin) ) {
@@ -583,14 +586,18 @@ static int exec_index()
 			return -1;
 	}
 
+	cl.dbid = opr.dbid;
+	afclose(&cl, &clr);
+
 	return 0;
 }
 
 static int exec_linearize()
 {
-	ETYMON_INDEX_OPTIONS index_options;
+/*	ETYMON_INDEX_OPTIONS index_options;*/
 
 	/* set indexing options */
+/*
 	memset(&index_options, 0, sizeof(ETYMON_INDEX_OPTIONS));
 	index_options.log.error = log_error;
 	index_options.dbname = *dbname;
@@ -600,28 +607,21 @@ static int exec_linearize()
 	index_options.files = nonopt_argv;
 	index_options.files_n = nonopt_argv_n;
 	index_options.files_stdin = index_files_stdin;
-/*	index_options.word_proximity = 0; */
 	index_options.split = index_split;
 	index_options.verbose = verbose;
-	index_options.dc_options = ""; /*sei_options->dc_options;*/
+	index_options.dc_options = "";
 	index_options.long_words = index_long_words;
+*/
 	
-	if (index_old_linear) {
-		if (etymon_index_optimize_old(&index_options) == -1)
-			return -1;
-	} else {
-		Aflinear rq;
-		rq.db = *dbname;
-		rq.verbose = verbose;
-		rq.memory = index_memory;
-		rq.nobuffer = index_no_linear_buffer;
-		if (_aflinear(&rq) < 0) {
-			if (aferrno == AFELINEAR)
-				aferror("Database is already linearized");
-			return -1;
-		}
-/*			if (etymon_index_optimize_new(&index_options) == -1)
-			return -1;*/
+	Aflinear rq;
+	rq.db = *dbname;
+	rq.verbose = verbose;
+	rq.memory = index_memory;
+	rq.nobuffer = index_no_linear_buffer;
+	if (_aflinear(&rq) < 0) {
+		if (aferrno == AFELINEAR)
+			aferror("Database is already linearized");
+		return -1;
 	}
 
 	return 0;

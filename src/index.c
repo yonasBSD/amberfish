@@ -19,6 +19,9 @@
 #include "xml_test.h"
 #include "syr1.h"
 
+#include "open.h"
+extern ETYMON_AF_STATE *etymon_af_state[];
+
 /* assumes that the buffer, absolute_path, is of size
    ETYMON_MAX_PATH_SIZE, that relative_path contains a valid
    null-terminated string, that cwd has been filled in using getcwd(),
@@ -77,6 +80,8 @@ void etymon_index_expand_path(char* relative_path, char* absolute_path, char* cw
 		}
 	}
 }
+
+#ifdef ZZZZZ
 
 /*#define OPT_STDIO*/
 
@@ -903,6 +908,8 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 	return 0;
 }
 
+#endif
+
 void etymon_index_write_nl(int filedes, etymon_af_off_t offset, ETYMON_INDEX_PAGE_NL* page) {
 	static uint1 leaf_flag = 0;
 	if (etymon_af_lseek(filedes, (etymon_af_off_t)offset, SEEK_SET) == -1) {
@@ -1343,16 +1350,9 @@ int etymon_index_index_word(ETYMON_INDEX_INDEXING_STATE* state, int wcache_p) {
 							  &(state->pcache_nl[level].nl));
 			p = state->pcache_nl[level].nl.p[ins];
 			level++;
-			if (level >= ETYMON_MAX_PAGE_DEPTH) {
-				int e;
-				char s[ETYMON_MAX_MSG_SIZE];
-				sprintf(s, "%s: Internal overflow (level)", state->dbname);
-				e = state->log->error(s, 1);
-				if (e != 0) {
-					exit(e);
-				}
-				return -1;
-			}
+			/* Internal overflow (level) */
+			if (level >= ETYMON_MAX_PAGE_DEPTH)
+				return aferr(AFEUNKNOWN);
 		}
 		
 	} while (leaf_flag == 0);
@@ -1642,7 +1642,7 @@ ETYMON_AF_DC_SPLIT* etymon_af_index_get_split_list(ETYMON_AF_DC_INDEX*
 
 
 /* returns 0 if everything went OK */
-int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
+int etymon_index_add_files(Afindex *opt) {
 	ETYMON_DOCBUF* docbuf;
 	ETYMON_INDEX_INDEXING_STATE* state;
 	char s_file[ETYMON_MAX_PATH_SIZE];
@@ -1652,9 +1652,10 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	ETYMON_AF_STAT st;
 	ssize_t nbytes;
 	size_t maxmem, memleft;
-	int dbinfo_fd, x_file;
+/*	int dbinfo_fd; */
+	int x_file;
 	uint4 magic;
-	ETYMON_DB_INFO dbinfo;
+	ETYMON_DB_INFO *dbinfo;
 	int dclass_id;
 	int result;
 	int fdef_fd;
@@ -1667,103 +1668,68 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	ETYMON_AF_DC_SPLIT* split_list = NULL;
 	ETYMON_AF_DC_SPLIT* split_p;
 	int use_docbuf; /* 1: use docbuf; 0: don't use it */
+	char *dbname;
+
+	dbname = etymon_af_state[opt->dbid]->dbname;
 	
 	maxmem = ((size_t) opt->memory) * 1048576 - 1315000;
 
 	/* make sure database is ready */
-	if (etymon_db_ready(opt->dbname) == 0) {
-		int e;
-		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Database not ready", opt->dbname);
-		e = opt->log.error(s, 1);
-		if (e != 0) {
-			exit(e);
-		}
-		return -1;
-	}
+	if (etymon_db_ready(dbname) == 0)
+		return aferr(AFEDBLOCK);
 	
 	/* lock the database */
-	etymon_db_lock(opt->dbname, &(opt->log));
+	etymon_db_lock(dbname, NULL);
 	
 	/* open db info file for read/write */
-	etymon_db_construct_path(ETYMON_DBF_INFO, opt->dbname, fn);
+/*
+	etymon_db_construct_path(ETYMON_DBF_INFO, dbname, fn);
 	dbinfo_fd = open(fn, O_RDWR | ETYMON_AF_O_LARGEFILE);
 	if (dbinfo_fd == -1) {
-		int e;
-		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Unable to open database", opt->dbname);
-		e = opt->log.error(s, 1);
-		etymon_db_unlock(opt->dbname);
-		if (e != 0) {
-			exit(e);
-		}
-		return - 1;
+		etymon_db_unlock(dbname);
+		return aferr(AFEDBIO);
 	}
 	nbytes = read(dbinfo_fd, &magic, sizeof(uint4));
 	if (nbytes != sizeof(uint4)) {
-		/* ERROR */
 		printf("unable to read %s\n", fn);
 		exit(1);
 	}
 	if (magic != ETYMON_INDEX_MAGIC) {
-		int e;
-		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Database created by incompatible version", opt->dbname);
-		e = opt->log.error(s, 1);
 		close(dbinfo_fd);
-		etymon_db_unlock(opt->dbname);
-		if (e != 0) {
-			exit(e);
-		}
-		return -1;
+		etymon_db_unlock(dbname);
+		return aferr(AFEVERSION);
 	}
 	nbytes = read(dbinfo_fd, &dbinfo, sizeof(ETYMON_DB_INFO));
 	if (nbytes != sizeof(ETYMON_DB_INFO)) {
-		/* ERROR */
 		printf("unable to read %s\n", fn);
 		exit(1);
 	}
+*/
+	dbinfo = &(etymon_af_state[opt->dbid]->info);
 
-	if (dbinfo.stemming && !af_stem_available()) {
-		int e;
-		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Database requires stemming support", opt->dbname);
-		e = opt->log.error(s, 1);
-		close(dbinfo_fd);
-		if (e != 0) {
-			exit(e);
-		}
-		return 0;
-		/* This appears to leave the database in a "not ready"
-		   state. */
+	if (dbinfo->stemming && !af_stem_available()) {
+		etymon_db_unlock(dbname);
+		return aferr(AFENOSTEM);
 	}
 	
 	/* we can only add files if the database is not optimized */
-	if (dbinfo.optimized == 1) {
-		int e;
-		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Unable to add to a linearized database", opt->dbname);
-		e = opt->log.error(s, 1);
-		close(dbinfo_fd);
-		if (e != 0) {
-			exit(e);
-		}
-		return 0;
+	if (dbinfo->optimized == 1) {
+		etymon_db_unlock(dbname);
+		return aferr(AFELINEAR);
 	}
 	
 	/* set up state information for indexing */
 	
 	state = (ETYMON_INDEX_INDEXING_STATE*)(malloc(sizeof(ETYMON_INDEX_INDEXING_STATE)));
 
-	state->udict_root = dbinfo.udict_root;
-	state->doc_n = dbinfo.doc_n;
-	state->dbname = opt->dbname;
-	state->log = &(opt->log);
+	state->udict_root = dbinfo->udict_root;
+	state->doc_n = dbinfo->doc_n;
+	state->dbname = dbname;
 	state->verbose = opt->verbose;
-	state->long_words = opt->long_words;
+	state->long_words = opt->_longwords;
 
 	/* open doctable for append */
-	etymon_db_construct_path(ETYMON_DBF_DOCTABLE, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_DOCTABLE, dbname, fn);
 	state->doctable_fd = open(fn, O_WRONLY | O_APPEND | O_CREAT | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (state->doctable_fd == -1) {
 		/* ERROR */
@@ -1777,7 +1743,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->doctable_next_id = st.st_size / sizeof(ETYMON_DOCTABLE) + 1;
 
 	/* open udict for read/write */
-	etymon_db_construct_path(ETYMON_DBF_UDICT, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_UDICT, dbname, fn);
 	state->udict_fd = open(fn, O_RDWR | O_CREAT | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (state->udict_fd == -1) {
 		/* ERROR */
@@ -1791,7 +1757,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->udict_size = st.st_size;
 	
 	/* open upost for append */
-	etymon_db_construct_path(ETYMON_DBF_UPOST, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_UPOST, dbname, fn);
 	state->upost_fd = open(fn, O_WRONLY | O_APPEND | O_CREAT | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (state->upost_fd == -1) {
 		/* ERROR */
@@ -1805,7 +1771,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->upost_isize = st.st_size / sizeof(ETYMON_INDEX_UPOST);
 	
 	/* open ufield for append */
-	etymon_db_construct_path(ETYMON_DBF_UFIELD, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_UFIELD, dbname, fn);
 	state->ufield_fd = open(fn, O_WRONLY | O_APPEND | O_CREAT | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (state->ufield_fd == -1) {
 		/* ERROR */
@@ -1819,7 +1785,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->ufield_isize = st.st_size / sizeof(ETYMON_INDEX_UFIELD);
 	
 	/* open uword for append */
-	etymon_db_construct_path(ETYMON_DBF_UWORD, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_UWORD, dbname, fn);
 	state->uword_fd = open(fn, O_WRONLY | O_APPEND | O_CREAT | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (state->uword_fd == -1) {
 		/* ERROR */
@@ -1851,10 +1817,10 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->pcache_l_write = 0;
 
 	/* turn on word numbering */
-	state->phrase = dbinfo.phrase;
-	state->word_proximity = dbinfo.word_proximity;
-	state->stemming = dbinfo.stemming;
-	if ( (dbinfo.phrase) || (dbinfo.word_proximity) ) {
+	state->phrase = dbinfo->phrase;
+	state->word_proximity = dbinfo->word_proximity;
+	state->stemming = dbinfo->stemming;
+	if ( (dbinfo->phrase) || (dbinfo->word_proximity) ) {
 		state->number_words = 1;
 	} else {
 		state->number_words = 0;
@@ -1915,7 +1881,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 
 	/* load field definitions into a binary tree */
 	/* open fdef for read/write */
-	etymon_db_construct_path(ETYMON_DBF_FDEF, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_FDEF, dbname, fn);
 	fdef_fd = open(fn, O_RDWR | O_CREAT | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (fdef_fd == -1) {
 		/* ERROR */
@@ -1925,13 +1891,13 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->fdef_count = etymon_af_fdef_read_mem(fdef_fd, &(state->fdef_root), &(state->fdef_tail));
 	
 	/* set dclass_id based on dclass string */
-	if (strcmp(opt->dclass, "xml") == 0) {
+	if (strcmp(opt->doctype, "xml") == 0) {
 		dclass_id = 1;
 	}
-	else if (strcmp(opt->dclass, "xml_test") == 0) {
+	else if (strcmp(opt->doctype, "xml_test") == 0) {
 		dclass_id = 2;
 	}
-	else if (strcmp(opt->dclass, "syr1") == 0) {
+	else if (strcmp(opt->doctype, "syr1") == 0) {
 		dclass_id = 100;
 	} else {
 		/* need to print an error here if the input is unknown
@@ -1943,7 +1909,6 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	/* set up parameters to pass in to document class init
 	   function */
 	dc_init.use_docbuf = 1;
-	dc_init.dc_options = opt->dc_options;
 	dc_init.dc_state = NULL;
 
 	/* for now we hard code calls */
@@ -1967,7 +1932,6 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		result = dc_text_init(&dc_init);
 	}
 	if (result == -1) {
-		close(dbinfo_fd);
 		free(state->wcache);
 		free(state->fcache);
 		if (state->number_words) {
@@ -2002,7 +1966,6 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	dc_index.split_list = NULL;
 	dc_index.dlevel = opt->dlevel;
 	dc_index.state = state;
-	dc_index.dc_options = opt->dc_options;
 	dc_index.dc_state = dc_init.dc_state;
 
 	/* get cwd */
@@ -2016,7 +1979,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		file_good = 1;
 		
 		/* load file into buffer */
-		if (opt->files_stdin) {
+		if (opt->_stdin) {
 			if (fgets(s_file, ETYMON_MAX_PATH_SIZE, stdin) == NULL) {
 				/* need to check fgets more correctly for errors */
 				done_files = 1;
@@ -2030,11 +1993,11 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 				source_file = s_file;
 			}
 		} else {
-			if (x_file == opt->files_n) {
+			if (x_file == opt->sourcen) {
 				done_files = 1;
 				break;
 			} else {
-				source_file = opt->files[x_file];
+				source_file = opt->source[x_file];
 			}
 		}
 
@@ -2048,6 +2011,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 			docbuf->fn = fn;
 			docbuf->filedes = open(docbuf->fn, O_RDONLY | ETYMON_AF_O_LARGEFILE);
 			if (docbuf->filedes == -1) {
+				/*
 				int e;
 				char s[ETYMON_MAX_MSG_SIZE];
 				sprintf(s, "%s: No such file or directory", docbuf->fn);
@@ -2056,6 +2020,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 				if (e != 0) {
 					exit(e);
 				}
+				*/
 			} else {
 
 				/* stat the file */
@@ -2071,11 +2036,13 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 						"%s: file not recognized: File format not recognized",
 						docbuf->fn);
 					file_good = 0;
-					e = opt->log.error(s, 0);
 					close(docbuf->filedes);
+					/*
+					e = opt->log.error(s, 0);
 					if (e != 0) {
 						exit(e);
 					}
+					*/
 				}
 				
 			}
@@ -2109,7 +2076,9 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 				   into multiple documents */
 				if (*(opt->split) != '\0') {
 					split_list =
-						etymon_af_index_get_split_list(&dc_index, opt->split);
+						etymon_af_index_get_split_list(
+							&dc_index, 
+							(char *) opt->split);
 					/* reset the docbuf page */
 					if (etymon_af_lseek(docbuf->filedes,
 							    (etymon_af_off_t)0, SEEK_SET) == -1) {
@@ -2161,7 +2130,6 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 			}
 			/* check result from document class */
 			if (result == -1) {
-				close(dbinfo_fd);
 				free(state->wcache);
 				free(state->fcache);
 				if (state->number_words) {
@@ -2196,7 +2164,6 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	} while (done_files == 0);
 	
 	if (etymon_index_dclass_finish(state) == -1) {
-		close(dbinfo_fd);
 		free(state->wcache);
 		free(state->fcache);
 		if (state->number_words) {
@@ -2222,7 +2189,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	/* write out fdef file */
 	/* re-open fdef and overwrite */
 	close(fdef_fd);
-	etymon_db_construct_path(ETYMON_DBF_FDEF, opt->dbname, fn);
+	etymon_db_construct_path(ETYMON_DBF_FDEF, dbname, fn);
 	fdef_fd = open(fn, O_WRONLY | O_CREAT | O_TRUNC | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
 	if (fdef_fd == -1) {
 		/* ERROR */
@@ -2232,13 +2199,13 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	etymon_af_fdef_write_mem(fdef_fd, state->fdef_root);
 	
 	/* update dbinfo */
+/*
 	if (etymon_af_lseek(dbinfo_fd, (etymon_af_off_t)0, SEEK_SET) == -1) {
 		perror("index_add_files():lseek()");
 	}
 	magic = ETYMON_INDEX_MAGIC;
 	nbytes = write(dbinfo_fd, &magic, sizeof(uint4));
 	if (nbytes != sizeof(uint4)) {
-		/* ERROR */
 		printf("unable to write MN\n");
 		exit(1);
 	}
@@ -2246,11 +2213,13 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	dbinfo.doc_n = state->doc_n;
 	nbytes = write(dbinfo_fd, &dbinfo, sizeof(ETYMON_DB_INFO));
 	if (nbytes != sizeof(ETYMON_DB_INFO)) {
-		/* ERROR */
 		printf("unable to write DBI\n");
 		exit(1);
 	}
 	close(dbinfo_fd);
+*/
+	dbinfo->udict_root = state->udict_root;
+	dbinfo->doc_n = state->doc_n;
 	
 	/* clean up */
 	free(state->wcache);
@@ -2274,7 +2243,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	free(state);
 
 	/* unlock the database */
-	etymon_db_unlock(opt->dbname);
+	etymon_db_unlock(dbname);
 
 	return 0;
 }

@@ -42,6 +42,8 @@ typedef Uint2 uint2;
 typedef Int4 int4;
 typedef Uint4 uint4;
 
+typedef unsigned char Afchar;
+
 /* Old 64-bit file system support */
 #ifdef O_LARGEFILE
 #	define ETYMON_AF_O_LARGEFILE O_LARGEFILE

@@ -1,9 +1,34 @@
 #ifndef _AF_INDEX_H
 #define _AF_INDEX_H
 
+/***** new *****/
+
+#include "config.h"
+
+typedef struct {
+	Uint2 dbid;
+	int memory;  /* maximum amount of memory to use during indexing (MB) */
+	char **source;  /* list of files to index */
+	int sourcen;
+	char *doctype;
+	Afchar *split;  /* delimiter of multiple documents (if any)
+                           within a file */
+	int dlevel;  /* maximum number of levels to descend (nested documents) */
+	int verbose;  /* boolean: verbose output */
+	int _stdin;  /* boolean: read files to index from standard input */
+	int _longwords;
+} Afindex;
+
+typedef struct {
+	int _tmp;
+} Afindex_r;
+
+/***** old *****/
+
 #include "defs.h"
 #include "docbuf.h"
 
+#ifdef ZZZZZ
 typedef struct {
 	ETYMON_LOG log;
 	char* dbname; /* database name */
@@ -21,6 +46,7 @@ typedef struct {
 	char* dc_options; /* document class options */
 	int long_words;
 } ETYMON_INDEX_OPTIONS;
+#endif
 
 typedef struct {
 	unsigned char* key; /* document key */
@@ -44,7 +70,6 @@ typedef struct {
 	int use_docbuf;  /* 1: read files via docbuf;
 			    0: don't use docbuf; this will also
 			       disable splitting files */
-	char* dc_options; /* document class options */
 	void* dc_state;
 } ETYMON_AF_DC_INIT;
 
@@ -62,7 +87,6 @@ typedef struct {
 			documents) */
 	uint1 dclass_id;
 	ETYMON_INDEX_INDEXING_STATE* state;
-	char* dc_options; /* document class options */
 	void* dc_state;
 } ETYMON_AF_DC_INDEX;
 
@@ -72,9 +96,11 @@ int etymon_index_search_keys_nl(unsigned char* word, size_t word_len, ETYMON_IND
 /* Used by search.cc as well; should it be moved out of index.cc? */
 int etymon_index_search_keys_l(unsigned char* word, size_t word_len, ETYMON_INDEX_PAGE_L* page, int* match);
 
-int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt);
+int etymon_index_add_files(Afindex *opt);
 
+#ifdef ZZZZZ
 int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt);
+#endif
 
 uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt);
 

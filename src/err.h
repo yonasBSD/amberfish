@@ -14,7 +14,7 @@ extern int aferrno;
 #define AFEMEM          (2)   /* Out of memory (failed malloc) */
 #define AFEBUFOVER      (3)   /* Buffer overflow (usually char[]) */
 #define AFEINVAL        (4)   /* Invalid argument */
-#define	AFEDBIO         (5)   /* I/O error */
+#define	AFEDBIO         (5)   /* Database file I/O error */
 #define	AFEBADDB        (6)   /* Corrupted database file */
 /*
  *  The following errors are only returned by certain functions.
@@ -26,9 +26,10 @@ extern int aferrno;
 #define AFETERMLEN     (11)   /* Query term too long */
 #define AFEQUERYNEST   (12)   /* Query too deeply nested */
 #define AFEQUERYSYN    (13)   /* Syntax error in query */
+#define AFENOSTEM      (14)   /* Database requires stemming support */
 
 #define AFMAXCOREERR    (6)
-#define AFMAXERR       (13)
+#define AFMAXERR       (14)
 
 static char* aferrmsg[] = {
 	"",
@@ -36,7 +37,7 @@ static char* aferrmsg[] = {
 	"Out of memory",
 	"Buffer overflow",
 	"Invalid argument",
-	"I/O error",
+	"Database file I/O error",
 	"Corrupted database file",
 	"Database locked",
 	"Incompatible database version",
@@ -44,7 +45,8 @@ static char* aferrmsg[] = {
 	"Too many open databases",
 	"Query term too long",
 	"Query too deeply nested",
-	"Syntax error in query"
+	"Syntax error in query",
+	"Database requires stemming support"
 };
 
 static inline int aferr(int err)

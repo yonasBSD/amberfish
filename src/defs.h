@@ -268,7 +268,6 @@ typedef struct ETYMON_AF_FDEF_MEM_STRUCT {
 } ETYMON_AF_FDEF_MEM;
 
 typedef struct {
-	ETYMON_LOG* log;
 	char* dbname; /* database name */
 	int doctable_fd; /* doctable file descriptor */
 	etymon_af_off_t doctable_next_id; /* next available doctable number */
