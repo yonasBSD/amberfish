@@ -11,6 +11,10 @@ fi
 
 AC_PROG_CXX
 
+AC_CHECK_SIZEOF(short int, 0)
+AC_CHECK_SIZEOF(int, 0)
+AC_CHECK_SIZEOF(long int, 0)
+
 xml=yes
 AC_ARG_ENABLE(xml, [  --disable-xml           disable linking with Xerces and XML support], [
 	if test "$enableval" = "no"; then
@@ -34,10 +38,6 @@ if test -f src/porter.cc; then
 	AC_DEFINE(HAVE_STEMMER)
 fi
 AC_MSG_RESULT($stemmer)
-
-AC_CHECK_SIZEOF(short int, 0)
-AC_CHECK_SIZEOF(int, 0)
-AC_CHECK_SIZEOF(long int, 0)
 
 AC_MSG_NOTICE(creating src/version.h)
 echo "#define AF_VERSION \"$af_version\"" > src/version.h
