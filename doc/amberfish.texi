@@ -1,5 +1,5 @@
 %
-%  Copyright (C) 1999-2002 Etymon Systems, Inc.  All Rights Reserved.
+%  Copyright (C) 1999-2004 Etymon Systems, Inc.  All Rights Reserved.
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -17,7 +17,7 @@
 }
 
 \pdfcatalog {
-/URI (http://www.etymon.com/amberfish/)
+/URI (http://www.etymon.com/)
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@
 @include version.texi
 
 @macro afcopyright{year}
-@emph{Copyright} @copyright{} @emph{1999--2002 by Etymon Systems, Inc.}
+@emph{Copyright} @copyright{} @emph{1999--2004 by Etymon Systems, Inc.}
 @end macro
 
 @macro spsection{}
@@ -55,9 +55,9 @@
 
 @sp 4
 
-This document describes Amberfish Version @value{VERSION}.  Updates and
-information are available from the Amberfish web page at
-@url{http://www.etymon.com/amberfish/} or via e-mail at
+This document describes Amberfish Version @value{VERSION}.  Updates
+and information are available from the Amberfish web page at
+@url{http://sourceforge.net/projects/amberfish/} or via e-mail at
 @email{info@@etymon.com}, or by contacting:
 
 @sp 1
