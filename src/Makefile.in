@@ -1,8 +1,4 @@
-GIRS=/home/nassar/cvs/girtools/girs
 SHELL = /bin/sh
-# PLATFORM should be set to "linux" or "solaris"
-# (default: "linux")
-PLATFORM = linux
 CC = g++
 #DEBUG = -g
 OPT = -O3 -funroll-loops
@@ -13,33 +9,16 @@ DISTCLEAN = *~
 RM = rm -f
 BINDIR = ../bin
 LIBDIR = ../lib
-#XERVER = 1_7_0
-#XERLIB = xerces-c${XERVER}
-#XERCES_DIR = xerces-c-src${XERVER}
-#XERCES_PKG = xerces-c-src${XERVER}.tar.gz
-#XERCES_LIB = lib${XERLIB}.so
-#INCLUDE = -Iinclude -Iengine -Idclass -Ietc/${XERCES_DIR}/src
+
+# The GIRS server (amberfishd) is experimental and not compiled by
+# default.
+GIRS = /home/nassar/cvs/girtools/girs
+
 INCLUDE = -Iinclude -Iengine -Idclass -I${GIRS}/src
 
 LIBS = @LDFLAGS@ @LIBS@
 
 all: include/version.h ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
-#	@echo ""
-#	@echo "Successful completion."
-#	@echo ""
-#	@echo "******************************************************************"
-#	@echo "The LD_LIBRARY_PATH environment variable should be set as follows:"
-#	@echo ""
-#	@echo "bash:"
-#	@cd ../lib ; \
-#	echo " " export LD_LIBRARY_PATH=`pwd`:"$$"LD_LIBRARY_PATH
-#	@echo ""
-#	@echo "csh:"
-#	@cd ../lib ; \
-#	echo " " setenv LD_LIBRARY_PATH `pwd`:"$$"LD_LIBRARY_PATH
-#	@echo ""
-#	@echo "******************************************************************"
-#	@echo ""
 
 amberfishd: include/version.h ${BINDIR}/amberfishd
 
@@ -58,19 +37,6 @@ ${BINDIR}/afadmin: ${LIBDIR}/libamberfish.a tools/afadmin.o
 
 ${BINDIR}/affetch: tools/affetch.o
 	${CC} -o ${BINDIR}/affetch tools/affetch.o
-
-#${LIBDIR}/${XERCES_LIB}: etc/${XERCES_DIR}
-#	cd etc/${XERCES_DIR}/src/xercesc ; \
-#	autoconf ; \
-#	XERCESCROOT=`pwd`/../.. /bin/sh runConfigure -p${PLATFORM} -cgcc -xg++ -minmem -nsocket -tnative -rpthread ; \
-#	XERCESCROOT=`pwd`/../.. gmake ; \
-#	cp ../../lib/${XERCES_LIB} ../../../../../lib/.
-
-#etc/${XERCES_DIR}:
-#	cd etc ; \
-#	if [ ! -d ${XERCES_DIR} ] ; \
-#		then tar xfz ${XERCES_PKG} ; \
-#        fi ; \
 
 SRC = include/af.h \
 		include/af_auto.h \
@@ -116,13 +82,6 @@ dclass/syr1.o: ${SRC}
 
 include/version.h:
 	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" > include/version.h
-
-#include/af_auto.h: autoconf/configure ../VERSION include/af_auto.h.in
-#	cd autoconf ; CC=${CC} ./configure
-#	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" >> include/af_auto.h
-
-#autoconf/configure: autoconf/configure.in
-#	cd autoconf ; autoconf
 
 clean:
 	${RM} ${CLEAN}
