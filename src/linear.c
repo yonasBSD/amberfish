@@ -484,7 +484,7 @@ static int linclose(Aflinst *t)
 	return 0;
 }
 
-int aflinear(const Aflinear *rq)
+int _aflinear(const Aflinear *rq)
 {
 	Aflinst t;
 

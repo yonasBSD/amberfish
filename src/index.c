@@ -509,17 +509,6 @@ int etymon_index_optimize_old_stdio(ETYMON_INDEX_OPTIONS* opt) {
 
 #endif
 
-/*
-int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS *opt)
-{
-	Aflinear rq;
-
-	rq.db = opt->dbname;
-	rq.verbose = opt->verbose;
-	return aflinear(&rq);
-}
-*/
-
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
    in the first unoptimized pass; so it explicitly counts these values
