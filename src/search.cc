@@ -9,6 +9,8 @@
 #include "fdef.h"
 #include "index.h"
 
+extern ETYMON_AF_STATE* etymon_af_state[];
+
 typedef struct {
 	int db_id;
 	ETYMON_AF_SEARCH* opt;

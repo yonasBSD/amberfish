@@ -34,8 +34,6 @@ typedef struct {
 	ETYMON_AF_LOG* log;
 } ETYMON_AF_CLOSE;
 
-static ETYMON_AF_STATE* etymon_af_state[ETYMON_AF_MAX_OPEN];
-
 int etymon_af_open(ETYMON_AF_OPEN* opt);
 
 int etymon_af_close(ETYMON_AF_CLOSE* opt);

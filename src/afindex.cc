@@ -236,6 +236,15 @@ void etymon_sei_check_conflicts(ETYMON_SEI_OPTIONS* sei_options) {
 	
 }
 
+static int count_files(char **files)
+{
+	int x = 0;
+	if (files) {
+		while (files[x])
+			x++;
+	}
+	return x;
+}
 
 void etymon_sei_execute(ETYMON_SEI_OPTIONS* sei_options) {
 	ETYMON_DB_OPTIONS* db_options;
@@ -256,6 +265,7 @@ void etymon_sei_execute(ETYMON_SEI_OPTIONS* sei_options) {
 	index_options->dlevel = sei_options->dlevel;
 	index_options->dclass = sei_options->dclass;
 	index_options->files = sei_options->files;
+	index_options->files_n = count_files(sei_options->files);
 	index_options->files_stdin = sei_options->files_stdin;
 	index_options->phrase = sei_options->phrase;
 	index_options->word_proximity = 0;

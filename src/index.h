@@ -11,6 +11,7 @@ typedef struct {
 	int dlevel; /* maximum number of levels to descend (nested documents) */
 	char* dclass; /* document class */
 	char** files; /* list of files to index */
+	int files_n;
 	int files_stdin; /* boolean: read files to index from standard input */
 	int phrase; /* boolean: enable phrase search */
 	int word_proximity; /* boolean: enable word proximity operator */

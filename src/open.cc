@@ -10,6 +10,7 @@
 
 static int etymon_af_init_flag = 0;
 
+ETYMON_AF_STATE* etymon_af_state[ETYMON_AF_MAX_OPEN];
 
 void etymon_af_init() {
 	memset(etymon_af_state, 0, sizeof(ETYMON_AF_STATE*) * ETYMON_AF_MAX_OPEN);
@@ -261,7 +262,7 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 			return -1;
 		}
 	}
-	
+
 	return db_id;
 }
 

@@ -1990,7 +1990,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 				source_file = s_file;
 			}
 		} else {
-			if (opt->files[x_file] == NULL) {
+			if (x_file == opt->files_n) {
 				done_files = 1;
 				break;
 			} else {

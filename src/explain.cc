@@ -7,6 +7,8 @@
 #include "explain.h"
 #include "open.h"
 
+extern ETYMON_AF_STATE* etymon_af_state[];
+
 int etymon_af_fdef_list_fields_recursive(ETYMON_AF_FDEF_DISK* fdef, ETYMON_AF_EXPLAIN* opt, int p, int* n) {
 
 	if (fdef[p - 1].left) {
