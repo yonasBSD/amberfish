@@ -345,7 +345,7 @@ static int exec_search()
 	Uint2 dbid[ETYMON_AF_MAX_OPEN];
 	int dbidn;
 	int x;
-	ETYMON_AF_ERESULT* eresults;
+	Afresultmd* resultmd;
 	char** p;
 	AFSEARCH_RESULT* res;
 	int res_n;
@@ -417,15 +417,14 @@ static int exec_search()
 		}
 		
 		res_n = ser.resultn;
-		eresults = (ETYMON_AF_ERESULT*)(malloc((res_n + 1) * sizeof(ETYMON_AF_ERESULT)));
+		resultmd = (Afresultmd*)(malloc((res_n + 1) * sizeof(Afresultmd)));
 		res = (AFSEARCH_RESULT*)(malloc((res_n + 1) * sizeof(AFSEARCH_RESULT)));
-		if ( (!eresults) || (!res) ) {
+		if ( (!resultmd) || (!res) ) {
 			fprintf(stderr, "af: unable to allocate memory for search results\n");
 		} else {
-			if (etymon_af_resolve_results(ser.result,
+			if (afgetresultmd(ser.result,
 						      res_n,
-						      eresults,
-						      &log) != -1) {
+						      resultmd) != -1) {
 				for (x = 0; x < res_n; x++) {
 					res[x].score = ser.result[x].score;
 					strcpy(res[x].dbname,
@@ -435,10 +434,10 @@ static int exec_search()
 					res[x].doc_id =
 						ser.result[x].docid;
 					res[x].parent =
-						eresults[x].parent;
-					strcpy(res[x].filename, eresults[x].filename);
-					res[x].begin = eresults[x].begin;
-					res[x].end = eresults[x].end;
+						resultmd[x].parent;
+					strcpy(res[x].filename, resultmd[x].docpath);
+					res[x].begin = resultmd[x].begin;
+					res[x].end = resultmd[x].end;
 
 					if (search_style == 1) {
 						/* add to rlist */
@@ -460,11 +459,11 @@ static int exec_search()
 						ses_presult(res + x);
 					}
 					
-					free(eresults[x].filename);
+					free(resultmd[x].docpath);
 				}
 			}
 
-			free(eresults);
+			free(resultmd);
 		}
 
 		if (ser.result) {
@@ -481,7 +480,7 @@ static int exec_search()
 			/* AFSEARCH_RTREE* rtree_p_new; */
 			Afresult* results =
 				(Afresult*)(malloc(2 * sizeof(Afresult)));
-			eresults = (ETYMON_AF_ERESULT*)(malloc(2 * sizeof(ETYMON_AF_ERESULT)));
+			resultmd = (Afresultmd*)(malloc(2 * sizeof(Afresultmd)));
 			
 			for (x = 0; x < res_n; x++) {
 				rtree_head =
@@ -498,15 +497,15 @@ static int exec_search()
 					results->dbid = rtree_head->r.db_id;
 					results->docid = rtree_head->r.parent;
 					results->score = rtree_head->r.score;
-					etymon_af_resolve_results(results, 1, eresults, &log);
+					afgetresultmd(results, 1, resultmd);
 					rtree_p =
 						(AFSEARCH_RTREE*)(malloc(sizeof(AFSEARCH_RTREE)));
 					rtree_p->r.score = rtree_head->r.score;
 					rtree_p->r.doc_id = results->docid;
 					rtree_p->r.db_id = results->dbid;
-					rtree_p->r.parent = eresults->parent;
-					rtree_p->r.begin = eresults->begin;
-					rtree_p->r.end = eresults->end;
+					rtree_p->r.parent = resultmd->parent;
+					rtree_p->r.begin = resultmd->begin;
+					rtree_p->r.end = resultmd->end;
 					strcpy(rtree_p->r.dbname, rtree_head->r.dbname);
 					strcpy(rtree_p->r.filename, rtree_head->r.filename);
 					rtree_p->next = 0;
@@ -531,7 +530,7 @@ static int exec_search()
 			}
 
 			free(results);
-			free(eresults);
+			free(resultmd);
 		}
 		
 		free(res);

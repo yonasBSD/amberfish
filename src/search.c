@@ -1522,16 +1522,14 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 }
 
 
-/* results should point to an array of results_n objects.  eresults should
-   point to an array (allocated to [results_n + 1] elements) of
-   unallocated AF_ERESULT structures. */
-int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESULT* eresults, ETYMON_AF_LOG* log) {
+int afgetresultmd(Afresult *result, int resultn, Afresultmd *resultmd)
+{
 	ETYMON_DOCTABLE doctable;
 	int results_x;
 	int db_id;
 	int files_opened;
 
-	memset(eresults, 0, (results_n + 1) * sizeof(ETYMON_AF_ERESULT));
+	memset(resultmd, 0, resultn * sizeof (Afresultmd));
 	
 	/* find each id currently in use */
 	for (db_id = 1; db_id < ETYMON_AF_MAX_OPEN; db_id++) {
@@ -1547,10 +1545,10 @@ int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESUL
 			/* loop through each result looking for
                            db_id's that match the database we are
                            currently working with */
-			for (results_x = 0; results_x < results_n; results_x++) {
+			for (results_x = 0; results_x < resultn; results_x++) {
 
 				/* test whether it's a relevant result */
-				if (results[results_x].dbid == db_id) {
+				if (result[results_x].dbid == db_id) {
 
 					/* we delay opening the
                                            database files until we
@@ -1568,7 +1566,7 @@ int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESUL
 
 					/* now resolve the doc_id */
 					if (etymon_af_lseek(etymon_af_state[db_id]->fd[ETYMON_DBF_DOCTABLE],
-						     (etymon_af_off_t)( ((etymon_af_off_t)(results[results_x].docid - 1)) *
+						     (etymon_af_off_t)( ((etymon_af_off_t)(result[results_x].docid - 1)) *
 								 ((etymon_af_off_t)(sizeof(ETYMON_DOCTABLE))) ),
 						     SEEK_SET) == -1) {
 						perror("etymon_af_resolve_doc_id():lseek()");
@@ -1577,22 +1575,20 @@ int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESUL
 						 sizeof(ETYMON_DOCTABLE)) == -1) {
 						perror("etymon_af_resolve_doc_id():read()");
 					}
-					eresults[results_x].filename = afstrdup(doctable.filename);
-					if (eresults[results_x].filename == NULL) {
+					resultmd[results_x].docpath = afstrdup(doctable.filename);
+					if (resultmd[results_x].docpath == NULL) {
 						int x;
-						etymon_af_log(log, EL_CRITICAL, EX_MEMORY, "etymon_af_resolve_results()",
-						       etymon_af_state[db_id]->dbname, NULL, NULL);
 						/* run through all eresult[].filename and free all results */
-						for (x = 0; x < results_n; x++) {
-							if (eresults[x].filename) {
-								free(eresults[x].filename);
+						for (x = 0; x < resultn; x++) {
+							if (resultmd[x].docpath) {
+								free(resultmd[x].docpath);
 							}
 						}
-						return -1;
+						return aferr(AFEMEM);
 					}
-					eresults[results_x].begin = doctable.begin;
-					eresults[results_x].end = doctable.end;
-					eresults[results_x].parent = doctable.parent;
+					resultmd[results_x].begin = doctable.begin;
+					resultmd[results_x].end = doctable.end;
+					resultmd[results_x].parent = doctable.parent;
 				} /* if: db_id's match */
 
 			} /* for loop: results_x */

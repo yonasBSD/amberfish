@@ -3,6 +3,7 @@
 
 /***** new *****/
 
+#include <fcntl.h>
 #include "config.h"
 
 typedef unsigned char Afchar;
@@ -31,11 +32,20 @@ typedef struct {
 	int resultn;
 } Afsearch_r;
 
+typedef struct {
+	Uint4 parent;  /* docid of parent document */
+        char *docpath;  /* document source file name */
+	off_t begin;  /* starting offset of document within the file */
+        off_t end;  /* ending offset of document within the file (one byte past end) */
+} Afresultmd;
+
 int afsearch(const Afsearch *r, Afsearch_r *rr);
 
 int afsortscore(Afresult *result, int resultn);
 
 int afsortdocid(Afresult *result, int resultn);
+
+int afgetresultmd(Afresult *result, int resultn, Afresultmd *resultmd);
 
 /***** old *****/
 
@@ -84,12 +94,14 @@ typedef struct {
 } ETYMON_AF_SEARCH;
 */
 
+/*
 typedef struct {
-	uint4 parent;  /* doc_id of parent document */
-        char* filename; /* document source file name */
-	etymon_af_off_t begin; /* starting offset of document within the file */
-        etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
+	uint4 parent;  / doc_id of parent document /
+        char* filename; / document source file name /
+	etymon_af_off_t begin; / starting offset of document within the file /
+        etymon_af_off_t end; / ending offset of document within the file (one byte past end) /
 } ETYMON_AF_ERESULT;
+*/
 
 typedef struct {
 	Uint2 dbid;
@@ -102,6 +114,8 @@ typedef struct {
 
 /*int etymon_af_search_term_compare(const void* a, const void* b);*/
 
-int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESULT* resolved_results, ETYMON_AF_LOG* log);
+/*
+int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESULT* resolved_results);
+*/
 
 #endif
