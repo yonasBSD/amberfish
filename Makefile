@@ -11,6 +11,12 @@ build:
 	cd src ; ${MAKE} all
 	cd doc ; ${MAKE} all
 
+html:
+	cd doc ; ${MAKE} html
+
+pdf:
+	cd doc ; ${MAKE} pdf
+
 install:
 	cd src ; ${MAKE} ${MAKEFLAGS} install
 	cd doc ; ${MAKE} ${MAKEFLAGS} install
