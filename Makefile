@@ -15,6 +15,7 @@ build:
 
 install:
 	cd src ; make install
+	cd doc ; make install
 
 uninstall:
 	cd src ; make uninstall

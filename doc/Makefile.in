@@ -2,7 +2,7 @@ PREFIX =	@prefix@
 PREFIXMAN =	${PREFIX}/man
 MAN1 =		af.1
 
-all: amberfish.pdf amberfish-old.pdf
+all: amberfish.pdf
 
 amberfish.pdf: amberfish.texi version.texi
 	texi2dvi --pdf amberfish.texi
@@ -20,8 +20,8 @@ install: all
 	chmod a+r ${MAN1}
 	cp ${MAN1} ${PREFIXMAN}/man1/.
 
-uninstall:
-	cd ${PREFIXMAN}/man1 ; rm -f ${MAN1}
+#uninstall:
+#	cd ${PREFIXMAN}/man1 ; rm -f ${MAN1}
 
 clean:
 	rm -f amberfish.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \

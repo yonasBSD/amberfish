@@ -11,7 +11,7 @@
 #include "linbuf.h"
 #include "util.h"
 
-#define LINBUFSEGSIZE ((size_t) 2000000000)
+#define LINBUFSEGSIZE ((size_t) 1000000000)
 
 static size_t bufsize;
 static FILE *fbuf;
