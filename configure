@@ -843,6 +843,11 @@ if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --disable-xml           disable linking with Xerces and XML support
+
 Some influential environment variables:
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
@@ -4013,6 +4018,19 @@ _ACEOF
 
 
 
+xml=yes
+
+# Check whether --enable-xml or --disable-xml was given.
+if test "${enable_xml+set}" = set; then
+  enableval="$enable_xml"
+
+	if test "$enableval" = "no"; then
+		xml=no
+	fi
+
+fi;
+
+if test "$xml" = "yes"; then
 
 for ac_header in xercesc/util/XercesVersion.hpp
 do
@@ -4213,6 +4231,7 @@ _ACEOF
 
 fi
 
+fi
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

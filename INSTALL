@@ -36,7 +36,11 @@ include files and library, for example:
 Once you have configure saying 'yes' to Xerces, the rest of the build
 process should hopefully proceed smoothly.  If you have a very old
 version of Xerces, you may still be unable to compile Amberfish with
-it.
+it.  You also have this option:
+
+  ./configure --disable-xml
+
+That will force Amberfish to disable Xerces and XML support.
 
 
 AMBERFISH INSTALLATION
