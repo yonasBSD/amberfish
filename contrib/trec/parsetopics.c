@@ -7,7 +7,7 @@
 
 #define STRSIZE (1024)
 
-static const char *afcmd = "time af-release -dGX00 -dGX01 -dGX02 -dGX03 -dGX04 -dGX05 -dGX06 -dGX07 -dGX08 -dGX09 -dGX10 -dGX11 -dGX12 -dGX13 -dGX14 -dGX15 -dGX16 -dGX17 -dGX18 -dGX19 -dGX20 -dGX21 -dGX22 -dGX23 -dGX24 -dGX25 -dGX26 -dGX27 -n10000 --style=trec --trec-tag nn04base ";
+static const char *afcmd = "time af -dGX00 -dGX01 -dGX02 -dGX03 -dGX04 -dGX05 -dGX06 -dGX07 -dGX08 -dGX09 -dGX10 -dGX11 -dGX12 -dGX13 -dGX14 -dGX15 -dGX16 -dGX17 -dGX18 -dGX19 -dGX20 -dGX21 -dGX22 -dGX23 -dGX24 -dGX25 -dGX26 -dGX27 -n10000 --style=trec --trec-tag nn04base ";
 
 static const char *nextword(const char *pos, char *word)
 {
@@ -36,7 +36,7 @@ static int goodword(const char *word)
 
 static void finish()
 {
-	printf("' > results\n");
+	printf("' >> trec_results\n");
 }
 
 int main(int argc, char *argv[])
@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 	int firstterm;
 	
 	printf("#!/bin/sh\n");
+	printf("rm -f trec_results\n");
 
 	started = 0;
 	multi = 0;
