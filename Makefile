@@ -25,4 +25,4 @@ distclean:
 	rm -f *~
 
 changelog:
-	rcs2log > ./ChangeLog
+	rcs2log -h sourceforge > ./ChangeLog

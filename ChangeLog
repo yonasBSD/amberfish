@@ -1,9 +1,11 @@
-2004-04-07  nnassar  <nnassar@nn1>
+2004-04-07  nnassar  <nnassar@sourceforge>
+
+	* Makefile, ChangeLog: Added ChangeLog.
 
 	* INSTALL, configure, configure.in:
 	Added --disable-xml option to configure.
 
-2004-04-06  nnassar  <nnassar@nn1>
+2004-04-06  nnassar  <nnassar@sourceforge>
 
 	* src/include/af_auto.h.in, Makefile, NOTES, VERSION, configure, configure.in, src/Makefile, src/Makefile.in, src/autoconf/configure, src/autoconf/configure.in, src/dclass/xml.h, src/include/af.h, src/libxerces_auto.in, INSTALL:
 	Changed build process to the standard './configure ; make' and added
@@ -25,13 +27,13 @@
 	* INSTALL, README, src/Makefile, src/xerces.patch:
 	Initial attempt at reintegrating Xerces.
 
-2004-04-02  nnassar  <nnassar@nn1>
+2004-04-02  nnassar  <nnassar@sourceforge>
 
 	* src/autoconf/configure:
 	Added 'configure' file even though it is auto-generated.  This will
 	ensure that releases do not require autoconf to build.
 
-2004-04-01  nnassar  <nnassar@nn1>
+2004-04-01  nnassar  <nnassar@sourceforge>
 
 	* bin/.do_not_delete, lib/.do_not_delete:
 	Added .do_not_delete to lib/ and bin/ directories to force "cvs
