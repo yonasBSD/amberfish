@@ -14,23 +14,10 @@ typedef unsigned char Afchar;
 #define AFSCOREDEFAULT (1)
 
 typedef struct {
-	Uint2 *dbid;  /* databases to search */
-	int dbidn;
-	Afchar *query;
-	int qtype;  /* AFQUERYBOOLEAN */
-	int score;  /* AFNOSCORE | AFSCOREDEFAULT */
-} Afsearch;
-
-typedef struct {
         Uint4 docid;
         Uint2 score;
         Uint2 dbid;
 } Afresult;
-
-typedef struct {
-        Afresult *result;
-	int resultn;
-} Afsearch_r;
 
 typedef struct {
 	Uint4 parent;  /* docid of parent document */
@@ -39,13 +26,26 @@ typedef struct {
         off_t end;  /* ending offset of document within the file (one byte past end) */
 } Afresultmd;
 
+typedef struct {
+	Uint2 *dbid;  /* databases to search */
+	int dbidn;
+	Afchar *query;
+	int qtype;  /* AFQUERYBOOLEAN */
+	int score;  /* AFNOSCORE | AFSCOREDEFAULT */
+} Afsearch;
+
+typedef struct {
+        Afresult *result;
+	int resultn;
+} Afsearch_r;
+
 int afsearch(const Afsearch *r, Afsearch_r *rr);
 
 int afsortscore(Afresult *result, int resultn);
 
 int afsortdocid(Afresult *result, int resultn);
 
-int afgetresultmd(Afresult *result, int resultn, Afresultmd *resultmd);
+int afgetresultmd(const Afresult *result, int resultn, Afresultmd *resultmd);
 
 /***** old *****/
 

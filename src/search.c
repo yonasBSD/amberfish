@@ -314,7 +314,8 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 			} else {
 				if ( (field_mask[field_mask_len++] = etymon_af_fdef_get_field(etymon_af_state[state->dbid]->fdef,
 											   word)) == 0 )
-					return aferr(AFEBADFIELD);
+/*					return aferr(AFEBADFIELD);*/
+					return 0;
 			}
 		}
 	}
@@ -1522,7 +1523,7 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 }
 
 
-int afgetresultmd(Afresult *result, int resultn, Afresultmd *resultmd)
+int afgetresultmd(const Afresult *result, int resultn, Afresultmd *resultmd)
 {
 	ETYMON_DOCTABLE doctable;
 	int results_x;

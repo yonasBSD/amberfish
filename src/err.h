@@ -23,13 +23,12 @@ extern int aferrno;
 #define	AFEVERSION      (8)   /* Incompatible database version */
 #define	AFELINEAR       (9)   /* Unsupported operation on linearized database */
 #define	AFEOPENLIM     (10)   /* Too many open databases */
-#define AFEBADFIELD    (11)   /* Unknown field name */
-#define AFETERMLEN     (12)   /* Query term too long */
-#define AFEQUERYNEST   (13)   /* Query too deeply nested */
-#define AFEQUERYSYN    (14)   /* Syntax error in query */
+#define AFETERMLEN     (11)   /* Query term too long */
+#define AFEQUERYNEST   (12)   /* Query too deeply nested */
+#define AFEQUERYSYN    (13)   /* Syntax error in query */
 
-#define AFMAXDEFERR     (6)
-#define AFMAXERR       (14)
+#define AFMAXCOREERR    (6)
+#define AFMAXERR       (13)
 
 static char* aferrmsg[] = {
 	"",
@@ -43,7 +42,6 @@ static char* aferrmsg[] = {
 	"Incompatible database version",
 	"Unsupported operation on linearized database",
 	"Too many open databases",
-	"Unknown field name",
 	"Query term too long",
 	"Query too deeply nested",
 	"Syntax error in query"

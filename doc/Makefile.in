@@ -2,7 +2,8 @@ prefix =	@prefix@
 exec_prefix =	@exec_prefix@
 MANDIR =	${DESTDIR}@mandir@
 MAN1 =		af.1.gz
-MAN3 =		afopen.3.gz afclose.3.gz
+MAN3 =		afopen.3.gz afclose.3.gz afsearch.3.gz afsortscore.3.gz \
+		afsortdocid.3.gz afgetresultmd.3.gz
 
 all: man html pdf
 
