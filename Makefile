@@ -1,6 +1,4 @@
 SHELL =		/bin/sh
-PREFIX =	/usr/local
-BIN =		${PREFIX}/bin
 
 all:
 	@if [ ! -f src/Makefile ] ; then \

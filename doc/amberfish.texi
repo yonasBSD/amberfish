@@ -121,13 +121,20 @@ Version @value{VERSION}
 @end titlepage
 
 
+@node Top, Tutorial, (dir), (dir)
+@top Preface
+
+@noindent
+@sc{This} document serves as an introduction to the Amberfish text
+retrieval system.  It is intended for both beginning UNIX users and
+professional system administrators.  Amberfish is text-based software
+and does not currently have a graphical user interface, although it is
+hoped that the tools provided will be easy to integrate into existing
+systems.  Except where otherwise noted, a UNIX platform is assumed.
+
+
 @menu
 * Tutorial::     
-* Advanced topics::     
-* Reference::     
-* Error messages::     
-* Notes for Isearch users::     
-* Index::               
 @end menu
 
 
@@ -138,10 +145,11 @@ Version @value{VERSION}
 @end iftex
 
 
-@node Tutorial, Advanced topics, Top, Top
+@node Tutorial, (dir), Top, Top
 @chapter Tutorial
 @cindex Tutorial
 
+@ignore
 @noindent
 @sc{This} document serves as an introduction to the Amberfish text
 retrieval system.  It is intended for both beginning UNIX users and
@@ -149,6 +157,7 @@ professional system administrators.  Amberfish is text-based software
 and does not currently have a graphical user interface, although it is
 hoped that the tools provided will be easy to integrate into existing
 systems.  Except where otherwise noted, a UNIX platform is assumed.
+@end ignore
 
 @menu
 * Introduction::          
@@ -162,7 +171,7 @@ systems.  Except where otherwise noted, a UNIX platform is assumed.
 * Relevance ranking::                
 * Multiple databases::                
 * Listing database information::                
-* Database status::                
+* More about XML::                 
 @end menu
 
 
@@ -377,7 +386,7 @@ match every document in the database.
 
 
 @spsection{}
-@node Phrases, Fields, Right truncation, Tutorial
+@node Phrases, Multiple documents in a file, Right truncation, Tutorial
 @section Phrases
 @cindex Phrases
 
@@ -684,7 +693,7 @@ a single result set.
 
 
 @spsection{}
-@node Listing database information, Database status, Multiple databases, Tutorial
+@node Listing database information, More about XML, Multiple databases, Tutorial
 @section Listing database information
 @cindex Listing database information
 
@@ -758,7 +767,7 @@ tools to index, manage, or search databases.
 
 
 @spsection{}
-@node More about XML, , Database status, Tutorial
+@node More about XML, , Listing database information, Tutorial
 @section More about XML
 @cindex More about XML
 
