@@ -29,7 +29,7 @@ distclean:
 	make clean
 	cd src ; make distclean
 	cd doc ; make distclean
-	rm -f src/Makefile src/af_auto.h
+	rm -f src/Makefile src/af_auto.h doc/Makefile
 	rm -f *~ *#
 
 changelog:

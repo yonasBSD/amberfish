@@ -287,7 +287,7 @@ int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt) {
 	/* optimize! */
 	
 	if (opt->verbose >= 2) {
-		printf("Optimizing\n");
+		printf("Linearizing\n");
 	}
 	
 	/* first descend to the left-most leaf page */
@@ -695,7 +695,7 @@ int etymon_index_optimize(ETYMON_INDEX_OPTIONS* opt) {
 	/* optimize! */
 
 	if (opt->verbose >= 2) {
-		printf("Optimizing\n");
+		printf("Linearizing\n");
 	}
 	
 	/* first descend to the left-most leaf page */

@@ -2,6 +2,7 @@ AC_INIT()
 
 AC_CONFIG_HEADER(src/af_auto.h)
 AC_CONFIG_FILES(src/Makefile)
+AC_CONFIG_FILES(doc/Makefile)
 
 AC_PROG_CXX
 

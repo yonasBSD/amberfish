@@ -5,13 +5,14 @@ OPT =		-O3 -funroll-loops
 GIRS =		/usr/local/girtools/girs
 
 LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-CXXFLAGS =	@CPPFLAGS@ -Wall -Wno-unused-variable \
+CXXFLAGS =	@CPPFLAGS@ -Wall -Wno-unused-variable -Wno-unused-function \
 			${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src
 SHELL =		/bin/sh
 CXX =		g++
 
 LIBS =		@LDFLAGS@ @LIBS@ -L. -lamberfish -lm
 PREFIX =	@prefix@
+PREFIXBIN =	${PREFIX}/bin
 
 LIBAMBERFISH =	libamberfish.a
 OBJ =		log.o open.o util.o lock.o search.o fdef.o index.o docbuf.o admin.o explain.o \
@@ -57,11 +58,11 @@ version.h:
 	echo "#define ETYMON_AF_VERSION \"`cat ../VERSION`\"" > version.h
 
 install:
-	mkdir -p ${PREFIX}/bin
-	cp ${BIN} ${PREFIX}/bin/.
+	mkdir -p ${PREFIXBIN}
+	cp ${BIN} ${PREFIXBIN}/.
 
 uninstall:
-	cd ${PREFIX}/bin ; rm -f ${BIN}
+	cd ${PREFIXBIN} ; rm -f ${BIN}
 
 clean:
 	rm -f ${BIN} amberfishd \
