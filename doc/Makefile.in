@@ -4,7 +4,7 @@ MAN1 =		af.1
 
 all: amberfish.pdf
 
-amberfish.pdf: amberfish.texi version.texi
+amberfish.pdf: amberfish.texi
 	texi2dvi --pdf amberfish.texi
 
 amberfish.html: amberfish.texi version.texi
@@ -24,7 +24,7 @@ install: all
 #	cd ${PREFIXMAN}/man1 ; rm -f ${MAN1}
 
 clean:
-	rm -f amberfish.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \
+	rm -f amberfish.{aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \
 		amberfish-old.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs}
 
 distclean:
