@@ -9,7 +9,7 @@ typedef struct {
 } Afopen;
 
 typedef struct {
-	int id;
+	int dbid;
 } Afopen_r;
 
 int afopen(const Afopen *r, Afopen_r *rr);

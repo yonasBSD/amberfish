@@ -351,7 +351,7 @@ static int setomode(const char *mode, ETYMON_AF_OPEN *op)
 		op->create = 0;
 		return 0;
 	}
-	if (mode[0] == 'w') {
+	if (mode[0] == 'w' && mode[1] == '+') {
 		op->read_only = 0;
 		op->create = 1;
 		return 0;
@@ -375,7 +375,7 @@ int afopen(const Afopen *r, Afopen_r *rr)
 	op.keep_open = 0;
 	op.log = &log;
 	log.write = logfn;
-	if ((rr->id = etymon_af_open(&op)) == -1)
+	if ((rr->dbid = etymon_af_open(&op)) == -1)
 		return aferr(AFEUNKNOWN);
 	return 0;
 }

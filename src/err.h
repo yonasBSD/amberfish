@@ -15,15 +15,15 @@ extern int aferrno;
 #define AFEBUFOVER      (3)   /* Buffer overflow (usually char[]) */
 #define AFEINVAL        (4)   /* Invalid argument */
 #define	AFEDBIO         (5)   /* I/O error */
-#define	AFEDBLOCK       (6)   /* Database locked */
-#define	AFEVERSION      (7)   /* Incompatible database version */
-#define	AFEBADDB        (8)   /* Corrupted database file */
+#define	AFEBADDB        (6)   /* Corrupted database file */
 /*
  *  The following errors are only returned by certain functions.
  */
+#define	AFEDBLOCK       (7)   /* Database locked */
+#define	AFEVERSION      (8)   /* Incompatible database version */
 #define	AFELINEAR       (9)   /* Unsupported operation on linearized database */
 
-#define AFMAXDEFERR     (8)
+#define AFMAXDEFERR     (6)
 #define AFMAXERR        (9)
 
 static char* aferrmsg[] = {

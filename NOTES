@@ -5,9 +5,6 @@ RELEASE NOTES
 
 RECENT CHANGES
 
-* New afopen() interface.  Specific error reporting related to opening
-databases is temporarily disabled.
-
 1.5.9
 
 * Various changes related to RPM packaging.

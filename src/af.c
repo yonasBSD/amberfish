@@ -341,7 +341,7 @@ static int exec_search()
 		op.db = dbname[x];
 		if (afopen(&op, &opr) < 0)
 			return afperror(argv0);
-		db_id[x] = opr.id;
+		db_id[x] = opr.dbid;
 /*		if ( (db_id[x] = etymon_af_open(&ope)) == -1 ) {
 			return -1;
 		} */
