@@ -313,6 +313,7 @@ typedef struct {
 		     database */
 	int verbose;
 	int long_words;
+	int flushmsg;
 } ETYMON_INDEX_INDEXING_STATE;
 
 #endif

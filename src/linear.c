@@ -12,108 +12,6 @@
 #include "info.h"
 #include "linbuf.h"
 
-/*
-static int logerr(char *s, int e) {
-	fprintf(stderr, "%s\n", s);
-	return 0;
-}
-*/
-
-static inline int getlock(const char *db)
-{
-	if (!etymon_db_ready(db, NULL))
-		return aferr(AFEDBLOCK);
-	if (etymon_db_lock(db, NULL) < 0)
-		return -1;
-
-	return 0;
-}
-
-static inline int freelock(const char *db)
-{
-	etymon_db_unlock(db, NULL);
-
-	return 0;
-}
-
-static inline int openfiles(const char *db, Affile *f)
-{
-	memset(f, 0, sizeof f);
-	if (!(f->info = afopendbf(db, AFFTINFO, "r+b")))
-		return -1;
-	if (!(f->udict = afopendbf(db, AFFTUDICT, "r+b")))
-		return -1;
-	if (!(f->upost = afopendbf(db, AFFTUPOST, "rb")))
-		return -1;
-	if (!(f->ufield = afopendbf(db, AFFTUFIELD, "rb")))
-		return -1;
-	if (!(f->uword = afopendbf(db, AFFTUWORD, "rb")))
-		return -1;
-	if (!(f->lpost = afopendbf(db, AFFTLPOST, "ab")))
-		return -1;
-	if (!(f->lfield = afopendbf(db, AFFTLFIELD, "ab")))
-		return -1;
-	if (!(f->lword = afopendbf(db, AFFTLWORD, "ab")))
-		return -1;
-	return 0;
-}
-
-static inline int closefile(FILE *f)
-{
-	if (f) {
-		if (fclose(f) != 0)
-			return aferr(AFEDBIO);
-	}
-	
-	return 0;
-}
-
-static inline int truncfile(const char *db, int type)
-{
-	FILE *f;
-
-	if (!(f = afopendbf(db, type, "wb")))
-		return aferr(AFEDBIO);
-	if (fclose(f) != 0)
-		return aferr(AFEDBIO);
-
-	return 0;
-}
-
-static inline int truncufiles(const char *db)
-{
-	if (truncfile(db, AFFTUPOST) < 0)
-		return -1;
-	if (truncfile(db, AFFTUFIELD) < 0)
-		return -1;
-	if (truncfile(db, AFFTUFIELD) < 0)
-		return -1;
-
-	return 0;
-}
-
-static inline int closefiles(Affile *f)
-{
-	if (closefile(f->info) < 0)
-		return -1;
-	if (closefile(f->udict) < 0)
-		return -1;
-	if (closefile(f->upost) < 0)
-		return -1;
-	if (closefile(f->ufield) < 0)
-		return -1;
-	if (closefile(f->uword) < 0)
-		return -1;
-	if (closefile(f->lpost) < 0)
-		return -1;
-	if (closefile(f->lfield) < 0)
-		return -1;
-	if (closefile(f->lword) < 0)
-		return -1;
-
-	return 0;
-}
-
 typedef struct {
 	const Aflinear *rq;
 	int postx;
@@ -144,7 +42,102 @@ typedef struct {
 	ETYMON_INDEX_LWORD lword;
 } Aflinst;
 
-static inline int getfsizes(Aflinst *t)
+static int getlock(const char *db)
+{
+	if (!etymon_db_ready(db, NULL))
+		return aferr(AFEDBLOCK);
+	if (etymon_db_lock(db, NULL) < 0)
+		return -1;
+
+	return 0;
+}
+
+static int freelock(const char *db)
+{
+	etymon_db_unlock(db, NULL);
+
+	return 0;
+}
+
+static int openfiles(const char *db, Affile *f)
+{
+	memset(f, 0, sizeof f);
+	if (!(f->info = afopendbf(db, AFFTINFO, "r+b")))
+		return -1;
+	if (!(f->udict = afopendbf(db, AFFTUDICT, "r+b")))
+		return -1;
+	if (!(f->upost = afopendbf(db, AFFTUPOST, "rb")))
+		return -1;
+	if (!(f->ufield = afopendbf(db, AFFTUFIELD, "rb")))
+		return -1;
+	if (!(f->uword = afopendbf(db, AFFTUWORD, "rb")))
+		return -1;
+	if (!(f->lpost = afopendbf(db, AFFTLPOST, "ab")))
+		return -1;
+	if (!(f->lfield = afopendbf(db, AFFTLFIELD, "ab")))
+		return -1;
+	if (!(f->lword = afopendbf(db, AFFTLWORD, "ab")))
+		return -1;
+	return 0;
+}
+
+static int closefile(FILE *f)
+{
+	if (f) {
+		if (fclose(f) != 0)
+			return aferr(AFEDBIO);
+	}
+	
+	return 0;
+}
+
+static int truncfile(const char *db, int type)
+{
+	FILE *f;
+
+	if (!(f = afopendbf(db, type, "wb")))
+		return aferr(AFEDBIO);
+	if (fclose(f) != 0)
+		return aferr(AFEDBIO);
+
+	return 0;
+}
+
+static int truncufiles(const char *db)
+{
+	if (truncfile(db, AFFTUPOST) < 0)
+		return -1;
+	if (truncfile(db, AFFTUFIELD) < 0)
+		return -1;
+	if (truncfile(db, AFFTUFIELD) < 0)
+		return -1;
+
+	return 0;
+}
+
+static int closefiles(Affile *f)
+{
+	if (closefile(f->info) < 0)
+		return -1;
+	if (closefile(f->udict) < 0)
+		return -1;
+	if (closefile(f->upost) < 0)
+		return -1;
+	if (closefile(f->ufield) < 0)
+		return -1;
+	if (closefile(f->uword) < 0)
+		return -1;
+	if (closefile(f->lpost) < 0)
+		return -1;
+	if (closefile(f->lfield) < 0)
+		return -1;
+	if (closefile(f->lword) < 0)
+		return -1;
+
+	return 0;
+}
+
+static int getfsizes(Aflinst *t)
 {
 	off_t nb;
 
@@ -173,7 +166,7 @@ static inline int getfsizes(Aflinst *t)
 	return 0;
 }
 
-static inline int seekleftleaf(Aflinst *t)
+static int seekleftleaf(Aflinst *t)
 {
 	Uint1 leaf;
 	ETYMON_INDEX_PAGE_NL pagenl;
@@ -192,7 +185,7 @@ static inline int seekleftleaf(Aflinst *t)
 	}
 }
 
-static inline int readpagel(Aflinst *t)
+static int readpagel(Aflinst *t)
 {
 	if (fseeko(t->f.udict, (off_t) (t->udictp + 1), SEEK_SET) < 0)
 		return aferr(AFEDBIO);
@@ -202,7 +195,7 @@ static inline int readpagel(Aflinst *t)
 	return 0;
 }
 
-static inline int readupost(Aflinst *t)
+static int readupost(Aflinst *t)
 {
 	if (t->rq->nobuffer) {
 		if (fseeko(t->f.upost,
@@ -223,7 +216,7 @@ static inline int readupost(Aflinst *t)
 	return 0;
 }
 
-static inline int readufield(Aflinst *t)
+static int readufield(Aflinst *t)
 {
 	if (fseeko(t->f.ufield,
 		   (off_t) ( ((off_t) (t->ufieldp - 1)) *
@@ -237,7 +230,7 @@ static inline int readufield(Aflinst *t)
 	return 0;
 }
 
-static inline int writelfield(Aflinst *t)
+static int writelfield(Aflinst *t)
 {
 	if (fwrite(&(t->lfield), 1, sizeof t->lfield, t->f.lfield) <
 	    sizeof t->lfield)
@@ -246,7 +239,7 @@ static inline int writelfield(Aflinst *t)
 	return 0;
 }
 
-static inline int linfield(Aflinst *t)
+static int linfield(Aflinst *t)
 {
 	/* do we need to look for duplicates?? */
 	t->lfieldpsave = t->lfieldn + 1;
@@ -267,7 +260,7 @@ static inline int linfield(Aflinst *t)
 	return 0;
 }
 
-static inline int readuword(Aflinst *t)
+static int readuword(Aflinst *t)
 {
 	if (fseeko(t->f.uword,
 		   (off_t) ( ((off_t) (t->uwordp - 1)) *
@@ -281,7 +274,7 @@ static inline int readuword(Aflinst *t)
 	return 0;
 }
 
-static inline int writelword(Aflinst *t)
+static int writelword(Aflinst *t)
 {
 	if (fwrite(&(t->lword), 1, sizeof t->lword, t->f.lword) <
 	    sizeof t->lword)
@@ -290,7 +283,7 @@ static inline int writelword(Aflinst *t)
 	return 0;
 }
 
-static inline int linwn(Aflinst *t)
+static int linwn(Aflinst *t)
 {
 	t->lwordpsave = t->lwordn + 1;
 	t->wordc = 0;
@@ -309,7 +302,7 @@ static inline int linwn(Aflinst *t)
 	return 0;
 }
 
-static inline int writelpost(Aflinst *t)
+static int writelpost(Aflinst *t)
 {
 	if (fwrite(&(t->lpost), 1, sizeof t->lpost, t->f.lpost) <
 	    sizeof t->lpost)
@@ -318,7 +311,7 @@ static inline int writelpost(Aflinst *t)
 	return 0;
 }
 
-static inline int updatelpost(Aflinst *t)
+static int updatelpost(Aflinst *t)
 {
 	/* compare the doc_id with our cached lpost */
 	if (t->upost.doc_id == t->lpost.doc_id) {
@@ -348,7 +341,7 @@ static inline int updatelpost(Aflinst *t)
 	return 0;
 }
 
-static inline int writepagel(Aflinst *t)
+static int writepagel(Aflinst *t)
 {
 	if (fseeko(t->f.udict, (off_t) (t->udictp + 1), SEEK_SET) < 0)
 		return aferr(AFEDBIO);
@@ -359,7 +352,7 @@ static inline int writepagel(Aflinst *t)
 	return 0;
 }
 
-static inline void debugpostings(Aflinst *t)
+static void debugpostings(Aflinst *t)
 {
 	if (t->rq->verbose >= 6) {
 		int x;
@@ -373,7 +366,7 @@ static inline void debugpostings(Aflinst *t)
 	}
 }
 
-static inline int linpost(Aflinst *t)
+static int linpost(Aflinst *t)
 {
 	for (t->postx = 0; t->postx < t->pagel.n; (t->postx)++) {
 		debugpostings(t);
@@ -411,7 +404,7 @@ static inline int linpost(Aflinst *t)
 	return 0;
 }
 
-static inline void debugpagel(Aflinst *t)
+static void debugpagel(Aflinst *t)
 {
 	if (t->rq->verbose >= 6) {
 		afprintvp(t->rq->verbose, 6);
@@ -424,7 +417,7 @@ static inline void debugpagel(Aflinst *t)
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
    in the first unlinearized pass; so it explicitly counts these
    values while building the linear structures */
-static inline int linearize(Aflinst *t)
+static int linearize(Aflinst *t)
 {
 	afprintv(t->rq->verbose, 5, "Seek to leftmost leaf node");
 	if (seekleftleaf(t) < 0)
@@ -442,7 +435,7 @@ static inline int linearize(Aflinst *t)
 	return 0;
 }
 
-static inline int linopen(Aflinst *t)
+static int linopen(Aflinst *t)
 {
 	afprintv(t->rq->verbose, 4, "Locking database");
 	if (getlock(t->rq->db) < 0)
@@ -468,7 +461,7 @@ static inline int linopen(Aflinst *t)
 	return 0;
 }
 
-static inline int linclose(Aflinst *t)
+static int linclose(Aflinst *t)
 {
 	t->info.optimized = 1;
 
