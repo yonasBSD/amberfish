@@ -1,4 +1,6 @@
-INSTALL_BIN=/usr/local/bin
+SHELL =		/bin/sh
+PREFIX =	/usr/local
+BIN =		${PREFIX}/bin
 
 all:
 	@if [ ! -f src/Makefile ] ; then \
@@ -9,20 +11,23 @@ all:
 
 build:
 	cd src ; make all
+	cd doc ; make all
 
 install:
-	cp -f bin/* ${INSTALL_BIN}/.
+	cp -f bin/* ${BIN}/.
 
 clean:
 	rm -fr autom4te.cache
 	rm -f config.log config.status
 	cd src ; make clean
+	cd doc ; make clean
 
 distclean:
 	make clean
 	cd src ; make distclean
-	rm -f src/Makefile src/include/version.h src/include/af_auto.h
-	rm -f *~
+	cd doc ; make distclean
+	rm -f src/Makefile src/af_auto.h
+	rm -f *~ *#
 
 changelog:
 	rcs2log -h sourceforge > ./ChangeLog

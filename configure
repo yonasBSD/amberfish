@@ -1266,7 +1266,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-          ac_config_headers="$ac_config_headers src/include/af_auto.h"
+          ac_config_headers="$ac_config_headers src/af_auto.h"
 
           ac_config_files="$ac_config_files src/Makefile"
 
@@ -4757,7 +4757,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-  "src/include/af_auto.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/include/af_auto.h" ;;
+  "src/af_auto.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/af_auto.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

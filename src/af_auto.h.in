@@ -1,0 +1,6 @@
+#undef SIZEOF_INT
+#undef SIZEOF_LONG_INT
+#undef SIZEOF_SHORT_INT
+#undef HAVE_XERCESC_UTIL_XERCESVERSION_HPP
+#undef HAVE_LIBXERCES_C
+#include "version.h"

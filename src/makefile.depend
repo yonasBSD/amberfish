@@ -1,0 +1,21 @@
+admin.o: admin.cc
+docbuf.o: docbuf.cc
+engine.o: engine.cc af.h af_auto.h version.h engine.h defs.h text.h xml.h \
+  xml_test.h syr1.h util.cc docbuf.cc fdef.cc lock.cc index.cc admin.cc \
+  log.cc open.cc search.cc explain.cc
+explain.o: explain.cc
+fdef.o: fdef.cc
+index.o: index.cc
+lock.o: lock.cc
+log.o: log.cc
+open.o: open.cc
+search.o: search.cc
+util.o: util.cc
+afadmin.o: afadmin.cc af.h af_auto.h version.h
+affetch.o: affetch.cc
+afindex.o: afindex.cc af.h af_auto.h version.h
+afsearch.o: afsearch.cc af.h af_auto.h version.h
+syr1.o: syr1.cc syr1.h af.h af_auto.h version.h engine.h
+text.o: text.cc text.h af.h af_auto.h version.h engine.h
+xml.o: xml.cc xml.h af.h af_auto.h version.h engine.h
+xml_test.o: xml_test.cc xml_test.h af.h af_auto.h version.h engine.h

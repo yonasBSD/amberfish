@@ -39,10 +39,8 @@ should probably be enhanced a little bit to allow characters such as
 * Using '*' alone as a search term.  This is undefined and may cause
 strange behavior.
 
-* Stability of C/C++ API.  The C/C++ interface is unstable for
-indexing and document classes.  The interface for searching is
-moderately stable, and the others need to be rewritten to conform to
-it.
+* Stability of C/C++ API.  The C/C++ interface will be undergoing
+major changes.
 
 * Phrase searching without -phrase.  Searching for a phrase in a
 database that was created without -phrase returns no results rather
