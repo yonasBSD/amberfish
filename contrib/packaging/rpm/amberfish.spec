@@ -6,7 +6,7 @@
 #   Dimitri Tarassenko <mitka@mitka.us>
 #
 %define xerces_ver 2.5.0
-%define release 4
+%define release 1
 
 # We'll check for presense of xerces-c-devel by this file:
 %define m1_xercesc_file %{_includedir}/xercesc/util/XercesVersion.hpp
@@ -19,6 +19,10 @@
 %if %( [ ! "%{_vendor}" == "suse" ]; echo $?; )
     %define m1_flavor SuSE
     %define m1_flavor_SuSE 1
+%endif
+%if %( [ ! "%{_vendor}" == "MandrakeSoft" ]; echo $?; )
+    %define m1_flavor MDK
+    %define m1_flavor_MDK 1
 %endif
 %if %{?m1_flavor:0}%{!?m1_flavor:1}
     %define m1_flavor %_vendor
@@ -35,15 +39,17 @@ License: GPL
 Group: Applications/Text
 URL: http://www.etymon.com/tr.html
 Source0: %{name}-%{version}.tar.gz
-#Patch0: %{name}-%{version}-dir.patch
+Source1: pdftex.map
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: %{m1_xercesc_file}
-BuildRequires: texinfo sed autoconf gcc gcc-c++ make binutils libstdc++-devel
+BuildRequires: tetex texinfo sed autoconf gcc gcc-c++ make binutils libstdc++-devel
 Requires: libstdc++
 %{?m1_flavor_RH:BuildRequires: xerces-c-devel >= %xerces_ver }
 %{?m1_flavor_RH:Requires: xerces-c >= %xerces_ver }
 %{?m1_flavor_SuSE:BuildRequires: Xerces-c-devel >= %xerces_ver }
 %{?m1_flavor_SuSE:Requires: Xerces-c >= %xerces_ver }
+%{?m1_flavor_MDK:BuildRequires: xerces-c-devel >= %xerces_ver }
+%{?m1_flavor_MDK:Requires: xerces-c >= %xerces_ver }
 
 # Now, we're going to be relocateable!!!
 Prefix: %{_bindir}
@@ -71,9 +77,9 @@ the steps at http://xml.apache.org/xerces-c/build-misc.html#RPMLinux
 
 On SuSE, install Xerces-c (note capital X) package using yast or rpm.
 
-
 %prep
 %setup -q
+cp %{_sourcedir}/pdftex.map ./doc/pdftex.map
 #%patch0 -p1 -b .bindir
 
 %build 
@@ -87,9 +93,9 @@ make DESTDIR=%{buildroot} install
 %clean 
 rm -fr %{buildroot}
 
-%post 
-%preun 
-%postun 
+#%post
+#%preun
+#%postun
 
 %files 
 %defattr(-,root,root) 
@@ -98,6 +104,13 @@ rm -fr %{buildroot}
 %doc doc/html/* doc/amberfish.pdf doc/amberfish.texi doc/version.texi NOTES README COPYING INSTALL CREDITS
 	
 %changelog 
+* Mon Jun 21 2004 Dimitri Tarassenko <mitka@mitka.us> 1.5.9-1
+- pdftex.map added to resolve font mapping when pdf is built
+- tetex is added as build requirement
+- some cleanup done to prevent empty pre/postun scripts in RPM
+* Wed Jun 16 2004 Joao Cruz <jalrnc@yahoo.com> 1.5.9-0
+- upgrade to 1.5.9
+- added mandrake flavor
 * Tue Jun 15 2004 Dimitri Tarassenko <mitka@mitka.us>
 - patch removed, added HTML docs and CREDITS file, install notes
 * Mon Jun 14 2004 Dimitri Tarassenko <mitka@mitka.us>
