@@ -1,22 +1,20 @@
-#ifndef _AF_AUTO_H
-#define _AF_AUTO_H
 
-/* Begin old af_auto.h */
+#ifndef _AF_CONFIG_H
+#define _AF_CONFIG_H
+
+#include "version.h"
+
 #undef SIZEOF_INT
 #undef SIZEOF_LONG_INT
 #undef SIZEOF_SHORT_INT
 #undef HAVE_XERCESC_UTIL_XERCESVERSION_HPP
 #undef HAVE_LIBXERCES_C
-#include "version.h"
-/* End old af_auto.h */
 
 #if (HAVE_LIBXERCES_C == 1)
 #if (HAVE_XERCESC_UTIL_XERCESVERSION_HPP == 1)
 #define ETYMON_AF_XML
 #endif
 #endif
-
-/* platform specific typedefs */
 
 typedef char int1;
 typedef unsigned char uint1;

@@ -4,11 +4,12 @@
  *  Authors:  Nassib Nassar
  */
 
-#include "xml_test.h"
-#include "fdef.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "xml_test.h"
+#include "fdef.h"
 
 
 /* returns 0 if everything went OK */

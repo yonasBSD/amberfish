@@ -1,7 +1,7 @@
 #ifndef DC_SYR1_H
 #define DC_SYR1_H
 
-#include "af_auto.h"
+#include "config.h"
 #include "index.h"
 
 #ifdef af__cplusplus

@@ -1,19 +1,9 @@
 #ifndef _AF_DOCBUF_H
 #define _AF_DOCBUF_H
 
-#include "af_auto.h"
-
-/* Most of these includes are probably not needed. */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <errno.h>
 #include <unistd.h>
-#include <math.h>
-#include <time.h>
+
+#include "config.h"
 
 typedef struct {
 	int eof; /* flag, turned on once all the data have been traversed */

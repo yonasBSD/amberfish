@@ -4,17 +4,18 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
 
+#include "config.h"
 #include "open.h"
 #include "index.h"
 #include "search.h"
 #include "admin.h"
 #include "explain.h"
 #include "util.h"
-#include "af_auto.h"
 
 #define MAX_DBS (256)
 
@@ -527,7 +528,7 @@ static int exec_list()
 
 static int exec_version()
 {
-	printf(ETYMON_AF_VERSION);
+	printf(AF_VERSION);
 	printf("\n");
 	return 0;
 }

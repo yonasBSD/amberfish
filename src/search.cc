@@ -4,6 +4,11 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <math.h>
 #include "search.h"
 #include "open.h"
 #include "fdef.h"

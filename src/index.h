@@ -1,7 +1,7 @@
 #ifndef _AF_INDEX_H
 #define _AF_INDEX_H
 
-#include "misc.h"
+#include "defs.h"
 #include "docbuf.h"
 
 typedef struct {

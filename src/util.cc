@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
-#include "misc.h"
+#include "defs.h"
 
 #define ETYMON_UTIL_MAX_ARG_SIZE 4096
 

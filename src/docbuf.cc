@@ -4,8 +4,11 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdio.h>
+#include <ctype.h>
+#include <sys/stat.h>
 #include "docbuf.h"
-#include "misc.h"
+#include "defs.h"
 
 void etymon_docbuf_load_page(ETYMON_DOCBUF* docbuf) {
 	docbuf->data_len = read(docbuf->filedes,

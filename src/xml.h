@@ -1,7 +1,7 @@
 #ifndef DC_XML_H
 #define DC_XML_H
 
-#include "af_auto.h"
+#include "config.h"
 
 #ifdef ETYMON_AF_XML
 

@@ -6,8 +6,8 @@
 
 #include "text.h"
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
-
 
 /* returns 0 if everything went OK */
 int dc_text_init(ETYMON_AF_DC_INIT* dc_init) {

@@ -3,13 +3,15 @@
  *  have a home.
  */
 
-#ifndef _AF_MISC_H
-#define _AF_MISC_H
+#ifndef _AF_DEFS_H
+#define _AF_DEFS_H
 
 #include <fcntl.h>
-#include "af_auto.h"
+#include "config.h"
 
-#define ETYMON_AF_BANNER "Amberfish, Version " ETYMON_AF_VERSION
+/* I'd like to move this to where it is used and reduce the number of
+   times it is used. */
+#define ETYMON_AF_BANNER "Amberfish, Version " AF_VERSION
 #define ETYMON_AF_COPYRIGHT "Copyright (C) 1999-2004 Etymon Systems, Inc.  All Rights Reserved."
 #define ETYMON_AF_BANNER_STAMP ETYMON_AF_BANNER ".  " ETYMON_AF_COPYRIGHT
 

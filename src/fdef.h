@@ -1,7 +1,7 @@
 #ifndef _AF_FDEF_H
 #define _AF_FDEF_H
 
-#include "misc.h"
+#include "defs.h"
 
 typedef struct {
 	unsigned char* word;

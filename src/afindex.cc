@@ -7,10 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "config.h"
 #include "index.h"
 #include "admin.h"
 #include "util.h"
-#include "af_auto.h"
 
 typedef struct {
 	char* dbname; /* database name */

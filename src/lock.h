@@ -1,7 +1,7 @@
 #ifndef _AF_LOCK_H
 #define _AF_LOCK_H
 
-#include "misc.h"
+#include "defs.h"
 
 int etymon_db_ready(char* dbname, ETYMON_LOG* log);
 

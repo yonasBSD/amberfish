@@ -31,11 +31,11 @@ AC_CHECK_SIZEOF(int, 0)
 AC_CHECK_SIZEOF(long int, 0)
 
 AC_MSG_NOTICE(creating src/version.h)
-echo "#define ETYMON_AF_VERSION \"$af_version\"" > src/version.h
+echo "#define AF_VERSION \"$af_version\"" > src/version.h
 AC_MSG_NOTICE(creating doc/version.texi)
 echo "@set VERSION $af_version" > doc/version.texi
 
-AC_CONFIG_HEADER(src/af_auto.h)
+AC_CONFIG_HEADER(src/config.h)
 AC_CONFIG_FILES(src/Makefile)
 AC_CONFIG_FILES(doc/Makefile)
 

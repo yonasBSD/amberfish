@@ -1,7 +1,7 @@
 #ifndef DC_XML_TEST_H
 #define DC_XML_TEST_H
 
-#include "af_auto.h"
+#include "config.h"
 #include "index.h"
 
 #ifdef af__cplusplus

@@ -1,7 +1,7 @@
 #ifndef _AF_OPEN_H
 #define _AF_OPEN_H
 
-#include "misc.h"
+#include "defs.h"
 #include "log.h"
 
 /* maximum number of databases that can be open simultaneously */

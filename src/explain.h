@@ -1,7 +1,7 @@
 #ifndef _AF_EXPLAIN_H
 #define _AF_EXPLAIN_H
 
-#include "misc.h"
+#include "defs.h"
 #include "log.h"
 
 typedef struct {

@@ -1,7 +1,7 @@
 #ifndef _AF_ADMIN_H
 #define _AF_ADMIN_H
 
-#include "misc.h"
+#include "defs.h"
 
 typedef struct {
 	ETYMON_LOG log;
