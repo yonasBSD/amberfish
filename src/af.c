@@ -42,6 +42,8 @@ static int search_style = 0;
 static int search_skiphits = 0;
 static int search_numhits = -1;
 static int search_totalhits = 0;
+static char *trec_topic = "<topic_number>";
+static char *trec_tag = "<run_tag>";
 
 static int cmd_list = 0;
 
@@ -60,6 +62,14 @@ static char *argv0 = NULL;
 
 static int process_opt_long(char *opt, char *arg)
 {
+	if (!strcmp(opt, "trec-tag")) {
+		trec_tag = arg;
+		return 0;
+	}
+	if (!strcmp(opt, "trec-topic")) {
+		trec_topic = arg;
+		return 0;
+	}
 	if (!strcmp(opt, "split")) {
 		index_split = arg;
 		return 0;
@@ -79,7 +89,13 @@ static int process_opt_long(char *opt, char *arg)
 		return 0;
 	}
 	if (!strcmp(opt, "style")) {
-		search_style = strcmp(arg, "lineage") ? 0 : 1;
+		if (!strcmp(arg, "lineage"))
+			search_style = 1;
+		else if (!strcmp(arg, "tree"))
+			search_style = 2;
+		else if (!strcmp(arg, "trec"))
+			search_style = 3;
+		else search_style = 0;
 		return 0;
 	}
 	if (!strcmp(opt, "phrase")) {
@@ -135,6 +151,8 @@ static int process_opt(int argc, char *argv[])
 		{ "split", 1, 0, 0 },
 		{ "style", 1, 0, 0 },
 		{ "totalhits", 0, 0, 0 },
+		{ "trec-tag", 1, 0, 0 },
+		{ "trec-topic", 1, 0, 0 },
 		{ "verbose", 0, 0, 'v' },
 		{ "version", 0, 0, 0 },
 		{ 0, 0, 0, 0 }
@@ -294,6 +312,15 @@ typedef struct AFSEARCH_RTREE_STRUCT {
 	struct AFSEARCH_RTREE_STRUCT* child;
 } AFSEARCH_RTREE;
 
+static void presult_trec(AFSEARCH_RESULT *res, int rank)
+{
+	const char *docno;
+
+	docno = strrchr(res->filename, '/');
+	docno = docno ? docno + 1 : res->filename;
+	printf("%s Q0 %-20s %5i %5i %s\n",
+	       trec_topic, docno, rank, res->score, trec_tag);
+}
 
 void ses_presult(AFSEARCH_RESULT *res)
 {
@@ -450,7 +477,10 @@ static int exec_search()
 						rlist_tail = rlist_p;
 						*/
 					} else {
-						ses_presult(res + x);
+						if (search_style == 3)
+							presult_trec(res + x, x + 1);  /* trec */
+						else 
+							ses_presult(res + x);  /* default */
 					}
 					
 /*					free(resultmd[x].docpath);*/
@@ -788,6 +818,11 @@ static int validate_opt_search()
 		return 0;
 	if (*search_query_boolean == '\0')
 		return aferror("No query specified");
+	/* note: if relevance ranking becomes possible to disable in
+	   the future, we need to make sure it is enabled when using
+	   --style=trec, so that the following check makes sense */
+	if (search_style == 3 && search_skiphits)
+		return aferror("TREC result not allowed with --skiphits");
 	return 0;
 }
 
