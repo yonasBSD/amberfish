@@ -1531,6 +1531,7 @@ int etymon_index_dclass_index(ETYMON_INDEX_INDEXING_STATE* state) {
 	static uint1 leaf_flag;
 	static ssize_t nbytes;
 
+	afprintv(state->verbose, 2, "Flushing index buffers");
 	/* make sure there is at least one page (root) */
 	if (state->udict_root == 0) {
 		/* seek to offset 0 and write one zero byte (unused) */
@@ -2318,7 +2319,6 @@ int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 			(state->fcache_count == state->fcache_size);
 	}
 	if (full) {
-		afprintv(state->verbose, 2, "Flushing index buffers");
 		if (etymon_index_dclass_index(state) == -1) {
 			return -1;
 		}

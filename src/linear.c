@@ -213,10 +213,11 @@ static inline int readupost(Aflinst *t)
 		if (fread(&(t->upost), 1, sizeof t->upost, t->f.upost) < sizeof t->upost)
 			return aferr(AFEDBIO);
 	} else {
-		aflinread(&(t->upost), 
-			  (off_t) ( ((off_t) (t->upostp - 1)) *
-				    ((off_t) (sizeof t->upost)) ),
-			  sizeof t->upost);
+		if (aflinread(&(t->upost), 
+			      (off_t) ( ((off_t) (t->upostp - 1)) *
+					((off_t) (sizeof t->upost)) ),
+			      sizeof t->upost) < 0)
+			return -1;
 	}
 		  
 	return 0;
@@ -459,9 +460,11 @@ static inline int linopen(Aflinst *t)
 	if (getfsizes(t) < 0)
 		return -1;
 
-	if (!t->rq->nobuffer)
-		aflinbuf(t->f.upost, t->rq->memory);
-	
+	if (!t->rq->nobuffer) {
+		if (aflinbuf(t->f.upost, t->rq->memory) < 0)
+			return -1;
+	}
+
 	return 0;
 }
 

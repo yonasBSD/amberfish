@@ -6,8 +6,9 @@
 
 extern int aferrno;
 
-#define AFEUNDEF        (1)     /* Undefined/unknown value */
+#define AFEMEM          (1)     /* Out of memory (failed malloc) */
 #define AFEBUFOVER      (2)     /* Buffer overflow (usually char[]) */
+#define AFEUNDEF        (3)     /* Undefined/unknown value */
 #define	AFEDBIO        (10)     /* I/O error while accessing a database file */
 #define	AFEDBLOCK      (11)     /* Database locked */
 #define	AFEVERSION     (12)     /* Incompatible database version */

@@ -20,13 +20,14 @@
 /* #include "search_new.h" */
 
 #define MAX_DBS (256)
+#define MEMORYMIN (3)
 
 static int cmd_index = 0;
 static int index_create = 0;
 static int index_phrase = 0;
 static int index_stemming = 1;
 static int index_long_words = 0;
-static int index_memory = 3;
+static int index_memory = MEMORYMIN;
 static int index_dlevel = 1;
 static int index_no_linear = 0;
 static int index_no_linear_buffer = 0;
@@ -172,6 +173,8 @@ static int process_opt(int argc, char *argv[])
 			break;
 		case 'm':
 			index_memory = atoi(optarg);
+			if (index_memory < MEMORYMIN)
+				index_memory = MEMORYMIN;
 			break;
 		case 't':
 			index_doctype = optarg;
