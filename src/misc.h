@@ -6,6 +6,7 @@
 #ifndef _AF_MISC_H
 #define _AF_MISC_H
 
+#include <fcntl.h>
 #include "af_auto.h"
 
 #define ETYMON_AF_BANNER "Amberfish, Version " ETYMON_AF_VERSION

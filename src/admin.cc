@@ -4,6 +4,10 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include "admin.h"
 #include "lock.h"
 #include "util.h"

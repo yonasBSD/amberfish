@@ -4,6 +4,11 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
 #include "open.h"
 #include "util.h"
 #include "lock.h"

@@ -4,6 +4,8 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include "explain.h"
 #include "open.h"
 

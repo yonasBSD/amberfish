@@ -4,6 +4,9 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "lock.h"
 #include "util.h"
 

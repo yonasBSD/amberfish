@@ -4,6 +4,10 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include "fdef.h"
 
 /* assumes we are positioned at the beginning of the file */

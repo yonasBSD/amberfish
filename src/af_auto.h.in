@@ -1,18 +1,6 @@
 #ifndef _AF_AUTO_H
 #define _AF_AUTO_H
 
-/* Most of these includes are not needed. */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <unistd.h>
-#include <math.h>
-#include <time.h>
-
 /* Begin old af_auto.h */
 #undef SIZEOF_INT
 #undef SIZEOF_LONG_INT
@@ -72,22 +60,6 @@ typedef struct dirent64  ETYMON_AF_DIRENT;
 #define etymon_af_off_t  off_t
 typedef struct stat  ETYMON_AF_STAT;
 typedef struct dirent  ETYMON_AF_DIRENT;
-#endif
-
-#ifndef ftruncate
-int ftruncate(int fd, off_t length);
-#endif
-
-#ifndef strcasecmp
-int strcasecmp(const char *s1, const char *s2);
-#endif
-
-#ifndef snprintf
-int snprintf(char *str, size_t n, const char *format, ...);
-#endif
-
-#ifndef strdup
-char *strdup(const char *s);
 #endif
 
 #endif

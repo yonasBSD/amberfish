@@ -4,6 +4,11 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <string.h>
 #include "misc.h"
 
 #define ETYMON_UTIL_MAX_ARG_SIZE 4096
