@@ -1,8 +1,16 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "af.h"
-
+#include "open.h"
+#include "search.h"
+#include "util.h"
+#include "af_auto.h"
 
 typedef struct {
 	char** dbname; /* list of database name */

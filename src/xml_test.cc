@@ -1,4 +1,11 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
 #include "xml_test.h"
+#include "fdef.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>

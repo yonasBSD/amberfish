@@ -1,11 +1,12 @@
 #ifndef DC_XML_H
 #define DC_XML_H
 
-#include "af.h"
+#include "af_auto.h"
 
 #ifdef ETYMON_AF_XML
 
-#include "engine.h"
+#include "index.h"
+#include "fdef.h"
 #include <xercesc/sax/AttributeList.hpp>
 #include <xercesc/sax/HandlerBase.hpp>
 #include <xercesc/util/PlatformUtils.hpp>

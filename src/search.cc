@@ -1,3 +1,25 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "search.h"
+#include "open.h"
+#include "fdef.h"
+#include "index.h"
+
+typedef struct {
+	int db_id;
+	ETYMON_AF_SEARCH* opt;
+	uint4 corpus_doc_n;
+} ETYMON_AF_SEARCH_STATE;
+
+typedef struct {
+	int doc_id;
+	int score;
+} ETYMON_AF_IRESULT;
+
 typedef struct {
 	ETYMON_INDEX_LWORD* wlist;
 	uint4 wn_n;

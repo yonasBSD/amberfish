@@ -1,21 +1,25 @@
-admin.o: admin.cc
-docbuf.o: docbuf.cc
-engine.o: engine.cc af.h af_auto.h version.h engine.h defs.h text.h xml.h \
-  xml_test.h syr1.h util.cc docbuf.cc fdef.cc lock.cc index.cc admin.cc \
-  log.cc open.cc search.cc explain.cc
-explain.o: explain.cc
-fdef.o: fdef.cc
-index.o: index.cc
-lock.o: lock.cc
-log.o: log.cc
-open.o: open.cc
-search.o: search.cc
-util.o: util.cc
-afadmin.o: afadmin.cc af.h af_auto.h version.h
+admin.o: admin.cc admin.h misc.h af_auto.h version.h lock.h util.h
+docbuf.o: docbuf.cc docbuf.h af_auto.h version.h misc.h
+explain.o: explain.cc explain.h misc.h af_auto.h version.h log.h open.h
+fdef.o: fdef.cc fdef.h misc.h af_auto.h version.h
+index.o: index.cc index.h misc.h af_auto.h version.h docbuf.h lock.h \
+  util.h fdef.h text.h xml.h xml_test.h syr1.h
+lock.o: lock.cc lock.h misc.h af_auto.h version.h util.h
+log.o: log.cc log.h
+open.o: open.cc open.h misc.h af_auto.h version.h log.h util.h lock.h
+search.o: search.cc search.h misc.h af_auto.h version.h log.h open.h \
+  fdef.h index.h docbuf.h
+util.o: util.cc misc.h af_auto.h version.h
+afadmin.o: afadmin.cc admin.h misc.h af_auto.h version.h open.h log.h \
+  explain.h util.h
 affetch.o: affetch.cc
-afindex.o: afindex.cc af.h af_auto.h version.h
-afsearch.o: afsearch.cc af.h af_auto.h version.h
-syr1.o: syr1.cc syr1.h af.h af_auto.h version.h engine.h
-text.o: text.cc text.h af.h af_auto.h version.h engine.h
-xml.o: xml.cc xml.h af.h af_auto.h version.h engine.h
-xml_test.o: xml_test.cc xml_test.h af.h af_auto.h version.h engine.h
+afindex.o: afindex.cc index.h misc.h af_auto.h version.h docbuf.h admin.h \
+  util.h
+afsearch.o: afsearch.cc open.h misc.h af_auto.h version.h log.h search.h \
+  util.h
+syr1.o: syr1.cc syr1.h af_auto.h version.h index.h misc.h docbuf.h fdef.h \
+  util.h
+text.o: text.cc text.h af_auto.h version.h index.h misc.h docbuf.h
+xml.o: xml.cc xml.h af_auto.h version.h index.h misc.h docbuf.h fdef.h
+xml_test.o: xml_test.cc xml_test.h af_auto.h version.h index.h misc.h \
+  docbuf.h fdef.h

@@ -1,3 +1,12 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "docbuf.h"
+#include "misc.h"
+
 void etymon_docbuf_load_page(ETYMON_DOCBUF* docbuf) {
 	docbuf->data_len = read(docbuf->filedes,
 				docbuf->buf,

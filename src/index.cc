@@ -1,3 +1,19 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "index.h"
+#include "lock.h"
+#include "util.h"
+#include "fdef.h"
+
+#include "text.h"
+#include "xml.h"
+#include "xml_test.h"
+#include "syr1.h"
+
 /* assumes that the buffer, absolute_path, is of size
    ETYMON_MAX_PATH_SIZE, that relative_path contains a valid
    null-terminated string, that cwd has been filled in using getcwd(),

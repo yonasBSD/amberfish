@@ -1,3 +1,13 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "admin.h"
+#include "lock.h"
+#include "util.h"
+
 void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 	char fn[ETYMON_MAX_PATH_SIZE];
 	int doctable_fd, dbinfo_fd;

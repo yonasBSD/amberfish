@@ -1,8 +1,8 @@
 #ifndef DC_TEXT_H
 #define DC_TEXT_H
 
-#include "af.h"
-#include "engine.h"
+#include "af_auto.h"
+#include "index.h"
 
 #ifdef af__cplusplus
 extern "C" {

@@ -1,5 +1,12 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
 #include "syr1.h"
-#include "engine.h"
+#include "fdef.h"
+#include "util.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -1,3 +1,12 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "explain.h"
+#include "open.h"
+
 int etymon_af_fdef_list_fields_recursive(ETYMON_AF_FDEF_DISK* fdef, ETYMON_AF_EXPLAIN* opt, int p, int* n) {
 
 	if (fdef[p - 1].left) {

@@ -1,3 +1,11 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "fdef.h"
+
 /* assumes we are positioned at the beginning of the file */
 uint2 etymon_af_fdef_read_mem(int fdef_fd, ETYMON_AF_FDEF_MEM** root, ETYMON_AF_FDEF_MEM** tail) {
 	ETYMON_AF_STAT st;

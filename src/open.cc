@@ -1,3 +1,13 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "open.h"
+#include "util.h"
+#include "lock.h"
+
 static int etymon_af_init_flag = 0;
 
 

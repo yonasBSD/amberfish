@@ -14,8 +14,9 @@ LIBS =		@LDFLAGS@ @LIBS@ -L. -lamberfish -lm
 PREFIX =	@prefix@
 
 LIBAMBERFISH =	libamberfish.a
-OBJ =		engine.o text.o xml.o xml_test.o syr1.o
-SRC =		admin.cc docbuf.cc engine.cc explain.cc fdef.cc \
+OBJ =		log.o open.o util.o lock.o search.o fdef.o index.o docbuf.o admin.o explain.o \
+		text.o xml.o xml_test.o syr1.o
+SRC =		admin.cc docbuf.cc explain.cc fdef.cc \
 		index.cc lock.cc log.cc open.cc search.cc util.cc \
 		afadmin.cc affetch.cc afindex.cc afsearch.cc \
 		syr1.cc text.cc xml.cc xml_test.cc

@@ -1,3 +1,12 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include <string.h>
+#include "log.h"
+
 void etymon_af_log(ETYMON_AF_LOG* log, int level, int code, char* where, char* file, char* extfile, char* extmsg) {
 
 	if (!log) {

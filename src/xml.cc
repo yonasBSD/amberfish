@@ -1,3 +1,9 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
 #include "xml.h"
 
 #ifdef ETYMON_AF_XML

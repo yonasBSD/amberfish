@@ -1,3 +1,12 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
+#include "lock.h"
+#include "util.h"
+
 int etymon_db_ready(char* dbname, ETYMON_LOG* log) {
 	char fn[ETYMON_MAX_PATH_SIZE];
 	int lock_fd;

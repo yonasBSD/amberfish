@@ -1,5 +1,12 @@
-#define ETYMON_UTIL_MAX_ARG_SIZE 4096
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
 
+#include "misc.h"
+
+#define ETYMON_UTIL_MAX_ARG_SIZE 4096
 
 /**
    Constructs a path name using a dbname as the stem and appending an

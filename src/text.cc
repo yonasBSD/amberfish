@@ -1,5 +1,10 @@
+/*
+ *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *
+ *  Authors:  Nassib Nassar
+ */
+
 #include "text.h"
-#include "engine.h"
 #include <stdio.h>
 #include <string.h>
 

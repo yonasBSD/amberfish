@@ -1,6 +1,93 @@
+#ifndef _AF_AUTO_H
+#define _AF_AUTO_H
+
+/* Most of these includes are not needed. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <unistd.h>
+#include <math.h>
+#include <time.h>
+
+/* Begin old af_auto.h */
 #undef SIZEOF_INT
 #undef SIZEOF_LONG_INT
 #undef SIZEOF_SHORT_INT
 #undef HAVE_XERCESC_UTIL_XERCESVERSION_HPP
 #undef HAVE_LIBXERCES_C
 #include "version.h"
+/* End old af_auto.h */
+
+#if (HAVE_LIBXERCES_C == 1)
+#if (HAVE_XERCESC_UTIL_XERCESVERSION_HPP == 1)
+#define ETYMON_AF_XML
+#endif
+#endif
+
+/* platform specific typedefs */
+
+typedef char int1;
+typedef unsigned char uint1;
+
+#if (SIZEOF_INT == 2)
+typedef int int2;
+typedef unsigned int uint2;
+#else
+#if (SIZEOF_SHORT_INT == 2)
+typedef short int int2;
+typedef unsigned short int uint2;
+#endif
+#endif
+
+#if (SIZEOF_INT == 4)
+typedef int int4;
+typedef unsigned int uint4;
+#else
+#if (SIZEOF_LONG_INT == 4)
+typedef long int int4;
+typedef unsigned long int uint4;
+#endif
+#endif
+
+/* 64-bit file system support */
+#ifdef O_LARGEFILE
+#define ETYMON_AF_O_LARGEFILE O_LARGEFILE
+#define etymon_af_lseek(A, B, C)  lseek64(A, B, C)
+#define etymon_af_fstat(A, B)  fstat64(A, B)
+#define etymon_af_ftruncate(A, B)  ftruncate64(A, B)
+#define etymon_af_readdir(A)  readdir64(A)
+#define etymon_af_off_t  off64_t
+typedef struct stat64  ETYMON_AF_STAT;
+typedef struct dirent64  ETYMON_AF_DIRENT;
+#else
+#define ETYMON_AF_O_LARGEFILE (0)
+#define etymon_af_lseek(A, B, C)  lseek(A, B, C)
+#define etymon_af_fstat(A, B)  fstat(A, B)
+#define etymon_af_ftruncate(A, B)  ftruncate(A, B)
+#define etymon_af_readdir(A)  readdir(A)
+#define etymon_af_off_t  off_t
+typedef struct stat  ETYMON_AF_STAT;
+typedef struct dirent  ETYMON_AF_DIRENT;
+#endif
+
+#ifndef ftruncate
+int ftruncate(int fd, off_t length);
+#endif
+
+#ifndef strcasecmp
+int strcasecmp(const char *s1, const char *s2);
+#endif
+
+#ifndef snprintf
+int snprintf(char *str, size_t n, const char *format, ...);
+#endif
+
+#ifndef strdup
+char *strdup(const char *s);
+#endif
+
+#endif
