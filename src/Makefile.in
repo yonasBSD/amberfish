@@ -1,3 +1,4 @@
+GIRS=/home/nassar/cvs/girtools/girs
 SHELL = /bin/sh
 # PLATFORM should be set to "linux" or "solaris"
 # (default: "linux")
@@ -18,7 +19,7 @@ LIBDIR = ../lib
 #XERCES_PKG = xerces-c-src${XERVER}.tar.gz
 #XERCES_LIB = lib${XERLIB}.so
 #INCLUDE = -Iinclude -Iengine -Idclass -Ietc/${XERCES_DIR}/src
-INCLUDE = -Iinclude -Iengine -Idclass
+INCLUDE = -Iinclude -Iengine -Idclass -I${GIRS}/src
 
 LIBS = @LDFLAGS@ @LIBS@
 
@@ -39,6 +40,12 @@ all: include/version.h ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${
 #	@echo ""
 #	@echo "******************************************************************"
 #	@echo ""
+
+amberfishd: include/version.h ${BINDIR}/amberfishd
+
+${BINDIR}/amberfishd: ${LIBDIR}/libamberfish.a tools/amberfishd.o
+	${CC} -o ${BINDIR}/amberfishd tools/amberfishd.o -L${LIBDIR} -lamberfish -lm ${LIBS} \
+		-L${GIRS}/src -lgirs
 
 ${BINDIR}/afindex: ${LIBDIR}/libamberfish.a tools/afindex.o
 	${CC} -o ${BINDIR}/afindex tools/afindex.o -L${LIBDIR} -lamberfish -lm ${LIBS}
@@ -124,7 +131,7 @@ clean:
 	cd dclass ; ${RM} ${CLEAN}
 	cd tools ; ${RM} ${CLEAN}
 	cd ${LIBDIR} ; ${RM} libamberfish.a ${XERCES_LIB}
-	cd ${BINDIR} ; ${RM} afindex afsearch afadmin affetch
+	cd ${BINDIR} ; ${RM} afindex afsearch afadmin affetch amberfishd
 
 distclean:
 	make clean
