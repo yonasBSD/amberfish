@@ -4,21 +4,28 @@
 #include "defs.h"
 #include "search.h"
 
+typedef unsigned char Afchar;
+
 typedef struct {
-	char *dbname;
-	unsigned char* query;
+	char **db;
+	int dbn;
+	Afchar *query;
 	int boolean;
-	int score_results;
-	int sort_results;
-} AF_SEARCH;
-
-#define AF_RESULT ETYMON_AF_RESULT
+	int score;
+	int sort_score;
+} Afsearch;
 
 typedef struct {
-        AF_RESULT *results;
-        int results_n;
-} AF_SEARCH_R;
+        uint4 docid;
+        uint2 score;
+        uint2 db;
+} Afresult;
 
-int af_search(const AF_SEARCH *request, AF_SEARCH_R *response);
+typedef struct {
+        Afresult *result;
+        int resultn;
+} Afsearch_r;
+
+int afsearch(const Afsearch *rq, Afsearch_r *rs);
 
 #endif

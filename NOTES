@@ -1,15 +1,21 @@
 
+
 RELEASE NOTES
 
 
 RECENT CHANGES
 
+* Stable release branch 1.2.x is stable in a relative sense; the
+branch is being made because of upcoming major changes.
+
 * Support for a Porter stemmer has been added.  See the INSTALL file
 for details.
 
-* There is a new "af" tool that combines most of the functions of
-afindex, afsearch, and afadmin.  The old tools are planned to be
-phased out over time.
+* There is a new, experimental "af" tool that combines most of the
+functions of afindex, afsearch, and afadmin.  The old tools are
+planned to be phased out over time.  Note that there are now two
+versions of the tutorial (PDF), one for the old tools and one for the
+new.
 
 * Fixed bug causing multiple error messages when afindex is given bad
 input files.

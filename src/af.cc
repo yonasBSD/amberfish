@@ -16,6 +16,7 @@
 #include "admin.h"
 #include "explain.h"
 #include "util.h"
+/* #include "search_new.h" */
 
 #define MAX_DBS (256)
 
@@ -270,6 +271,22 @@ static int exec_search()
 //	AFSEARCH_RLIST* rlist_tail = 0;
 //	AFSEARCH_RLIST* rlist_p;
 
+	/* test */
+	/*
+	{
+		Afsearch rq;
+		Afsearch_r rs;
+		rq.db = dbname;
+		rq.dbn = dbname_n;
+		rq.query = (Afchar *) search_query_boolean;
+		rq.boolean = 1;
+		rq.score = 1;
+		rq.sort_score = 1;
+		afsearch(&rq, &rs);
+		printf("---\n");
+	}
+	*/
+	
 	ope.read_only = 1;
 	ope.create = 0;
 	ope.keep_open = 0;
