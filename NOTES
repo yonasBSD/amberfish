@@ -5,6 +5,8 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+1.5.5
+
 * The new '--fetch' option in af replaces the equivalent function in
 affetch; and affetch is no longer compiled by default.
 
