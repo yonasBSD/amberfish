@@ -5,6 +5,12 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+1.5.4
+
+* Disabled the '--long-words' option.  There were bugs associated with
+this that will have to be addressed in a future release.  As of 1.5.4,
+long words are again indexed by default and cannot be suppressed.
+
 1.5.3
 
 * Experimental search options, -n (--numhits), --skiphits, and
