@@ -55,9 +55,11 @@
 
 @sp 4
 
+@ignore
 This document describes Amberfish Version @value{VERSION}.  Updates
 and information are available from the Etymon web site at
 @url{http://www.etymon.com/}.
+@end ignore
 
 @vskip 0pt plus 1filll
 
