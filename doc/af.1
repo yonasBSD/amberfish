@@ -44,8 +44,11 @@ Only one of these options can be used at a time.
 
 .TP
 .B -i, --index
-Index the set of documents
+Index documents (either
 .I file ...
+or specified via standard input if
+.B -F
+is used).
 
 .TP
 .B -s, --search
@@ -173,9 +176,8 @@ is reliable.
 
 .TP
 .B -F
-Read list of documents to be indexed from standard input.  (Use of
-this option is deprecated because it may not be supported in future
-versions.)
+Read list of documents to be indexed from standard input, rather than
+from the end of the command line.
 
 .SH SEARCH OPTIONS
 

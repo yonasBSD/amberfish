@@ -1878,12 +1878,14 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		fcache_alloc = (size_t) (memleft * .5);
 		wncache_alloc = 0;
 	}
+	/*
 	if (wcache_alloc > 2000000000)
 		wcache_alloc = 2000000000;
 	if (fcache_alloc > 2000000000)
 		fcache_alloc = 2000000000;
 	if (wncache_alloc > 2000000000)
 		wncache_alloc = 2000000000;
+	*/
 	
 	/* allocate memory for word cache */
 	state->wcache_size = wcache_alloc / ((size_t) sizeof(ETYMON_INDEX_WCACHE_NODE));
