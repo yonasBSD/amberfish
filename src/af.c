@@ -22,6 +22,9 @@
 #define MAX_DBS (256)
 #define MEMORYMIN (3)
 
+static char *erc_split = "erc:";
+static int split_override = 0;
+
 static int cmd_index = 0;
 static int index_create = 0;
 static int index_phrase = 0;
@@ -72,6 +75,7 @@ static int process_opt_long(char *opt, char *arg)
 	}
 	if (!strcmp(opt, "split")) {
 		index_split = arg;
+		split_override = 1;
 		return 0;
 	}
 	if (!strcmp(opt, "dlevel")) {
@@ -860,6 +864,11 @@ int afmain(int argc, char *argv[])
 		exit(-1);
 	/* dump_opt(); */
 
+	if (!split_override && !strcmp(index_doctype, "erc")) {
+		index_split = erc_split;
+		fprintf(stderr, "%s: Defaulting to '--split erc:' for erc doctype\n", argv0);
+	}
+	
 	if (validate_opt() < 0)
 		exit(-1);
 	
