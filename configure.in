@@ -17,6 +17,8 @@ fi
 AC_PROG_CC
 AC_PROG_CXX
 
+AC_CHECK_FUNC(getopt_long, , AC_CHECK_LIB(iberty, getopt_long))
+
 AC_CHECK_SIZEOF(short int, 0)
 AC_CHECK_SIZEOF(int, 0)
 AC_CHECK_SIZEOF(long int, 0)
