@@ -1,6 +1,6 @@
 PREFIX =	@prefix@
 PREFIXMAN =	${PREFIX}/man
-MAN1 =		af.1.gz
+MAN1 =		af.1
 
 all: amberfish.pdf ${MAN1}
 
@@ -26,7 +26,6 @@ uninstall:
 clean:
 	rm -f amberfish.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \
 		version.texi
-	rm -f ${MAN1}
 
 distclean:
 	make clean

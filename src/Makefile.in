@@ -32,9 +32,6 @@ depend: version.h
 
 include makefile.depend
 
-af: ${LIBAMBERFISH} af.o
-	${CXX} -o af af.o ${LIBS}
-
 afindex: ${LIBAMBERFISH} afindex.o
 	${CXX} -o afindex afindex.o ${LIBS}
 
@@ -46,6 +43,9 @@ afadmin: ${LIBAMBERFISH} afadmin.o
 
 affetch: affetch.o
 	${CXX} -o affetch affetch.o
+
+af: ${LIBAMBERFISH} af.o
+	${CXX} -o af af.o ${LIBS}
 
 amberfishd: ${LIBAMBERFISH} amberfishd.o
 	${CXX} -o amberfishd amberfishd.o ${LIBS} \

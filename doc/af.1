@@ -105,6 +105,15 @@ Parse input files into multiple documents at points where the
 specified delimiter string is found.
 
 .TP
+.B -t, --doctype=text, --doctype=xml
+Set the document type.  The default is
+.BR text .
+Specifying
+.B xml
+enables functions related to searching and retrieving within nested
+tags.
+
+.TP
 .BI "--dlevel " level
 The maximum resolution (levels of descent) for retrieval of nested
 documents.  The default value is 1; increasing it lengthens indexing

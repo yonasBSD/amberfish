@@ -43,6 +43,8 @@ static int verbose = 0;
 static char **nonopt_argv = NULL;
 static int nonopt_argv_n = 0;
 
+static char *argv0 = NULL;
+
 static int process_opt_long(char *opt, char *arg)
 {
 	if (!strcmp(opt, "split")) {
@@ -182,16 +184,30 @@ static void dump_opt()
 	}
 }
 
+static int aferror(char *s)
+{
+	fprintf(stderr, "%s: %s\n", argv0, s);
+	return -1;
+}
+
 int log_error(char *s, int e)
 {
-	fprintf(stderr, "libamberfish: %s\n", s);
+	aferror(s);
 	return 0;
 }
 
 void log_error_new(const ETYMON_AF_EXCEPTION *ex)
 {
 /* 	if (ex->level == 0) { */
-		fprintf(stderr, "libamberfish: %s [%s]\n", ex->msg, ex->where);
+	const char *msg = ex->msg;
+	const char *where = ex->where;
+	char *s = (char *)malloc(strlen(msg) + strlen(where) + 4);
+	strcpy(s, msg);
+	strcat(s, " [");
+	strcpy(s, where);
+	strcat(s, "]");
+	aferror(s);
+	free(s);
 /* 	}  */
 }
 
@@ -516,33 +532,59 @@ static int exec_version()
 	return 0;
 }
 
-static int validate_opt_cmd(char *argv0)
+static int validate_opt_cmd()
 {
 	if ( (!cmd_index) &&
 	     (!cmd_search) &&
 	     (!cmd_list) &&
-	     (!cmd_version) ) {
-		fprintf(stderr, "%s: no command option specified\n",
-			argv0);
-		return -1;
-	}
+	     (!cmd_version) )
+		return aferror("No command option specified");
+	if ((cmd_index + cmd_search + cmd_list + cmd_version) > 1)
+		return aferror("Too many command options specified");
 	return 0;
 }
 
-static int validate_opt(char *argv0)
+static int validate_opt_index()
 {
-	if (validate_opt_cmd(argv0) < 0)
+	if (!cmd_index)
+		return 0;
+	if (nonopt_argv_n == 0)
+		return aferror("No files specified for indexing");
+	return 0;
+}
+
+static int validate_opt_search()
+{
+	if (!cmd_search)
+		return 0;
+	if (*search_query == '\0')
+		return aferror("No query specified");
+	return 0;
+}
+
+static int validate_opt()
+{
+	if (validate_opt_cmd() < 0)
 		return -1;
+	if (validate_opt_index() < 0)
+		return -1;
+	if (validate_opt_search() < 0)
+		return -1;
+	if (dbname_n == 0) {
+		if (cmd_index || cmd_search || cmd_list)
+			return aferror("No database name specified");
+	}
 	return 0;
 }
 
 int main(int argc, char *argv[])
 {
+	argv0 = argv[0];
 	if (process_opt(argc, argv) < 0)
 		exit(-1);
 	/* dump_opt(); */
 
-	if (validate_opt(argv[0]) < 0)
+	if (validate_opt() < 0)
 		exit(-1);
 	
 	if (cmd_index)
