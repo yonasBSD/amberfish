@@ -30,7 +30,7 @@ all: ${BIN}
 
 %.d: %.cc
 	@set -e; rm -f $@; \
-		$(CC) -MM $(CPPFLAGS) $< > $@.$$$$; \
+		${CXX} -MM ${CXXFLAGS} $< > $@.$$$$; \
 		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 		rm -f $@.$$$$
 

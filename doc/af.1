@@ -36,7 +36,7 @@ af -i -d mydb -C -vv *.txt
 This creates a new database, mydb, containing an index to the set of
 files, *.txt.  Here is a typical search command:
 
-af -s -d mydb -q 'cat & (dog | mouse)'
+af -s -d mydb -Q 'cat & (dog | mouse)'
 
 .SH COMMAND OPTIONS
 
@@ -148,8 +148,8 @@ The following options can only be used together with the searching
 command.
 
 .TP
-.BI "-q, --query " query_string
-Search for the specified query string.
+.BI "-Q, --query-boolean " query_string
+Search for the specified Boolean query string.
 
 .TP
 .B --style=list, --style=lineage

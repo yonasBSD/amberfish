@@ -30,7 +30,7 @@ static char *index_split = "";
 static int index_files_stdin = 0; /* deprecated */
 
 static int cmd_search = 0;
-static char *search_query = "";
+static char *search_query_boolean = "";
 static int search_style = 0;
 
 static int cmd_list = 0;
@@ -86,7 +86,7 @@ static int process_opt(int argc, char *argv[])
 		{ "list", 0, 0, 'l' },
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear", 0, 0, 0 },
-		{ "query", 1, 0, 'q' },
+		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
 		{ "split", 1, 0, 0 },
 		{ "style", 1, 0, 0 },
@@ -100,7 +100,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CFd:ilm:q:st:v",
+				"CFQ:d:ilm:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -143,13 +143,13 @@ static int process_opt(int argc, char *argv[])
 		case 't':
 			index_doctype = optarg;
 			break;
-		case 'q':
-			search_query = optarg;
+		case 'Q':
+			search_query_boolean = optarg;
 			break;
 		case '?':
 			return -1;
 		default:
-			printf("getopt: %o\n", g);
+			printf("getopt error: %o\n", g);
 		}
 	}
 	if (optind < argc) {
@@ -172,7 +172,7 @@ static void dump_opt()
 	printf("index_no_linear = %i\n", index_no_linear);
 	printf("index_files_stdin = %i (deprecated)\n", index_files_stdin);
 	printf("cmd_search = %i\n", cmd_search);
-	printf("search_query = %s\n", search_query);
+	printf("search_query_boolean = %s\n", search_query_boolean);
 	printf("search_style = %i\n", search_style);
 	printf("cmd_list = %i\n", cmd_list);
 	printf("cmd_version = %i\n", cmd_version);
@@ -280,7 +280,7 @@ static int exec_search()
 	db_id[x] = 0;
 
 	sea.db_id = db_id;
-	sea.query = (unsigned char*)(search_query);
+	sea.query = (unsigned char*)(search_query_boolean);
 	/*
 	sea.score_results = ses_options->score_results;
 	sea.sort_results = ses_options->sort_results;
@@ -549,7 +549,7 @@ static int validate_opt_index()
 {
 	if (!cmd_index)
 		return 0;
-	if (nonopt_argv_n == 0)
+	if (nonopt_argv_n == 0 && !index_create)
 		return aferror("No files specified for indexing");
 	return 0;
 }
@@ -558,7 +558,7 @@ static int validate_opt_search()
 {
 	if (!cmd_search)
 		return 0;
-	if (*search_query == '\0')
+	if (*search_query_boolean == '\0')
 		return aferror("No query specified");
 	return 0;
 }

@@ -2,10 +2,7 @@ PREFIX =	@prefix@
 PREFIXMAN =	${PREFIX}/man
 MAN1 =		af.1
 
-all: amberfish.pdf ${MAN1}
-
-%.1.gz: %.1
-	gzip -c -9 $< > $@
+all: amberfish.pdf amberfish-old.pdf
 
 amberfish.pdf: amberfish.texi version.texi
 	texi2dvi --pdf amberfish.texi
@@ -13,8 +10,11 @@ amberfish.pdf: amberfish.texi version.texi
 amberfish.html: amberfish.texi version.texi
 	makeinfo --force --html -I. amberfish.texi -o amberfish.html
 
-#version.texi: ../VERSION
-#	echo "@set VERSION `cat ../VERSION`" > version.texi
+amberfish-old.pdf: amberfish-old.texi version.texi
+	texi2dvi --pdf amberfish-old.texi
+
+%.1.gz: %.1
+	gzip -c -9 $< > $@
 
 install: all
 	chmod a+r ${MAN1}
@@ -24,7 +24,8 @@ uninstall:
 	cd ${PREFIXMAN}/man1 ; rm -f ${MAN1}
 
 clean:
-	rm -f amberfish.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs}
+	rm -f amberfish.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs} \
+		amberfish-old.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs}
 
 distclean:
 	make clean
