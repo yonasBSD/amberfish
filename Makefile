@@ -17,9 +17,6 @@ install:
 	cd src ; ${MAKE} install
 	cd doc ; ${MAKE} install
 
-uninstall:
-	cd src ; ${MAKE} uninstall
-
 clean:
 	rm -fr autom4te.cache
 	rm -f config.log config.status
