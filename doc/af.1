@@ -211,12 +211,29 @@ results.
 Output the total number of results.
 
 .TP
-.B --style=list, --style=lineage
+.B --style=list, --style=lineage, --style=trec
 Set style of printed result sets.  The default is
 .BR list .
 Use the
 .B lineage
-style with XML to see hierarchical results.
+style with XML to see hierarchical results.  For the
+.B trec
+style, it is assumed that the indexed file names are the document
+numbers and that
+.B --skiphits
+is not used (because rank always starts at 1).
+
+.TP
+.BI "--trec-tag " run_tag
+Output TREC results with the specified run tag.  (This is to be used
+with
+.BR --style=trec .)
+
+.TP
+.BI "--trec-topic " topic_number
+Output TREC results with the specified topic number.  (This is to be
+used with
+.BR --style=trec .)
 
 .SH LINEARIZE OPTIONS
 
