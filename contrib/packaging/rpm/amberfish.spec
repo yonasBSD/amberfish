@@ -6,7 +6,7 @@
 #   Dimitri Tarassenko <mitka@mitka.us>
 #
 %define xerces_ver 2.5.0
-%define release 3
+%define release 4
 
 # We'll check for presense of xerces-c-devel by this file:
 %define m1_xercesc_file %{_includedir}/xercesc/util/XercesVersion.hpp
@@ -35,6 +35,7 @@ License: GPL
 Group: Applications/Text
 URL: http://www.etymon.com/tr.html
 Source0: %{name}-%{version}.tar.gz
+#Patch0: %{name}-%{version}-dir.patch
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: %{m1_xercesc_file}
 BuildRequires: texinfo sed autoconf gcc gcc-c++ make binutils libstdc++-devel
@@ -63,8 +64,17 @@ Boolean queries, right truncation, phrase searching, relevance
 ranking, support for multiple documents per file, incremental 
 indexing, and easy integration with other UNIX tools. 
 
+Please note that you need Xerces-c installed on your server for
+Amberfish to work. On a RedHat/Fedora you can download the latest
+source from http://xml.apache.org/xerces-c/download.cgi and follow
+the steps at http://xml.apache.org/xerces-c/build-misc.html#RPMLinux
+
+On SuSE, install Xerces-c (note capital X) package using yast or rpm.
+
+
 %prep
 %setup -q
+#%patch0 -p1 -b .bindir
 
 %build 
 %configure 
@@ -85,8 +95,10 @@ rm -fr %{buildroot}
 %defattr(-,root,root) 
 %{_bindir}/* 
 %{_mandir}/man1/* 
-%doc doc/html/* doc/amberfish.pdf doc/amberfish.texi doc/version.texi NOTES README COPYING INSTALL
+%doc doc/html/* doc/amberfish.pdf doc/amberfish.texi doc/version.texi NOTES README COPYING INSTALL CREDITS
 	
 %changelog 
+* Tue Jun 15 2004 Dimitri Tarassenko <mitka@mitka.us>
+- patch removed, added HTML docs and CREDITS file, install notes
 * Mon Jun 14 2004 Dimitri Tarassenko <mitka@mitka.us>
 - first 2 versions
