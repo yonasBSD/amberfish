@@ -28,5 +28,5 @@ clean:
 		amberfish-old.{pdf,aux,cp,cps,fn,fns,ky,log,pg,tmp,toc,tp,vr,vrs}
 
 distclean:
-	make clean
+	${MAKE} clean
 	rm -f *~ *#

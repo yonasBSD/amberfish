@@ -52,7 +52,7 @@ directory:
 
 Now compile Amberfish:
 
-  make
+  gmake
 
 This tries to build executables in src/ and a tutorial (PDF) in doc/.
 
@@ -64,7 +64,7 @@ Otherwise you will get an error something like this:
   libxerces-c.so.25: cannot open shared object file: No such file or
   directory
 
-Typing 'make install' in this directory will attempt to install the
+Typing 'gmake install' in this directory will attempt to install the
 Amberfish executables in {prefix}/bin/ where {prefix} defaults to
 /usr/local and can be changed in the invocation of configure, e.g.:
 ./configure --prefix=/opt
@@ -80,7 +80,7 @@ from:
 
 Rename the file as 'porter.cc', and remove or comment out its main()
 function.  Place porter.cc or a symbolic link to it in the src/
-directory here.  Then rerun './configure' and 'make' as shown above.
+directory here.  Then rerun './configure' and 'gmake' as shown above.
 The stemmer will automatically be enabled unless you use '--no-stem'
 with '-C' during indexing.  Note that if the stemmer function is
 enabled when a database is created, it must also be available when

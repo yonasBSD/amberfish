@@ -616,6 +616,12 @@ static int validate_opt_index()
 		return 0;
 	if (nonopt_argv_n == 0 && !index_create)
 		return aferror("No files specified for indexing");
+	if ( strcmp(index_doctype, "text")
+#ifdef ETYMON_AF_XML
+	     && strcmp(index_doctype, "xml")
+#endif
+		)
+		return aferror("Unsupported document type");
 	return 0;
 }
 

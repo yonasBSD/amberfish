@@ -5,6 +5,9 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+* Fixed a bug that occurred when using '-t xml' with XML support
+disabled.
+
 1.4.1
 
 * Disabled the '--long-words' option.  There were bugs associated with
@@ -34,14 +37,10 @@ afindex, afsearch, and afadmin.  Using the old tools is deprecated.
 They are no longer compiled by default, with the exception of affetch.
 To compile them, you can use:
 
-  cd src; make afindex afsearch afadmin
+  cd src; gmake afindex afsearch afadmin
 
 * Memory leaks.  There seems to be a memory leak in the search code.
 We could use assistance in tracking this down.
-
-* Indexing with '-t xml' apparently does not return an error message
-(as it should) when XML support is disabled.  Not sure what it
-actually does!
 
 * Stop words.  All words are currently indexed and searched.
 

@@ -88,5 +88,5 @@ clean:
 		${BINOBJ} ${LIBOBJ} ${LIBAF}
 
 distclean:
-	make clean
+	${MAKE} clean
 	rm -f *~ *#
