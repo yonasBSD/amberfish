@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 			printf("--trec-topic %s -sQ '", num);
 			firstterm = 1;
 			started = 1;
+			*ors = '\0';
 			continue;
 		}
 
