@@ -31,6 +31,3 @@ distclean:
 	cd doc ; make distclean
 	rm -f src/Makefile src/af_auto.h doc/Makefile
 	rm -f *~ *#
-
-changelog:
-	rcs2log -h sourceforge > ./ChangeLog
