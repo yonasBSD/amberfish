@@ -26,7 +26,7 @@ static int cmd_index = 0;
 static int index_create = 0;
 static int index_phrase = 0;
 static int index_stemming = 1;
-static int index_long_words = 0;
+static int index_long_words = 1;
 static int index_memory = MEMORYMIN;
 static int index_dlevel = 1;
 static int index_no_linear = 0;
@@ -91,10 +91,6 @@ static int process_opt_long(char *opt, char *arg)
 		index_old_linear = 1;
 		return 0;
 	}
-	if (!strcmp(opt, "long-words")) {
-		index_long_words = 1;
-		return 0;
-	}
 	return 0;
 }
 
@@ -108,7 +104,6 @@ static int process_opt(int argc, char *argv[])
 		{ "doctype", 1, 0, 't' },
 		{ "index", 0, 0, 'i' },
 		{ "list", 0, 0, 'l' },
-		{ "long-words", 0, 0, 0 },
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear", 0, 0, 0 },
 		{ "no-linear-buffer", 0, 0, 0 },

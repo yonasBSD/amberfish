@@ -5,6 +5,15 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+1.4.1
+
+* Disabled the '--long-words' option.  There were bugs associated with
+this that will have to be addressed in a development version.  As of
+1.4.1, long words are again indexed by default and cannot be
+suppressed.
+
+1.4.0
+
 * The linearizing (optimizing) code has been completely rewritten and
 is now somewhat faster.  The '--old-linear' option disables the new
 function and instead uses the old linearization function from stable
