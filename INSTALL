@@ -69,3 +69,20 @@ Amberfish executables in {prefix}/bin/ where {prefix} defaults to
 /usr/local and can be changed in the invocation of configure, e.g.:
 ./configure --prefix=/opt
 
+
+PORTER STEMMER
+
+Amberfish will try to use a Porter stemmer if it is available.  To
+make this work, download the 'ANSI C version' of the Porter stemmer
+from:
+
+  http://www.tartarus.org/~martin/PorterStemmer/
+
+Rename the file as 'porter.cc', and remove or comment out its main()
+function.  Place porter.cc or a symbolic link to it in the src/
+directory here.  Then rerun './configure' and 'make' as shown above.
+The stemmer will automatically be enabled unless you use '--no-stem'
+with '-C' during indexing.  Note that if the stemmer function is
+enabled when a database is created, it must also be available when
+files are added and when the database is searched.
+

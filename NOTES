@@ -4,11 +4,12 @@ RELEASE NOTES
 
 RECENT CHANGES
 
-* Experimental "af" tool.  There is a new af tool that combines most
-of the functions of afindex, afsearch, and afadmin.  There is
-preliminary documentation in a man page under doc/.  If it works well,
-the old tools will be phased out.  At this stage, it is still work in
-progress.
+* Support for a Porter stemmer has been added.  See the INSTALL file
+for details.
+
+* There is a new "af" tool that combines most of the functions of
+afindex, afsearch, and afadmin.  The old tools are planned to be
+phased out over time.
 
 * Fixed bug causing multiple error messages when afindex is given bad
 input files.
