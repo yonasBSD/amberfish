@@ -11,7 +11,7 @@
 #include "linbuf.h"
 #include "util.h"
 
-#define LINBUF_SEGMENT_SIZE ((size_t) 1000000000)
+#define LINBUF_SEGMENT_SIZE ((size_t) 2000000000)
 
 static size_t bufsize;
 static FILE *fbuf;
@@ -57,6 +57,8 @@ int aflinbuf(FILE *f, int mem)
 
 	afgetfsize(f, &fsize);
 	bufsize = ((size_t) mem) * 1048576;
+/*	printf("aflinbuf: %i %lu %lu\n", mem, (unsigned long) fsize,
+	(unsigned long) bufsize);*/
 	bufsize = fsize < bufsize ? fsize : bufsize;
 	fbuf = f;
 	createbuf();
@@ -84,9 +86,14 @@ int bufcpy(unsigned char *ptr, off_t offset, size_t size)
 
 int aflinread(void *ptr, off_t offset, size_t size)
 {
-	if ((offset + size) < bufsize) {
+	if ((offset + size) <= bufsize) {
+/*		printf("."); fflush(stdout);*/
 		return bufcpy((unsigned char *)ptr, offset, size);
 	} else {
+/*		printf("\n%lu %lu %lu\n", (unsigned long) offset,
+		(unsigned long) size,
+		(unsigned long) bufsize);*/
+/*		printf("*"); fflush(stdout);*/
 		fseeko(fbuf, offset, SEEK_SET);
 		return fread(ptr, 1, size, fbuf);
 	}

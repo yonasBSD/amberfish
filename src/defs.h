@@ -273,15 +273,15 @@ typedef struct {
 	etymon_af_off_t doctable_next_id; /* next available doctable number */
 	ETYMON_DOCTABLE doctable; /* doctable buffer to use repeatedly */
 	ETYMON_INDEX_WCACHE_NODE* wcache; /* binary tree (array) of word cache nodes */
-	int wcache_size;
-	int wcache_count;
+	size_t wcache_size;
+	size_t wcache_count;
 	int wcache_root;
 	ETYMON_INDEX_FCACHE_NODE* fcache; /* linked list (array) of field cache nodes */
-	int fcache_size;
-	int fcache_count;
+	size_t fcache_size;
+	size_t fcache_count;
 	ETYMON_INDEX_WNCACHE_NODE* wncache; /* linked list (array) of word number cache nodes */
-	int wncache_size;
-	int wncache_count;
+	size_t wncache_size;
+	size_t wncache_count;
 	int udict_fd; /* udict file descriptor */
 	etymon_af_off_t udict_size; /* current size of udict */
 	int upost_fd; /* upost file descriptor */
@@ -311,6 +311,8 @@ typedef struct {
 	int number_words; /* enable recordings of word number data */
 	int doc_n; /* total number of (non-deleted) documents in
 		     database */
+	int verbose;
+	int long_words;
 } ETYMON_INDEX_INDEXING_STATE;
 
 #endif

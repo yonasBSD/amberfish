@@ -509,6 +509,7 @@ int etymon_index_optimize_old_stdio(ETYMON_INDEX_OPTIONS* opt) {
 
 #endif
 
+/*
 int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS *opt)
 {
 	Aflinear rq;
@@ -517,6 +518,7 @@ int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS *opt)
 	rq.verbose = opt->verbose;
 	return aflinear(&rq);
 }
+*/
 
 /* this was written before the advent of ETYMON_INDEX_PAGE_L.post_n[],
    ETYMON_INDEX_UPOST.fields_n, and ETYMON_INDEX_UPOST.word_numbers_n
@@ -1656,7 +1658,8 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	char cwd[ETYMON_MAX_PATH_SIZE];
 	ETYMON_AF_STAT st;
 	ssize_t nbytes;
-	int maxmem, memleft, dbinfo_fd, x_file;
+	size_t maxmem, memleft;
+	int dbinfo_fd, x_file;
 	uint4 magic;
 	ETYMON_DB_INFO dbinfo;
 	int dclass_id;
@@ -1665,14 +1668,14 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	int done_files;
 	int file_good;
 	int x;
-	int wcache_alloc, fcache_alloc, wncache_alloc;
+	size_t wcache_alloc, fcache_alloc, wncache_alloc;
 	ETYMON_AF_DC_INDEX dc_index;
 	ETYMON_AF_DC_INIT dc_init;
 	ETYMON_AF_DC_SPLIT* split_list = NULL;
 	ETYMON_AF_DC_SPLIT* split_p;
 	int use_docbuf; /* 1: use docbuf; 0: don't use it */
 	
-	maxmem = opt->memory * 1048576 - 1315000;
+	maxmem = ((size_t) opt->memory) * 1048576 - 1315000;
 
 	/* make sure database is ready */
 	if (etymon_db_ready(opt->dbname, &(opt->log)) == 0) {
@@ -1763,6 +1766,8 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->doc_n = dbinfo.doc_n;
 	state->dbname = opt->dbname;
 	state->log = &(opt->log);
+	state->verbose = opt->verbose;
+	state->long_words = opt->long_words;
 
 	/* open doctable for append */
 	etymon_db_construct_path(ETYMON_DBF_DOCTABLE, opt->dbname, fn);
@@ -1836,7 +1841,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	
 	/* allocate memory for page cache */
 	state->pcache_nl_size = ETYMON_MAX_PAGE_DEPTH;
-	memleft = maxmem - (sizeof(ETYMON_INDEX_PCACHE_NODE) * ETYMON_MAX_PAGE_DEPTH);
+	memleft = maxmem - ((size_t) (sizeof(ETYMON_INDEX_PCACHE_NODE) * ETYMON_MAX_PAGE_DEPTH));
 	if (memleft < 1048576) {
 		memleft = 1048576;
 	}
@@ -1864,17 +1869,23 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	
 	/* calculate cache memory allocation based on memleft */
 	if (state->number_words) {
-		wcache_alloc = (int)(memleft * .4);
-		fcache_alloc = (int)(memleft * .3);
-		wncache_alloc = (int)(memleft * .3);
+		wcache_alloc = (size_t) (memleft * .4);
+		fcache_alloc = (size_t) (memleft * .3);
+		wncache_alloc = (size_t) (memleft * .3);
 	} else {
-		wcache_alloc = (int)(memleft * .5);
-		fcache_alloc = (int)(memleft * .5);
+		wcache_alloc = (size_t) (memleft * .5);
+		fcache_alloc = (size_t) (memleft * .5);
 		wncache_alloc = 0;
 	}
+	if (wcache_alloc > 2000000000)
+		wcache_alloc = 2000000000;
+	if (fcache_alloc > 2000000000)
+		fcache_alloc = 2000000000;
+	if (wncache_alloc > 2000000000)
+		wncache_alloc = 2000000000;
 	
 	/* allocate memory for word cache */
-	state->wcache_size = wcache_alloc / sizeof(ETYMON_INDEX_WCACHE_NODE);
+	state->wcache_size = wcache_alloc / ((size_t) sizeof(ETYMON_INDEX_WCACHE_NODE));
 	state->wcache = (ETYMON_INDEX_WCACHE_NODE*)(malloc(sizeof(ETYMON_INDEX_WCACHE_NODE) * state->wcache_size));
 	if (state->wcache == NULL) {
 		/* ERROR */
@@ -1885,7 +1896,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	state->wcache_root = -1;
 
 	/* allocate memory for field cache */
-	state->fcache_size = fcache_alloc / sizeof(ETYMON_INDEX_FCACHE_NODE);
+	state->fcache_size = fcache_alloc / ((size_t) sizeof(ETYMON_INDEX_FCACHE_NODE));
 	state->fcache = (ETYMON_INDEX_FCACHE_NODE*)(malloc(sizeof(ETYMON_INDEX_FCACHE_NODE) * state->fcache_size));
 	if (state->fcache == NULL) {
 		/* ERROR */
@@ -1896,7 +1907,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 
 	/* allocate memory for word number cache */
 	if (state->number_words) {
-		state->wncache_size = wncache_alloc / sizeof(ETYMON_INDEX_WNCACHE_NODE);
+		state->wncache_size = wncache_alloc / ((size_t) sizeof(ETYMON_INDEX_WNCACHE_NODE));
 		state->wncache = (ETYMON_INDEX_WNCACHE_NODE*)(malloc(sizeof(ETYMON_INDEX_WNCACHE_NODE) *
 								     state->wncache_size));
 		if (state->wncache == NULL) {
@@ -2279,6 +2290,11 @@ int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 	int done;
 	int full;
 
+	if (state->verbose >= 5) {
+		afprintvp(state->verbose, 5);
+		printf("Adding word: \"%s\"\n", (const char *) opt->word);
+	}
+	
 	/*
 	size_t tmp_len = strlen((const char*)opt->word);
 	char tmp_word[1024];
@@ -2302,6 +2318,7 @@ int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 			(state->fcache_count == state->fcache_size);
 	}
 	if (full) {
+		afprintv(state->verbose, 2, "Flushing index buffers");
 		if (etymon_index_dclass_index(state) == -1) {
 			return -1;
 		}

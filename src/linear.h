@@ -6,6 +6,8 @@
 typedef struct {
 	char *db;
 	int verbose;
+	int memory;
+	int nobuffer;
 } Aflinear;
 
 int aflinear(const Aflinear *rq);

@@ -140,6 +140,13 @@ is available.  Note that the stemming function is not distributed with
 this package and must be installed manually.
 
 .TP
+.B --long-words
+Index words longer than the maximum word length.  Using this option
+will cause long words to be truncated to the maximum word length, and
+they can be matched by right-truncated query terms.  By default, such
+words are discarded, i.e. not indexed at all.
+
+.TP
 .B --no-linear
 Do not linearize the indexes in the database.  By default, the
 database is automatically linearized.  Linearizing reduces searching
@@ -150,6 +157,13 @@ searched.  The only reason for using
 .B --no-linear
 is if one has a need to break up indexing into multiple invocations of
 .BR af .
+
+.TP
+.B --no-linear-buffer
+Do not use a memory buffer to speed up linearizing.  This option will
+be removed once the linearization buffer code is reliable.  If
+.B --old-linear
+is used, this option does not apply.
 
 .TP
 .B --old-linear

@@ -26,7 +26,7 @@ LIBAF =		libaf.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 		docbuf.o admin.o explain.o stem.o \
 		text.o xml.o xml_test.o syr1.o \
-		err.o info.o linear.o
+		err.o info.o linear.o linbuf.o
 #		search_new.o
 #		open_new.o
 BINOBJ =	afmain.o af.o

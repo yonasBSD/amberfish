@@ -110,6 +110,24 @@ int afgetfsize(FILE *f, off_t *size)
 	return 0;
 }
 
+void afprintvp(int verbose, int minimum)
+{
+	int x;
+	
+	for (x = 2; x < minimum; x++)
+		printf("+");
+	if (minimum > 2)
+		printf(" ");
+}
+
+void afprintv(int verbose, int minimum, const char *msg)
+{
+	if (verbose >= minimum) {
+		afprintvp(verbose, minimum);
+		printf("%s\n", msg);
+	}
+}
+
 /* old */
 	
 #include <stdlib.h>

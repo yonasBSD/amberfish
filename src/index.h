@@ -19,6 +19,7 @@ typedef struct {
                         within a file */
 	int verbose; /* boolean: verbose output */
 	char* dc_options; /* document class options */
+	int long_words;
 } ETYMON_INDEX_OPTIONS;
 
 typedef struct {
@@ -74,8 +75,6 @@ int etymon_index_search_keys_l(unsigned char* word, size_t word_len, ETYMON_INDE
 int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt);
 
 int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt);
-
-int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt);
 
 uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt);
 

@@ -217,6 +217,10 @@ void DcXmlHandlers::addWords(char* text) {
 	char* p = text;
 	int good;
 	int x;
+	int long_words;
+
+	long_words = _dc_index->state->long_words;
+	
 	while (*p != '\0') {
 
 		good = 0;
@@ -260,6 +264,9 @@ void DcXmlHandlers::addWords(char* text) {
 				p++;
 			}
 		}
+
+		if ( (good) && (!long_words) )
+			continue;
 
 		// truncate if last character is '.'
 		if (word[x - 1] == '.') {

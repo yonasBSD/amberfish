@@ -35,6 +35,9 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 	int good;
 	int x;
 	etymon_af_off_t offset = 0;
+	int long_words;
+
+	long_words = dc_index->state->long_words;
 	
 	/* return if the document size is 0 */
 	if (docbuf->data_len == 0) {
@@ -106,6 +109,9 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 						) {
 					}
 				}
+
+				if ( (good) && (!long_words) )
+					continue;
 				
 				/* truncate if last character is '.' */
 				if (word[x - 1] == '.') {
@@ -114,6 +120,13 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 				
 				/* terminate the word[] string */
 				word[x] = '\0';
+
+/*				if (good)
+				printf("Truncated: \"%s\"\n", word);*/
+				/* let's try skipping if truncated */
+/*				if (good)
+					continue;
+*/
 				
 				if (etymon_af_index_add_word(&add_word) == -1) {
 					return -1;

@@ -12,26 +12,6 @@
 #include "info.h"
 #include "linbuf.h"
 
-#define LINBUF_SIZE (64)
-
-static inline void afprintvp(int verbose, int minimum)
-{
-	int x;
-	
-	for (x = 2; x < minimum; x++)
-		printf("+");
-	if (minimum > 2)
-		printf(" ");
-}
-
-static inline void afprintv(int verbose, int minimum, const char *msg)
-{
-	if (verbose >= minimum) {
-		afprintvp(verbose, minimum);
-		printf("%s\n", msg);
-	}
-}
-
 /*
 static int logerr(char *s, int e) {
 	fprintf(stderr, "%s\n", s);
@@ -224,19 +204,20 @@ static inline int readpagel(Aflinst *t)
 
 static inline int readupost(Aflinst *t)
 {
-	/*
-	if (fseeko(t->f.upost,
-		   (off_t) ( ((off_t) (t->upostp - 1)) *
-			     ((off_t) (sizeof t->upost)) ),
-		   SEEK_SET) < 0)
-		return aferr(AFEDBIO);
-	if (fread(&(t->upost), 1, sizeof t->upost, t->f.upost) < sizeof t->upost)
-		return aferr(AFEDBIO);
-	*/
-	aflinread(&(t->upost), 
-		  (off_t) ( ((off_t) (t->upostp - 1)) *
-			    ((off_t) (sizeof t->upost)) ),
-		  sizeof t->upost);
+	if (t->rq->nobuffer) {
+		if (fseeko(t->f.upost,
+			   (off_t) ( ((off_t) (t->upostp - 1)) *
+				     ((off_t) (sizeof t->upost)) ),
+			   SEEK_SET) < 0)
+			return aferr(AFEDBIO);
+		if (fread(&(t->upost), 1, sizeof t->upost, t->f.upost) < sizeof t->upost)
+			return aferr(AFEDBIO);
+	} else {
+		aflinread(&(t->upost), 
+			  (off_t) ( ((off_t) (t->upostp - 1)) *
+				    ((off_t) (sizeof t->upost)) ),
+			  sizeof t->upost);
+	}
 		  
 	return 0;
 }
@@ -478,7 +459,8 @@ static inline int linopen(Aflinst *t)
 	if (getfsizes(t) < 0)
 		return -1;
 
-	aflinbuf(t->f.upost, LINBUF_SIZE);
+	if (!t->rq->nobuffer)
+		aflinbuf(t->f.upost, t->rq->memory);
 	
 	return 0;
 }

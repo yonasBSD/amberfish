@@ -16,6 +16,7 @@
 #include "admin.h"
 #include "explain.h"
 #include "util.h"
+#include "linear.h"
 /* #include "search_new.h" */
 
 #define MAX_DBS (256)
@@ -24,9 +25,11 @@ static int cmd_index = 0;
 static int index_create = 0;
 static int index_phrase = 0;
 static int index_stemming = 1;
+static int index_long_words = 0;
 static int index_memory = 3;
 static int index_dlevel = 1;
 static int index_no_linear = 0;
+static int index_no_linear_buffer = 0;
 static int index_old_linear = 0;
 static char *index_doctype = "text";
 static char *index_split = "";
@@ -79,8 +82,16 @@ static int process_opt_long(char *opt, char *arg)
 		index_no_linear = 1;
 		return 0;
 	}
+	if (!strcmp(opt, "no-linear-buffer")) {
+		index_no_linear_buffer = 1;
+		return 0;
+	}
 	if (!strcmp(opt, "old-linear")) {
 		index_old_linear = 1;
+		return 0;
+	}
+	if (!strcmp(opt, "long-words")) {
+		index_long_words = 1;
 		return 0;
 	}
 	return 0;
@@ -96,8 +107,10 @@ static int process_opt(int argc, char *argv[])
 		{ "doctype", 1, 0, 't' },
 		{ "index", 0, 0, 'i' },
 		{ "list", 0, 0, 'l' },
+		{ "long-words", 0, 0, 0 },
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear", 0, 0, 0 },
+		{ "no-linear-buffer", 0, 0, 0 },
 		{ "no-stem", 0, 0, 0 },
 		{ "old-linear", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
@@ -482,6 +495,7 @@ static int exec_index()
 	index_options.split = index_split;
 	index_options.verbose = verbose;
 	index_options.dc_options = ""; /*sei_options->dc_options;*/
+	index_options.long_words = index_long_words;
 	
 	/* first check if we are to create a new database */
 	if (index_create) {
@@ -499,8 +513,15 @@ static int exec_index()
 			if (etymon_index_optimize_old(&index_options) == -1)
 				return -1;
 		} else {
-			if (etymon_index_optimize_new(&index_options) == -1)
+			Aflinear rq;
+			rq.db = *dbname;
+			rq.verbose = verbose;
+			rq.memory = index_memory;
+			rq.nobuffer = index_no_linear_buffer;
+			if (aflinear(&rq) < 0)
 				return -1;
+/*			if (etymon_index_optimize_new(&index_options) == -1)
+			return -1;*/
 		}
 	}
 	return 0;

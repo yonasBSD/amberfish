@@ -11,6 +11,8 @@ FILE *afopendbf(const char *db, int type, const char *mode);
 int afclosedbf(Affile *f);
 int afmakefn(int type, const char *db, char *buf);
 int afgetfsize(FILE *f, off_t *size);
+void afprintvp(int verbose, int minimum);
+void afprintv(int verbose, int minimum, const char *msg);
 
 /* old */
 
