@@ -19,16 +19,13 @@ planned to be phased out over time.  Note that there are now two
 versions of the tutorial (PDF), one for the old tools and one for the
 new.  There is also a new man page for af which is updated frequently.
 
-* Experimental "amberfishd" server.  This is part of a
-proof-of-concept for the girtools project and is not currently usable
-for anything.  It is not compiled by default.
+* Experimental "afd" server.  This is part of a proof-of-concept for
+the girtools project and is not currently usable for anything.  It is
+not compiled by default.
 
 * Unoptimized databases.  Amberfish can only search databases that
 have been linearized with -O.  (The new af tool linearizes by
 default.)
-
-* Optimization speed.  The linearizing code is slow and needs to be
-rewritten.
 
 * Memory leaks.  There seems to be a memory leak in the search code.
 We could use assistance in tracking this down.
