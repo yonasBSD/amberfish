@@ -200,9 +200,9 @@ Here is a simple indexing command (@samp{$} is the UNIX prompt):
 @pindex afindex, -d
 @pindex afindex, -C
 @pindex afindex, -f
-@pindex afindex, -v
+@pindex afindex, -vv
 @example
-$ afindex -d mydb -C -f *.txt -v
+$ afindex -d mydb -C -f *.txt -vv
 @end example
 
 @cindex Database name
@@ -211,13 +211,14 @@ $ afindex -d mydb -C -f *.txt -v
 @cindex Indexing
 @noindent
 The @option{-d} option specifies the database name, in this case,
-@file{mydb}.  The @option{-C} option indicates that you want to create a
-new database (overwriting any existing database called @file{mydb}).
-The @option{-f} option supplies the names of the files you want to index
-(@file{*.txt}).  Finally, the @option{-v} option tells @command{afindex}
-to print information about the indexing process as it goes along.
-(Another option, @option{-m}, may be added to increase the amount of
-memory used for indexing, which will generally reduce indexing time.)
+@file{mydb}.  The @option{-C} option indicates that you want to create
+a new database (overwriting any existing database called @file{mydb}).
+The @option{-f} option supplies the names of the files you want to
+index (@file{*.txt}).  Finally, the @option{-vv} option tells
+@command{afindex} to print information about the indexing process as
+it goes along.  (Another option, @option{-m}, may be added to increase
+the amount of memory used for indexing, which will generally reduce
+indexing time.)
 
 The above example may alternatively be entered as two separate commands:
 
@@ -225,10 +226,10 @@ The above example may alternatively be entered as two separate commands:
 @pindex afindex, -d
 @pindex afindex, -C
 @pindex afindex, -f
-@pindex afindex, -v
+@pindex afindex, -vv
 @example
 $ afindex -d mydb -C
-$ afindex -d mydb -f *.txt -v
+$ afindex -d mydb -f *.txt -vv
 @end example
 
 @cindex Creating a database
@@ -391,7 +392,7 @@ string delimiter that indicates the boundaries between documents in a
 file.  For example:
 
 @example
-$ afindex -d mydb -C -f *.txt -split '#####' -v
+$ afindex -d mydb -C -f *.txt -split '#####' -vv
 @end example
 
 @noindent
@@ -495,7 +496,7 @@ Suppose we index the following XML data, contained in a file called,
 with the following command:
 
 @example
-$ afindex -d mydb -C -f jones.xml -v -t xml
+$ afindex -d mydb -C -f jones.xml -vv -t xml
 @end example
 
 @noindent
@@ -725,7 +726,7 @@ results.  This is regulated with the @command{afindex} option
 processed during indexing.  For example:
 
 @example
-$ afindex -d mydb -C -f medline.xml -v -t xml -dlevel 2
+$ afindex -d mydb -C -f medline.xml -vv -t xml -dlevel 2
 @end example
 
 Specifying @option{-dlevel 1} will define each XML file as a single
