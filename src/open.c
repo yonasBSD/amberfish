@@ -29,7 +29,7 @@ void etymon_af_init() {
 
 
 /* assumes that db_id is valid */
-int etymon_af_open_files(char* where, int db_id, int flags) {
+int etymon_af_open_files(char* where, Uint2 db_id, int flags) {
 	int x_fn, x;
 	
 	/* open all database files */
@@ -48,7 +48,7 @@ int etymon_af_open_files(char* where, int db_id, int flags) {
 
 
 /* assumes that db_id is valid */
-int etymon_af_close_files(char* where, int db_id) {
+int etymon_af_close_files(char* where, Uint2 db_id) {
 	int x_fn;
 	
 	/* close all the database files */
@@ -293,13 +293,15 @@ static int setomode(const char *mode, ETYMON_AF_OPEN *op)
 int afopen(const Afopen *r, Afopen_r *rr)
 {
 	ETYMON_AF_OPEN op;
+	int x;
 	
 	op.dbname = r->dbpath;
 	if (setomode(r->mode, &op) < 0)
 		return -1;
 	op.keep_open = 0;
-	if ((rr->dbid = etymon_af_open(&op)) == -1)
+	if ((x = etymon_af_open(&op)) == -1)
 		return -1;
+	rr->dbid = x;
 	return 0;
 }
 

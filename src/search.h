@@ -1,6 +1,44 @@
 #ifndef _AF_SEARCH_H
 #define _AF_SEARCH_H
 
+/***** new *****/
+
+#include "config.h"
+
+typedef unsigned char Afchar;
+
+#define AFQUERYBOOLEAN (1)
+
+#define AFNOSCORE      (0)
+#define AFSCOREDEFAULT (1)
+
+typedef struct {
+	Uint2 *dbid;  /* databases to search */
+	int dbidn;
+	Afchar *query;
+	int qtype;  /* AFQUERYBOOLEAN */
+	int score;  /* AFNOSCORE | AFSCOREDEFAULT */
+} Afsearch;
+
+typedef struct {
+        Uint4 docid;
+        Uint2 score;
+        Uint2 dbid;
+} Afresult;
+
+typedef struct {
+        Afresult *result;
+	int resultn;
+} Afsearch_r;
+
+int afsearch(const Afsearch *r, Afsearch_r *rr);
+
+int afsortscore(Afresult *result, int resultn);
+
+int afsortdocid(Afresult *result, int resultn);
+
+/***** old *****/
+
 #include "defs.h"
 #include "log.h"
 #include "info.h"
@@ -18,30 +56,33 @@ typedef struct {
 	ETYMON_AF_FDEF_DISK* fdef_disk;
 } ETYMON_SEARCH_SEARCHING_STATE;
 
+/*
 typedef struct {
 	int db_id;
 	uint4 doc_id;
 	uint2 score;
 } ETYMON_AF_RESULT;
+*/
 
+/*
 enum etymon_af_scoring_methods { ETYMON_AF_UNSCORED = 0,
-				 /* traditional vector space/IDF
-				    weighting method */
 				 ETYMON_AF_SCORE_DEFAULT };
 
 enum etymon_af_sorting_methods { ETYMON_AF_UNSORTED = 0,
-				 /* sort by score */
 				 ETYMON_AF_SORT_SCORE };
+*/
 
+/*
 typedef struct {
-	int* db_id; /* array of databases to search (0-terminated) */
+	int* db_id;
 	unsigned char* query;
-	int score_results; /* see etymon_af_scoring_methods */
-	int sort_results; /* see etymon_af_sorting_methods */
+	int score_results;
+	int sort_results;
 	ETYMON_AF_LOG* log;
 	ETYMON_AF_RESULT* results;
 	int results_n;
 } ETYMON_AF_SEARCH;
+*/
 
 typedef struct {
 	uint4 parent;  /* doc_id of parent document */
@@ -51,15 +92,16 @@ typedef struct {
 } ETYMON_AF_ERESULT;
 
 typedef struct {
-	int db_id;
-	ETYMON_AF_SEARCH* opt;
+	Uint2 dbid;
+	Afsearch* opt;
+	Afsearch_r* optr;
 	uint4 corpus_doc_n;
 } ETYMON_AF_SEARCH_STATE;
 
-int etymon_af_search(ETYMON_AF_SEARCH* opt);
+/*int etymon_af_search(ETYMON_AF_SEARCH* opt);*/
 
-int etymon_af_search_term_compare(const void* a, const void* b);
+/*int etymon_af_search_term_compare(const void* a, const void* b);*/
 
-int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_AF_ERESULT* resolved_results, ETYMON_AF_LOG* log);
+int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESULT* resolved_results, ETYMON_AF_LOG* log);
 
 #endif

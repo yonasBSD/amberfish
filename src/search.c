@@ -74,16 +74,16 @@ void etymon_af_search_free_r0(ETYMON_AF_R0* r0, int r0_size, int r0_wn_size) {
 int etymon_af_search_term_compare_docid(const void* a, const void* b) {
 	int x;
 	
-	x = ((ETYMON_AF_RESULT*)a)->db_id - ((ETYMON_AF_RESULT*)b)->db_id;
+	x = ((Afresult*)a)->dbid - ((Afresult*)b)->dbid;
 	if (x != 0) {
 		return x;
 	}
-	return ((ETYMON_AF_RESULT*)a)->doc_id - ((ETYMON_AF_RESULT*)b)->doc_id;
+	return ((Afresult*)a)->docid - ((Afresult*)b)->docid;
 }
 
 
 int etymon_af_search_term_compare_score(const void* a, const void* b) {
-	return ((ETYMON_AF_RESULT*)b)->score - ((ETYMON_AF_RESULT*)a)->score;
+	return ((Afresult*)b)->score - ((Afresult*)a)->score;
 }
 
 
@@ -169,11 +169,8 @@ int etymon_af_score_default(ETYMON_AF_SEARCH_STATE* state,
 	double sumsq = 0;
 
 	idf = (double*)(malloc(iresults_n * sizeof(double)));
-	if (idf == NULL) {
-		etymon_af_log(state->opt->log, EL_CRITICAL, EX_MEMORY, "etymon_af_score_default()",
-			      etymon_af_state[state->db_id]->dbname, NULL, NULL);
-		return -1;
-	}
+	if (idf == NULL)
+		return aferr(AFEMEM);
 		
 	for (x = 0; x < iresults_n; x++) {
 		sc = (corpus_doc_n / iresults_n)
@@ -315,12 +312,9 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
                                    the end of the array */
 				field_mask[field_mask_len++] = 0;
 			} else {
-				if ( (field_mask[field_mask_len++] = etymon_af_fdef_get_field(etymon_af_state[state->db_id]->fdef,
-											   word)) == 0 ) {
-					etymon_af_log(state->opt->log, EL_WARNING, EX_FIELD_UNKNOWN, "etymon_af_search()",
-					       etymon_af_state[state->db_id]->dbname, (char*)word, NULL);
-					return 0;
-				}
+				if ( (field_mask[field_mask_len++] = etymon_af_fdef_get_field(etymon_af_state[state->dbid]->fdef,
+											   word)) == 0 )
+					return aferr(AFEBADFIELD);
 			}
 		}
 	}
@@ -358,7 +352,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 		
 		/* search for word */
 
-		udict_p = etymon_af_state[state->db_id]->info.udict_root;
+		udict_p = etymon_af_state[state->dbid]->info.udict_root;
 
 		if (*word == '\0') {
 			break;
@@ -372,18 +366,18 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 		}
 
 		unstemmed_word_len = word_len;
-		if (etymon_af_state[state->db_id]->info.stemming)
+		if (etymon_af_state[state->dbid]->info.stemming)
 			word_len = af_stem(word);
 
 		do {
-			if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)udict_p, SEEK_SET) == -1) {
+			if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)udict_p, SEEK_SET) == -1) {
 				perror("etymon_af_search_term():lseek()");
 			}
-			if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
+			if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
 				perror("etymon_af_search_term():read()");
 			}
 			if (leaf_flag == 0) {
-				if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &page_nl,
+				if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &page_nl,
 					 sizeof(ETYMON_INDEX_PAGE_NL)) == -1) {
 					perror("etymon_af_search_term():read()");
 				}
@@ -392,7 +386,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 			}
 		} while (leaf_flag == 0);
 
-		if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &page_l, sizeof(ETYMON_INDEX_PAGE_L)) == -1) {
+		if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &page_l, sizeof(ETYMON_INDEX_PAGE_L)) == -1) {
 			perror("etymon_af_search_term():read()");
 		}
 		insertion = etymon_index_search_keys_l(word, word_len, &page_l, &match);
@@ -433,14 +427,14 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 				if (insertion < 0) {
 					lf = page_l.prev;
 					if (lf) {
-						if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
+						if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
 							     SEEK_SET) == -1) {
 							perror("etymon_af_search_term():lseek()");
 						}
-						if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
+						if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
 							perror("etymon_af_search_term():read()");
 						}
-						if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &page_l,
+						if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &page_l,
 							 sizeof(ETYMON_INDEX_PAGE_L)) == -1) {
 							perror("etymon_af_search_term():read()");
 						}
@@ -466,14 +460,14 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 
 			lf = udict_p;
 			/* force reload of the original page */
-			if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
+			if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
 				     SEEK_SET) == -1) {
 				perror("etymon_af_search_term():lseek()");
 			}
-			if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
+			if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
 				perror("etymon_af_search_term():read()");
 			}
-			if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &page_l,
+			if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &page_l,
 				 sizeof(ETYMON_INDEX_PAGE_L)) == -1) {
 				perror("etymon_af_search_term():read()");
 			}
@@ -486,14 +480,14 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 				if (insertion >= page_l.n) {
 					lf = page_l.next;
 					if (lf) {
-						if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
+						if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
 							     SEEK_SET) == -1) {
 							perror("etymon_af_search_term():lseek()");
 						}
-						if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
+						if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
 							perror("etymon_af_search_term():read()");
 						}
-						if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &page_l,
+						if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &page_l,
 							 sizeof(ETYMON_INDEX_PAGE_L)) == -1) {
 							perror("etymon_af_search_term():read()");
 						}
@@ -556,14 +550,14 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 
 			if (lf != lf_old) {
 				lf_old = lf;
-				if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
+				if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)lf,
 					     SEEK_SET) == -1) {
 					perror("etymon_af_search_term():lseek()");
 				}
-				if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
+				if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &(leaf_flag), 1) == -1) {
 					perror("etymon_af_search_term():read()");
 				}
-				if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &page_l,
+				if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &page_l,
 					 sizeof(ETYMON_INDEX_PAGE_L)) == -1) {
 					perror("etymon_af_search_term():read()");
 				}
@@ -573,22 +567,16 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 			if ( (word_counter == 0) && (lf_counter == 0) ) {
 				/* first we need an array to store the doc_id's */
 				r0 = (ETYMON_AF_R0*)(calloc(sizeof(ETYMON_AF_R0) * post_n, 1));
-				if (r0 == NULL) {
-					etymon_af_log(state->opt->log, EL_CRITICAL, EX_MEMORY, "etymon_af_search()",
-					       etymon_af_state[state->db_id]->dbname, NULL, NULL);
-					return -1;
-				}
+				if (r0 == NULL)
+					return aferr(AFEMEM);
 				r0_size = post_n;
 				/* also store word number data if phrase search is enabled */
-				if ( (etymon_af_state[state->db_id]->info.phrase) ||
-				     (etymon_af_state[state->db_id]->info.word_proximity) ) {
+				if ( (etymon_af_state[state->dbid]->info.phrase) ||
+				     (etymon_af_state[state->dbid]->info.word_proximity) ) {
 					for (ux = 0; ux < post_n; ux++) {
 						r0[ux].wn = (ETYMON_AF_R0_WN*)(calloc(sizeof(ETYMON_AF_R0_WN) * term_match_n, 1));
-						if (r0[ux].wn == NULL) {
-							etymon_af_log(state->opt->log, EL_CRITICAL, EX_MEMORY, "etymon_af_search()",
-							       etymon_af_state[state->db_id]->dbname, NULL, NULL);
-							return -1;
-						}
+						if (r0[ux].wn == NULL)
+							return aferr(AFEMEM);
 					}
 					r0_wn_size = term_match_n;
 				}
@@ -611,14 +599,14 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 				
 				/* read a result */
 /*				printf("Read a result\n");*/
-				if (etymon_af_state[state->db_id]->info.optimized) {
-					if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LPOST],
+				if (etymon_af_state[state->dbid]->info.optimized) {
+					if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LPOST],
 						     (etymon_af_off_t)( ((etymon_af_off_t)(postp - 1)) *
 								 ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LPOST))) ),
 						     SEEK_SET) == -1) {
 						perror("etymon_af_search_term():lseek()");
 					}
-					if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LPOST], &lpost,
+					if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LPOST], &lpost,
 						 sizeof(ETYMON_INDEX_LPOST)) == -1) {
 						perror("etymon_af_search_term():read()");
 					}
@@ -637,13 +625,13 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 					lpost.word_numbers = 0;
 					lpost.word_numbers_n = 0;
 					do {
-						if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UPOST],
+						if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UPOST],
 								    (etymon_af_off_t)( ((etymon_af_off_t)(postp - 1)) *
 										       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UPOST))) ),
 								    SEEK_SET) == -1) {
 							perror("etymon_af_search_term():lseek()");
 						}
-						if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UPOST], &upost,
+						if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UPOST], &upost,
 							 sizeof(ETYMON_INDEX_UPOST)) == -1) {
 							perror("etymon_af_search_term():read()");
 						}
@@ -719,8 +707,8 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 						r0[x_r0].freq += lpost.freq;
 					}
 
-					if ( (etymon_af_state[state->db_id]->info.phrase) ||
-					     (etymon_af_state[state->db_id]->info.word_proximity) ) {
+					if ( (etymon_af_state[state->dbid]->info.phrase) ||
+					     (etymon_af_state[state->dbid]->info.word_proximity) ) {
 
 						/* load word numbers */
 						r0[yy].wn[lf_counter].wn_n = lpost.word_numbers_n;
@@ -732,19 +720,17 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 									sizeof(uint1), 1));
 						if ( (r0[yy].wn[lf_counter].wlist == NULL) ||
 						     (r0[yy].wn[lf_counter].new_word == NULL) ) {
-							etymon_af_log(state->opt->log, EL_CRITICAL, EX_MEMORY, "etymon_af_search()",
-								      etymon_af_state[state->db_id]->dbname, NULL, NULL);
 							etymon_af_search_free_r0(r0, r0_size, r0_wn_size);
-							return -1;
+							return aferr(AFEMEM);
 						}
-						if (etymon_af_state[state->db_id]->info.optimized) {
-							if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LWORD],
+						if (etymon_af_state[state->dbid]->info.optimized) {
+							if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LWORD],
 									    (etymon_af_off_t)( ((etymon_af_off_t)(lpost.word_numbers - 1)) *
 											       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LWORD))) ),
 									    SEEK_SET) == -1) {
 								perror("etymon_af_search_term():lseek()");
 							}
-							if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LWORD],
+							if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LWORD],
 								 r0[yy].wn[lf_counter].wlist,
 								 r0[yy].wn[lf_counter].wn_n * sizeof(ETYMON_INDEX_LWORD)) == -1) {
 								perror("etymon_af_search_term():read()");
@@ -754,13 +740,13 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 							uwordp = posts[postsx].word_numbers;
 							uwordx = 0;
 							do {
-								if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD],
+								if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UWORD],
 										    (etymon_af_off_t)( ((etymon_af_off_t)(uwordp - 1)) *
 												       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UWORD))) ),
 										    SEEK_SET) == -1) {
 									perror("etymon_af_search_term():lseek()");
 								}
-								if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD],
+								if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UWORD],
 									 &uword,
 									 sizeof(ETYMON_INDEX_UWORD)) == -1) {
 									perror("etymon_af_search_term():read()");
@@ -809,8 +795,8 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 					field_match = 0;
 					/* check if field matches */
 					if (lpost.fields_n > 0) {
-						if (etymon_af_state[state->db_id]->info.optimized) {
-							if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LFIELD],
+						if (etymon_af_state[state->dbid]->info.optimized) {
+							if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LFIELD],
 									    (etymon_af_off_t)( ((etymon_af_off_t)(lpost.fields - 1)) *
 											       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LFIELD))) ),
 									    SEEK_SET) == -1) {
@@ -822,19 +808,19 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 						}
 						field_x = 0;
 						do {
-							if (etymon_af_state[state->db_id]->info.optimized) {
-								if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LFIELD],
+							if (etymon_af_state[state->dbid]->info.optimized) {
+								if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LFIELD],
 									 &lfield, sizeof(ETYMON_INDEX_LFIELD)) == -1) {
 									perror("etymon_af_search_term():read()");
 								}
 							} else {
-								if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UFIELD],
+								if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UFIELD],
 										    (etymon_af_off_t)( ((etymon_af_off_t)(ufieldp - 1)) *
 												       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UFIELD))) ),
 										    SEEK_SET) == -1) {
 									perror("etymon_af_search_term():lseek()");
 								}
-								if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UFIELD],
+								if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UFIELD],
 									 &ufield, sizeof(ETYMON_INDEX_UFIELD)) == -1) {
 									perror("etymon_af_search_term():read()");
 								}
@@ -861,8 +847,8 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 				}
 
 				/* intersect by phrase operator */
-				if ( ( (etymon_af_state[state->db_id]->info.phrase) ||
-				       (etymon_af_state[state->db_id]->info.word_proximity) ) &&
+				if ( ( (etymon_af_state[state->dbid]->info.phrase) ||
+				       (etymon_af_state[state->dbid]->info.word_proximity) ) &&
 				     (r_good != -1) && (word_counter > 0) ) {
 					
 					wn_found = 0;
@@ -878,8 +864,8 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 							   word numbers */
 
 							/* if optimized, we only have to seek once */
-							if (etymon_af_state[state->db_id]->info.optimized) {
-								if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LWORD],
+							if (etymon_af_state[state->dbid]->info.optimized) {
+								if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LWORD],
 									     (etymon_af_off_t)( ((etymon_af_off_t)(lpost.word_numbers - 1)) *
 											 ((etymon_af_off_t)(sizeof(ETYMON_INDEX_LWORD))) ),
 									     SEEK_SET) == -1) {
@@ -892,19 +878,19 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 							/* loop through new word numbers and intersect with lword_list[] */
 							for (x_wn = 0; x_wn < lpost.word_numbers_n; x_wn++) {
 								/* read a word number */
-								if (etymon_af_state[state->db_id]->info.optimized) {
-									if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_LWORD], &lword,
+								if (etymon_af_state[state->dbid]->info.optimized) {
+									if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_LWORD], &lword,
 										 sizeof(ETYMON_INDEX_LWORD)) == -1) {
 										perror("etymon_af_search_term():read()");
 									}
 								} else {
-									if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD],
+									if (etymon_af_lseek(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UWORD],
 											    (etymon_af_off_t)( ((etymon_af_off_t)(uwordp - 1)) *
 													       ((etymon_af_off_t)(sizeof(ETYMON_INDEX_UWORD))) ),
 											    SEEK_SET) == -1) {
 										perror("etymon_af_search_term():lseek()");
 									}
-									if (read(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UWORD], &uword,
+									if (read(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UWORD], &uword,
 										 sizeof(ETYMON_INDEX_UWORD)) == -1) {
 										perror("etymon_af_search_term():read()");
 									}
@@ -950,7 +936,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 					
 				}
 
-				if (!etymon_af_state[state->db_id]->info.optimized)
+				if (!etymon_af_state[state->dbid]->info.optimized)
 					free(posts);
 				
 			} /* for: x_r */
@@ -998,17 +984,15 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 		*iresults = (ETYMON_AF_IRESULT*)(malloc(sizeof(ETYMON_AF_IRESULT)));
 	}
 	if (*iresults == NULL) {
-		etymon_af_log(state->opt->log, EL_CRITICAL, EX_MEMORY, "etymon_af_search()",
-		       etymon_af_state[state->db_id]->dbname, NULL, NULL);
 		etymon_af_search_free_r0(r0, r0_size, r0_wn_size);
-		return -1;
+		return aferr(AFEMEM);
 	}
 	x_r = 0;
 	for (x = 0; x < r0_n; x++) {
 		if (r0[x].doc_id != 0) {
 			(*iresults)[x_r].doc_id = r0[x].doc_id;
 			(*iresults)[x_r].score =
-				state->opt->score_results ?
+				state->opt->score ?
 				r0[x].freq : 0;
 			x_r++;
 		}
@@ -1018,7 +1002,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 	etymon_af_search_free_r0(r0, r0_size, r0_wn_size);
 	
 	/* add relevance scores */
-	if (state->opt->score_results == ETYMON_AF_SCORE_DEFAULT) {
+	if (state->opt->score == AFSCOREDEFAULT) {
 		etymon_af_score_default(state, *iresults, *iresults_n,
 					state->corpus_doc_n);
 	}
@@ -1148,14 +1132,14 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 	int try_op;
 
 	/* open database files */
-	if (etymon_af_state[state->db_id]->keep_open == 0) {
-		if (etymon_af_open_files("etymon_af_search()", state->db_id, O_RDONLY) == -1) {
+	if (etymon_af_state[state->dbid]->keep_open == 0) {
+		if (etymon_af_open_files("etymon_af_search()", state->dbid, O_RDONLY) == -1) {
 			return -1;
 		}
 	}
 
 	/* only perform the search if there is something in the index */
-	if (etymon_af_fstat(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], &st) == -1) {
+	if (etymon_af_fstat(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &st) == -1) {
 		perror("etymon_af_search_db():fstat()");
 	}
 	if (st.st_size > ((etymon_af_off_t)0)) {
@@ -1218,21 +1202,18 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 					memcpy(term_tmp, query + term_start, term_len);
 					term_tmp[term_len] = '\0';
 				}
-				/* log the error */
-				etymon_af_log(state->opt->log, EL_ERROR, EX_QUERY_TERM_TOO_LONG, "etymon_af_search()", term_tmp,
-				       NULL, NULL);
 				if (term_tmp) {
 					free(term_tmp);
 				}
 				/* close database files */
-				if (etymon_af_state[state->db_id]->keep_open == 0) {
-					etymon_af_close_files("etymon_af_search()", state->db_id);
+				if (etymon_af_state[state->dbid]->keep_open == 0) {
+					etymon_af_close_files("etymon_af_search()", state->dbid);
 				}
 				/* free result sets */
 				while (--r_stack_p >= 0) {
 					free(r_stack[r_stack_p]);
 				}
-				return -1;
+				return aferr(AFETERMLEN);
 			}
 
 			memcpy(term, query + term_start, term_len);
@@ -1264,25 +1245,22 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 
 				/* make sure there is space left on the r_stack */
 				if (r_stack_p >= ETYMON_AF_MAX_R_STACK_DEPTH) {
-					/* log the error */
-					etymon_af_log(state->opt->log, EL_ERROR, EX_QUERY_TOO_COMPLEX, "etymon_af_search()",
-					       (char*)query, NULL, NULL);
 					/* close database files */
-					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", state->db_id);
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files("etymon_af_search()", state->dbid);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
 						free(r_stack[r_stack_p]);
 					}
-					return -1;
+					return aferr(AFEQUERYNEST);
 				}
 				
 				/* perform the search */
 				if (etymon_af_search_term(state, term, &(r_stack[r_stack_p]), &(rn_stack[r_stack_p])) == -1) {
 					/* close database files */
-					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", state->db_id);
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files("etymon_af_search()", state->dbid);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
@@ -1302,18 +1280,15 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 				
 				/* make sure there is space left on the op_stack */
 				if (op_stack_p >= ETYMON_AF_MAX_OP_STACK_DEPTH) {
-					/* log the error */
-					etymon_af_log(state->opt->log, EL_ERROR, EX_QUERY_TOO_COMPLEX, "etymon_af_search()",
-					       (char*)query, NULL, NULL);
 					/* close database files */
-					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", state->db_id);
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files("etymon_af_search()", state->dbid);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
 						free(r_stack[r_stack_p]);
 					}
-					return -1;
+					return aferr(AFEQUERYNEST);
 				}
 
 				/* push the operator onto the op_stack */
@@ -1325,18 +1300,15 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 			case ETYMON_AF_OP_GROUP_CLOSE:
 				/* top element on op_stack should be ETYMON_AF_OP_GROUP_OPEN */
 				if ( (op_stack_p <= 0) || (op_stack[op_stack_p - 1] != ETYMON_AF_OP_GROUP_OPEN) ) {
-					/* log the error */
-					etymon_af_log(state->opt->log, EL_ERROR, EX_QUERY_SYNTAX_ERROR, "etymon_af_search()",
-					       (char*)query, NULL, NULL);
 					/* close database files */
-					if (etymon_af_state[state->db_id]->keep_open == 0) {
-						etymon_af_close_files("etymon_af_search()", state->db_id);
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files("etymon_af_search()", state->dbid);
 					}
 					/* free result sets */
 					while (--r_stack_p >= 0) {
 						free(r_stack[r_stack_p]);
 					}
-					return -1;
+					return aferr(AFEQUERYSYN);
 				}
 				
 				/* pop ETYMON_AF_OP_GROUP_OPEN from op_stack */
@@ -1362,8 +1334,8 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 						if (etymon_af_boolean_or(state, r_stack, rn_stack, r_stack_p - 2, r_stack_p - 1)
 						    == -1) {
 							/* close database files */
-							if (etymon_af_state[state->db_id]->keep_open == 0) {
-								etymon_af_close_files("etymon_af_search()", state->db_id);
+							if (etymon_af_state[state->dbid]->keep_open == 0) {
+								etymon_af_close_files("etymon_af_search()", state->dbid);
 							}
 							/* free result sets */
 							while (--r_stack_p >= 0) {
@@ -1380,8 +1352,8 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 						if (etymon_af_boolean_and(state, r_stack, rn_stack, r_stack_p - 2, r_stack_p - 1)
 						    == -1) {
 							/* close database files */
-							if (etymon_af_state[state->db_id]->keep_open == 0) {
-								etymon_af_close_files("etymon_af_search()", state->db_id);
+							if (etymon_af_state[state->dbid]->keep_open == 0) {
+								etymon_af_close_files("etymon_af_search()", state->dbid);
 							}
 							/* free result sets */
 							while (--r_stack_p >= 0) {
@@ -1404,40 +1376,37 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 
 		/* there should be a single result set remaining on the r_stack */
 		if (r_stack_p != 1) {
-			/* log the error */
-			etymon_af_log(state->opt->log, EL_ERROR, EX_QUERY_SYNTAX_ERROR, "etymon_af_search()",
-			       (char*)query, NULL, NULL);
 			/* close database files */
-			if (etymon_af_state[state->db_id]->keep_open == 0) {
-				etymon_af_close_files("etymon_af_search()", state->db_id);
+			if (etymon_af_state[state->dbid]->keep_open == 0) {
+				etymon_af_close_files("etymon_af_search()", state->dbid);
 			}
 			/* free result sets */
 			while (--r_stack_p >= 0) {
 				free(r_stack[r_stack_p]);
 			}
-			return -1;
+			return aferr(AFEQUERYSYN);
 		}
 
 		/* add results to the main result set */
 		if (rn_stack[0] > 0) {
 			int x_r, x;
-			x_r = state->opt->results_n;
-			if (state->opt->results == NULL) {
-				state->opt->results = (ETYMON_AF_RESULT*)(malloc((x_r + rn_stack[0]) * sizeof(ETYMON_AF_RESULT)));
+			x_r = state->optr->resultn;
+			if (state->optr->result == NULL) {
+				state->optr->result = (Afresult *) malloc((x_r + rn_stack[0]) * sizeof(Afresult));
 			} else {
-				state->opt->results = (ETYMON_AF_RESULT*)(realloc(state->opt->results, (x_r + rn_stack[0]) * sizeof(ETYMON_AF_RESULT)));
+				state->optr->result = (Afresult *) realloc(state->optr->result, (x_r + rn_stack[0]) * sizeof(Afresult));
 			}
-			if (state->opt->results == NULL) {
+			if (state->optr->result == NULL) {
 				/* ERROR */
 				return -1;
 			}
 			for (x = 0; x < rn_stack[0]; x++) {
-				state->opt->results[x_r].db_id = state->db_id;
-				state->opt->results[x_r].doc_id = (r_stack[0])[x].doc_id;
-				state->opt->results[x_r].score = (r_stack[0])[x].score;
+				state->optr->result[x_r].dbid = state->dbid;
+				state->optr->result[x_r].docid = (r_stack[0])[x].doc_id;
+				state->optr->result[x_r].score = (r_stack[0])[x].score;
 				x_r++;
 			}
-			state->opt->results_n += rn_stack[0];
+			state->optr->resultn += rn_stack[0];
 		}
 
 		if (r_stack[0]) {
@@ -1447,8 +1416,8 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 	}
 	
 	/* close database files */
-	if (etymon_af_state[state->db_id]->keep_open == 0) {
-		if (etymon_af_close_files("etymon_af_search()", state->db_id) == -1) {
+	if (etymon_af_state[state->dbid]->keep_open == 0) {
+		if (etymon_af_close_files("etymon_af_search()", state->dbid) == -1) {
 			return -1;
 		}
 	}
@@ -1459,17 +1428,20 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 
 /* possible errors:
    EX_DB_ID_INVALID
-*/
 int etymon_af_search(ETYMON_AF_SEARCH* opt) {
-	int* p_db;
+*/
+int afsearch(const Afsearch *r, Afsearch_r *rr)
+{
+/*	int* p_db;*/
+	int dbx;
+	Uint2 dbid;
 	ETYMON_AF_SEARCH_STATE state;
 
 	/* validate database identifiers */
-	for (p_db = opt->db_id; *p_db != 0; p_db++) {
-		if ( (*p_db < 0) || (etymon_af_state[*p_db] == NULL) ) {
-			etymon_af_log(opt->log, EL_ERROR, EX_DB_ID_INVALID, "etymon_af_search()", NULL, NULL, NULL);
-			return -1;
-		}
+	for (dbx = 0; dbx < r->dbidn; dbx++) {
+		dbid = r->dbid[dbx];
+		if (etymon_af_state[dbid] == NULL)
+			return aferr(AFEINVAL);
 		/* this is only until we support unoptimized database searching */
 /*
 		if (etymon_af_state[*p_db]->info.optimized == 0) {
@@ -1479,67 +1451,72 @@ int etymon_af_search(ETYMON_AF_SEARCH* opt) {
 			return -1;
 		}
 */
-		if (etymon_af_state[*p_db]->info.stemming && !af_stem_available()) {
+		if (etymon_af_state[dbid]->info.stemming && !af_stem_available()) {
 			fprintf(stderr,
 				"af: %s: Database requires stemming support\n",
-				etymon_af_state[*p_db]->dbname);
+				etymon_af_state[dbid]->dbname);
 			return -1;
 		}
 	}
 	
 	/* build corpus data */
 	state.corpus_doc_n = 0;
-	if (opt->score_results) {
+	if (r->score) {
 		/* compute total number of (non-deleted) documents in
 		   all databases to be searched */
-		for (p_db = opt->db_id; *p_db != 0; p_db++) {
-			state.corpus_doc_n += etymon_af_state[*p_db]->info.doc_n;
+		for (dbx = 0; dbx < r->dbidn; dbx++) {
+			dbid = r->dbid[dbx];
+			state.corpus_doc_n += etymon_af_state[dbid]->info.doc_n;
 		}
 	}
 
 	/* clear results */
-	opt->results = NULL;
-	opt->results_n = 0;
+	rr->result = NULL;
+	rr->resultn = 0;
 	
 	/* loop through each database to search */
-	for (p_db = opt->db_id; *p_db != 0; p_db++) {
-		state.db_id = *p_db;
-		state.opt = opt;
+	for (dbx = 0; dbx < r->dbidn; dbx++) {
+		dbid = r->dbid[dbx];
+		state.dbid = dbid;
+		state.opt = (Afsearch *) r;
+		state.optr = rr;
 		if (etymon_af_search_db(&state) == -1) {
 			return -1;
 		}
 	}
 
-	/* scale results from 0 to 100 */
-	if (opt->score_results) {
+	/* scale results from 0 to 10000 */
+	if (r->score) {
 		int x;
 		int high = 0;
 		int low = 0;
-		for (x = 0; x < opt->results_n; x++) {
-			if (opt->results[x].score > high) {
-				high = opt->results[x].score;
+		for (x = 0; x < rr->resultn; x++) {
+			if (rr->result[x].score > high) {
+				high = rr->result[x].score;
 			}
-			if (opt->results[x].score < low) {
-				low = opt->results[x].score;
+			if (rr->result[x].score < low) {
+				low = rr->result[x].score;
 			}
 		}
-		for (x = 0; x < opt->results_n; x++) {
-			opt->results[x].score = (
-				(opt->results[x].score - low) * 100 )
+		for (x = 0; x < rr->resultn; x++) {
+			rr->result[x].score = (
+				(rr->result[x].score - low) * 10000 )
 				/ (high - low);
 		}
 	}
 	
 	/* sort results */
-	if (opt->results_n > 1) {
-		/* sort by score */
+	/*
+	if (rr->resultn > 1) {
+		/ sort by score /
 		if (opt->sort_results == ETYMON_AF_SORT_SCORE) {
 			qsort(opt->results, opt->results_n, sizeof(ETYMON_AF_RESULT), etymon_af_search_term_compare_score);
 		} else {
-			/* sort by doc_id */
+			/ sort by doc_id /
 			qsort(opt->results, opt->results_n, sizeof(ETYMON_AF_RESULT), etymon_af_search_term_compare_docid);
 		}
 	}
+	*/
 		
 	return 0;
 }
@@ -1548,7 +1525,7 @@ int etymon_af_search(ETYMON_AF_SEARCH* opt) {
 /* results should point to an array of results_n objects.  eresults should
    point to an array (allocated to [results_n + 1] elements) of
    unallocated AF_ERESULT structures. */
-int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_AF_ERESULT* eresults, ETYMON_AF_LOG* log) {
+int etymon_af_resolve_results(Afresult* results, int results_n, ETYMON_AF_ERESULT* eresults, ETYMON_AF_LOG* log) {
 	ETYMON_DOCTABLE doctable;
 	int results_x;
 	int db_id;
@@ -1573,7 +1550,7 @@ int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_A
 			for (results_x = 0; results_x < results_n; results_x++) {
 
 				/* test whether it's a relevant result */
-				if (results[results_x].db_id == db_id) {
+				if (results[results_x].dbid == db_id) {
 
 					/* we delay opening the
                                            database files until we
@@ -1591,7 +1568,7 @@ int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_A
 
 					/* now resolve the doc_id */
 					if (etymon_af_lseek(etymon_af_state[db_id]->fd[ETYMON_DBF_DOCTABLE],
-						     (etymon_af_off_t)( ((etymon_af_off_t)(results[results_x].doc_id - 1)) *
+						     (etymon_af_off_t)( ((etymon_af_off_t)(results[results_x].docid - 1)) *
 								 ((etymon_af_off_t)(sizeof(ETYMON_DOCTABLE))) ),
 						     SEEK_SET) == -1) {
 						perror("etymon_af_resolve_doc_id():lseek()");
@@ -1630,5 +1607,19 @@ int etymon_af_resolve_results(ETYMON_AF_RESULT* results, int results_n, ETYMON_A
 	
 	} /* for loop: db_id */
 
+	return 0;
+}
+
+int afsortscore(Afresult *result, int resultn)
+{
+	if (resultn > 1)
+		qsort(result, resultn, sizeof(Afresult), etymon_af_search_term_compare_score);
+	return 0;
+}
+
+int afsortdocid(Afresult *result, int resultn)
+{
+	if (resultn > 1)
+		qsort(result, resultn, sizeof(Afresult), etymon_af_search_term_compare_docid);
 	return 0;
 }

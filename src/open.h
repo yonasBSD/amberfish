@@ -3,19 +3,21 @@
 
 /***** new *****/
 
+#include "config.h"
+
 typedef struct {
 	char *dbpath;
 	char *mode;
 } Afopen;
 
 typedef struct {
-	int dbid;
+	Uint2 dbid;
 } Afopen_r;
 
 int afopen(const Afopen *r, Afopen_r *rr);
 
 typedef struct {
-	int dbid;
+	Uint2 dbid;
 } Afclose;
 
 typedef struct {
@@ -52,20 +54,18 @@ typedef struct {
 	int read_only; /* open database for read-only operations */
 	int create; /* create database, overwriting if one already exists */
 	int keep_open; /* keep database files open, instead of re-opening for each operation */
-/*	ETYMON_AF_LOG* log;*/
 } ETYMON_AF_OPEN;
 
 typedef struct {
 	int db_id;
-/*	ETYMON_AF_LOG* log;*/
 } ETYMON_AF_CLOSE;
 
 int etymon_af_open(ETYMON_AF_OPEN* opt);
 
 int etymon_af_close(ETYMON_AF_CLOSE* opt);
 
-int etymon_af_open_files(char* where, int db_id, int flags);
+int etymon_af_open_files(char* where, Uint2 db_id, int flags);
 
-int etymon_af_close_files(char* where, int db_id);
+int etymon_af_close_files(char* where, Uint2 db_id);
 
 #endif

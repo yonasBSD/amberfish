@@ -304,7 +304,7 @@ typedef struct AFSEARCH_RTREE_STRUCT {
 void ses_presult(AFSEARCH_RESULT *res)
 {
 	printf("%i %s %i %i %s %ld %ld\n",
-	       res->score,
+	       res->score / 100,
 	       res->dbname,
 	       res->doc_id,
 	       res->parent,
@@ -335,12 +335,15 @@ static int exec_search()
 /*	ETYMON_AF_OPEN ope; */
 	Afopen op;
 	Afopen_r opr;
+	Afsearch se;
+	Afsearch_r ser;
 	Afclose cl;
 	Afclose_r clr;
-	ETYMON_AF_SEARCH sea;
+/*	ETYMON_AF_SEARCH sea;*/
 /*	ETYMON_AF_CLOSE clo;*/
 	ETYMON_AF_LOG log;
-	int db_id[256];
+	Uint2 dbid[ETYMON_AF_MAX_OPEN];
+	int dbidn;
 	int x;
 	ETYMON_AF_ERESULT* eresults;
 	char** p;
@@ -361,75 +364,76 @@ static int exec_search()
 		if (afopen(&op, &opr) < 0)
 			return searcherr();
 /*			return afperror(argv0);*/
-		db_id[x] = opr.dbid;
+		dbid[x] = opr.dbid;
 /*		if ( (db_id[x] = etymon_af_open(&ope)) == -1 ) {
 			return -1;
 		} */
 	}
-	db_id[x] = 0;
-
-	sea.db_id = db_id;
-	sea.query = (unsigned char*)(search_query_boolean);
+	dbidn = x;
+	
+	se.dbid = dbid;
+	se.dbidn = dbidn;
+	se.query = (Afchar *) search_query_boolean;
+	se.qtype = AFQUERYBOOLEAN;
 	/*
 	sea.score_results = ses_options->score_results;
 	sea.sort_results = ses_options->sort_results;
 	*/
-	sea.score_results = ETYMON_AF_SCORE_DEFAULT;
-	sea.sort_results = ETYMON_AF_SORT_SCORE;
-	sea.log = &log;
+	se.score = AFSCOREDEFAULT;
 	
-	r = etymon_af_search(&sea);
-
+	r = afsearch(&se, &ser);
+	afsortscore(ser.result, ser.resultn);
+	
 	if (r != -1) {
 		if (search_totalhits)
-			printf("%i\n", sea.results_n);
+			printf("%i\n", ser.resultn);
 	}
 	
 	if (r != -1 && search_numhits) {
 
 		if (search_skiphits) {
-			if (search_skiphits < sea.results_n) {
-				size_t movebytes = (sea.results_n - search_skiphits) *
-					sizeof (ETYMON_AF_RESULT);
-				memmove(sea.results,
-					sea.results + search_skiphits,
+			if (search_skiphits < ser.resultn) {
+				size_t movebytes = (ser.resultn - search_skiphits) *
+					sizeof (Afresult);
+				memmove(ser.result,
+					ser.result + search_skiphits,
 					movebytes);
-				sea.results = (ETYMON_AF_RESULT *) realloc(
-					sea.results,
+				ser.result = (Afresult *) realloc(
+					ser.result,
 					movebytes);
-				sea.results_n = sea.results_n - search_skiphits;
+				ser.resultn = ser.resultn - search_skiphits;
 			} else {
-				sea.results = (ETYMON_AF_RESULT *) realloc(
-					sea.results, sizeof (ETYMON_AF_RESULT));
-				sea.results_n = 0;
+				ser.result = (Afresult *) realloc(
+					ser.result, sizeof (Afresult));
+				ser.resultn = 0;
 			}
 		}
 		
-		if (search_numhits > 0 && sea.results_n > search_numhits) {
-			sea.results_n = search_numhits;
-			sea.results = (ETYMON_AF_RESULT *) realloc(
-				sea.results,
-				search_numhits * sizeof (ETYMON_AF_RESULT));
+		if (search_numhits > 0 && ser.resultn > search_numhits) {
+			ser.resultn = search_numhits;
+			ser.result = (Afresult *) realloc(
+				ser.result,
+				search_numhits * sizeof (Afresult));
 		}
 		
-		res_n = sea.results_n;
+		res_n = ser.resultn;
 		eresults = (ETYMON_AF_ERESULT*)(malloc((res_n + 1) * sizeof(ETYMON_AF_ERESULT)));
 		res = (AFSEARCH_RESULT*)(malloc((res_n + 1) * sizeof(AFSEARCH_RESULT)));
 		if ( (!eresults) || (!res) ) {
 			fprintf(stderr, "af: unable to allocate memory for search results\n");
 		} else {
-			if (etymon_af_resolve_results(sea.results,
+			if (etymon_af_resolve_results(ser.result,
 						      res_n,
 						      eresults,
 						      &log) != -1) {
 				for (x = 0; x < res_n; x++) {
-					res[x].score = sea.results[x].score;
+					res[x].score = ser.result[x].score;
 					strcpy(res[x].dbname,
-					       dbname[sea.results[x].db_id - 1]);
+					       dbname[ser.result[x].dbid - 1]);
 					res[x].db_id =
-						sea.results[x].db_id;
+						ser.result[x].dbid;
 					res[x].doc_id =
-						sea.results[x].doc_id;
+						ser.result[x].docid;
 					res[x].parent =
 						eresults[x].parent;
 					strcpy(res[x].filename, eresults[x].filename);
@@ -463,8 +467,8 @@ static int exec_search()
 			free(eresults);
 		}
 
-		if (sea.results) {
-			free(sea.results);
+		if (ser.result) {
+			free(ser.result);
 		}
 
 		if ( (search_style == 1) ||
@@ -475,8 +479,8 @@ static int exec_search()
 			AFSEARCH_RTREE* rtree_head;
 			AFSEARCH_RTREE* rtree_p;
 			/* AFSEARCH_RTREE* rtree_p_new; */
-			ETYMON_AF_RESULT* results =
-				(ETYMON_AF_RESULT*)(malloc(2 * sizeof(ETYMON_AF_RESULT)));
+			Afresult* results =
+				(Afresult*)(malloc(2 * sizeof(Afresult)));
 			eresults = (ETYMON_AF_ERESULT*)(malloc(2 * sizeof(ETYMON_AF_ERESULT)));
 			
 			for (x = 0; x < res_n; x++) {
@@ -491,15 +495,15 @@ static int exec_search()
 					printf("Back... (db_id=%i)\n",
 					       rtree_head->r.db_id);
 					*/
-					results->db_id = rtree_head->r.db_id;
-					results->doc_id = rtree_head->r.parent;
+					results->dbid = rtree_head->r.db_id;
+					results->docid = rtree_head->r.parent;
 					results->score = rtree_head->r.score;
 					etymon_af_resolve_results(results, 1, eresults, &log);
 					rtree_p =
 						(AFSEARCH_RTREE*)(malloc(sizeof(AFSEARCH_RTREE)));
 					rtree_p->r.score = rtree_head->r.score;
-					rtree_p->r.doc_id = results->doc_id;
-					rtree_p->r.db_id = results->db_id;
+					rtree_p->r.doc_id = results->docid;
+					rtree_p->r.db_id = results->dbid;
 					rtree_p->r.parent = eresults->parent;
 					rtree_p->r.begin = eresults->begin;
 					rtree_p->r.end = eresults->end;
@@ -533,8 +537,8 @@ static int exec_search()
 		free(res);
 	}
 	
-	for (x = 0; db_id[x] != 0; x++) {
-		cl.dbid = db_id[x];
+	for (x = 0; x < dbidn; x++) {
+		cl.dbid = dbid[x];
 		afclose(&cl, &clr);
 	}
 
