@@ -5,7 +5,13 @@ Typing 'make' in this directory will attempt to build Amberfish.  By
 default this will NOT include XML support.  Please see below for
 installing XML support.
 
-Typeing 'make install' will attempt to install the Amberfish binaries
+NOTE: Unfortunantely, if you already have Xerces installed, the build
+process may find it and try to link with it.  This is a problem
+because Amberfish needs a patched, non-standard version of Xerces in
+order to work.  If you run into this problem, you might consider
+installing the patched version of Xerces as described below.
+
+Typing 'make install' will attempt to install the Amberfish binaries
 in /usr/local/bin/.
 
 
@@ -53,10 +59,14 @@ bash, you may find this to work:
 
 * Install Xerces.  You can either do a system-wide installation or
 copy the needed files where Amberfish can find them.  Amberfish needs
-the src/xercesc directory placed in an include path and the Xerces
-libraries (lib/libxerces-c.so*) placed in the library path.
+the src/xercesc directory placed in the include path
+(e.g. /usr/include) and the Xerces libraries (lib/libxerces-c.so*)
+placed in the library path (e.g. /usr/lib).
 
-* Compile Amberfish (by typing 'make').
+* Recompile Amberfish, from this directory:
+
+  make clean ; make
 
 * Be sure LD_LIBRARY_PATH points to the Xerces library before running
 Amberfish binaries.
+
