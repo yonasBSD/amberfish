@@ -12,7 +12,7 @@ DISTCLEAN = *~
 RM = rm -f
 BINDIR = ../bin
 LIBDIR = ../lib
-XERVER = 1_7_0
+#XERVER = 1_7_0
 #XERLIB = xerces-c${XERVER}
 #XERCES_DIR = xerces-c-src${XERVER}
 #XERCES_PKG = xerces-c-src${XERVER}.tar.gz
@@ -20,7 +20,7 @@ XERVER = 1_7_0
 #INCLUDE = -Iinclude -Iengine -Idclass -Ietc/${XERCES_DIR}/src
 INCLUDE = -Iinclude -Iengine -Idclass
 
-#LIBS=-lxerces-c
+LIBS=-lxerces-c
 
 all: ${BINDIR}/afindex ${BINDIR}/afsearch ${BINDIR}/afadmin ${BINDIR}/affetch
 	@echo ""

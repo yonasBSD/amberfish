@@ -19,25 +19,14 @@ USA.
 
                                * * *
 
-PLEASE NOTE: Xerces is no longer bundled with this package.  As a
-result, all of the documentation related to XML does not apply unless
-you link in an external version of Xerces.  (Linking has become
-complicated by the fact that Xerces no longer offers getScanner() or
-an equivalent as a public method.)  The rough edges should be smoothed
-out over the coming year, during which time the code will remain
-tagged as a development/unstable version.  By default, this package
-currently has XML support disabled.  Also, some of the documentation
-has not yet been updated since the move to SourceForge.
-
-On Linux you may be able to compile this package simply by typing
-`make'.
+See the file 'INSTALL' for installation instructions.
 
 Please refer to the web site for updates:
 
 	http://sourceforge.net/projects/amberfish/
 
-See `doc/amberfish.pdf' for the user documentation.  (You may have to
-type `make' first in the `doc/' subdirectory.)
+See 'doc/amberfish.pdf' for the user documentation.  (You may have to
+type 'make' first in the 'doc/' subdirectory.)
 
 We hope you enjoy using Amberfish!
 
