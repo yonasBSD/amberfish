@@ -167,7 +167,7 @@ int etymon_index_optimize_new(ETYMON_INDEX_OPTIONS* opt) {
 	if (dbinfo.optimized == 1) {
 		int e;
 		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Database is already optimized", opt->dbname);
+		sprintf(s, "%s: Database is already linearized", opt->dbname);
 		e = opt->log.error(s, 1);
 		fclose(dbinfo_f);
 		close(dbinfo_fd);
@@ -583,7 +583,7 @@ int etymon_index_optimize(ETYMON_INDEX_OPTIONS* opt) {
 	if (dbinfo.optimized == 1) {
 		int e;
 		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Database is already optimized", opt->dbname);
+		sprintf(s, "%s: Database is already linearized", opt->dbname);
 		e = opt->log.error(s, 1);
 		close(dbinfo_fd);
 		etymon_db_unlock(opt->dbname, &(opt->log)); /* unlock the database */
@@ -1728,7 +1728,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	if (dbinfo.optimized == 1) {
 		int e;
 		char s[ETYMON_MAX_MSG_SIZE];
-		sprintf(s, "%s: Unable to add to an optimized database", opt->dbname);
+		sprintf(s, "%s: Unable to add to a linearized database", opt->dbname);
 		e = opt->log.error(s, 1);
 		close(dbinfo_fd);
 		if (e != 0) {
@@ -1911,7 +1911,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		dclass_id = 100;
 	} else {
 		/* need to print an error here if the input is unknown
-                   - right now it's being handled in afindex.c which
+                   - right now it's being handled in af.cc which
                    is the wrong place */
 		dclass_id = 0;
 	}

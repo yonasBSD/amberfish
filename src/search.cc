@@ -1322,7 +1322,7 @@ int etymon_af_search(ETYMON_AF_SEARCH* opt) {
 		/* this is only until we support unoptimized database searching */
 		if (etymon_af_state[*p_db]->info.optimized == 0) {
 			fprintf(stderr,
-				"afsearch: %s: The current version cannot search an unoptimized database (run \"afindex -O\" on the database)\n",
+				"af: %s: The current version cannot search a non-linearized database\n",
 				etymon_af_state[*p_db]->dbname);
 			return -1;
 		}

@@ -301,7 +301,7 @@ static int exec_search()
 		eresults = (ETYMON_AF_ERESULT*)(malloc((res_n + 1) * sizeof(ETYMON_AF_ERESULT)));
 		res = (AFSEARCH_RESULT*)(malloc((res_n + 1) * sizeof(AFSEARCH_RESULT)));
 		if ( (!eresults) || (!res) ) {
-			fprintf(stderr, "afsearch: unable to allocate memory for search results\n");
+			fprintf(stderr, "af: unable to allocate memory for search results\n");
 		} else {
 			if (etymon_af_resolve_results(sea.results, res_n, eresults, &log) != -1) {
 				for (x = 0; x < res_n; x++) {
