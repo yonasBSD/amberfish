@@ -226,19 +226,12 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 	return db_id;
 }
 
-
-/* possible errors:
-   EX_IO
-   EX_DB_ID_INVALID
-*/
 int etymon_af_close(ETYMON_AF_CLOSE* opt) {
 	ssize_t nbytes;
 	
 	/* make sure we have a valid pointer in the table */
-	if ( (opt->db_id < 1) || (etymon_af_state[opt->db_id] == NULL) ) {
-		etymon_af_log(opt->log, EL_ERROR, EX_DB_ID_INVALID, "etymon_af_close()", NULL, NULL, NULL);
-		return -1;
-	}
+	if ( (opt->db_id < 1) || (etymon_af_state[opt->db_id] == NULL) )
+		return aferr(AFEINVAL);
 
 	/* write out cached database info */
 	if (etymon_af_state[opt->db_id]->read_only == 0) {
@@ -246,31 +239,20 @@ int etymon_af_close(ETYMON_AF_CLOSE* opt) {
 		if (etymon_af_state[opt->db_id]->keep_open == 0) {
 			etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO] = open(etymon_af_state[opt->db_id]->fn[ETYMON_DBF_INFO],
 									 O_RDWR | ETYMON_AF_O_LARGEFILE, ETYMON_DB_PERM);
-			if (etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO] == -1) {
-				etymon_af_log(opt->log, EL_ERROR, EX_IO, "etymon_af_close()", etymon_af_state[opt->db_id]->dbname, 
-				       etymon_af_state[opt->db_id]->fn[ETYMON_DBF_INFO], strerror(errno));
-				return -1;
-			}
+			if (etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO] == -1)
+				return aferr(AFEDBIO);
 		}
 		/* now write out dbinfo */
-		if (etymon_af_lseek(etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO], (etymon_af_off_t)4, SEEK_SET) == -1) {
-			etymon_af_log(opt->log, EL_ERROR, EX_IO, "etymon_af_close()", etymon_af_state[opt->db_id]->dbname, 
-			       etymon_af_state[opt->db_id]->fn[ETYMON_DBF_INFO], strerror(errno));
-			return -1;
-		}
+		if (etymon_af_lseek(etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO], (etymon_af_off_t)4, SEEK_SET) == -1)
+			return aferr(AFEDBIO);
 		nbytes = write(etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO], &(etymon_af_state[opt->db_id]->info),
 			       sizeof(ETYMON_DB_INFO));
-		if (nbytes != sizeof(ETYMON_DB_INFO)) {
-			etymon_af_log(opt->log, EL_ERROR, EX_IO, "etymon_af_close()", etymon_af_state[opt->db_id]->dbname, 
-			       etymon_af_state[opt->db_id]->fn[ETYMON_DBF_INFO], strerror(errno));
-			return -1;
-		}
+		if (nbytes != sizeof(ETYMON_DB_INFO))
+			return aferr(AFEDBIO);
 		/* close the file if we opened it */
 		if (etymon_af_state[opt->db_id]->keep_open == 0) {
-			if (close(etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO]) == -1) {
-				etymon_af_log(opt->log, EL_ERROR, EX_IO, "etymon_af_close()", etymon_af_state[opt->db_id]->dbname, 
-				       etymon_af_state[opt->db_id]->fn[ETYMON_DBF_INFO], strerror(errno));
-			}
+			if (close(etymon_af_state[opt->db_id]->fd[ETYMON_DBF_INFO]) == -1)
+				return aferr(AFEDBIO);
 		}
 	}
 	
@@ -319,4 +301,12 @@ int afopen(const Afopen *r, Afopen_r *rr)
 	if ((rr->dbid = etymon_af_open(&op)) == -1)
 		return -1;
 	return 0;
+}
+
+int afclose(const Afclose *r, Afclose_r *rr)
+{
+	ETYMON_AF_CLOSE c;
+
+	c.db_id = r->dbid;
+	return etymon_af_close(&c);
 }

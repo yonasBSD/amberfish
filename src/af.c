@@ -335,8 +335,10 @@ static int exec_search()
 /*	ETYMON_AF_OPEN ope; */
 	Afopen op;
 	Afopen_r opr;
+	Afclose cl;
+	Afclose_r clr;
 	ETYMON_AF_SEARCH sea;
-	ETYMON_AF_CLOSE clo;
+/*	ETYMON_AF_CLOSE clo;*/
 	ETYMON_AF_LOG log;
 	int db_id[256];
 	int x;
@@ -531,10 +533,9 @@ static int exec_search()
 		free(res);
 	}
 	
-	clo.log = &log;
 	for (x = 0; db_id[x] != 0; x++) {
-		clo.db_id = db_id[x];
-		etymon_af_close(&clo);
+		cl.dbid = db_id[x];
+		afclose(&cl, &clr);
 	}
 
 	return 0;

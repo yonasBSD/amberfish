@@ -14,6 +14,16 @@ typedef struct {
 
 int afopen(const Afopen *r, Afopen_r *rr);
 
+typedef struct {
+	int dbid;
+} Afclose;
+
+typedef struct {
+	int _tmp;
+} Afclose_r;
+
+int afclose(const Afclose *r, Afclose_r *rr);
+
 /***** old *****/
 
 #include "defs.h"
@@ -47,7 +57,7 @@ typedef struct {
 
 typedef struct {
 	int db_id;
-	ETYMON_AF_LOG* log;
+/*	ETYMON_AF_LOG* log;*/
 } ETYMON_AF_CLOSE;
 
 int etymon_af_open(ETYMON_AF_OPEN* opt);
