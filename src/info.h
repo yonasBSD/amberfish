@@ -20,6 +20,7 @@ typedef struct {
 
 int afdbver(FILE *info);
 int afreadinfo(FILE *f, Dbinfo *info);
+int afwriteinfo(FILE *f, Dbinfo *info);
 
 /* old */
 

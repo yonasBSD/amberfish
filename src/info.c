@@ -30,3 +30,18 @@ int afreadinfo(FILE *f, Dbinfo *info)
 	n = fread(info, 1, sizeof (Dbinfo), f);
 	return (n == sizeof (Dbinfo)) ? 0 : aferr(AFEBADDB);
 }
+
+int afwriteinfo(FILE *f, Dbinfo *info)
+{
+	Uint4 magic;
+	
+	if (fseeko(f, 0, SEEK_SET) < 0)
+		return aferr(AFEDBIO);
+	magic = ETYMON_INDEX_MAGIC;
+	if (fwrite(&magic, 1, sizeof magic, f) < sizeof magic)
+		return aferr(AFEDBIO);
+	if (fwrite(info, 1, sizeof (ETYMON_DB_INFO), f) < sizeof (ETYMON_DB_INFO))
+		return aferr(AFEDBIO);
+
+	return 0;
+}
