@@ -14,7 +14,7 @@ extern "C" {
 #include "girs.h"
 }
 
-int search(GIRS_SEARCH_REQUEST *rq, GIRS_SEARCH_RESPONSE *rs)
+int search(const GIRS_SEARCH_REQUEST *rq, GIRS_SEARCH_RESPONSE *rs)
 {
 	/* testing only */
 	printf("Received query: [%s]\n", rq->query);
