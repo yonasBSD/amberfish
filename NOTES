@@ -17,7 +17,7 @@ OTHER NOTES, BUGS, AND OUTSTANDING ISSUES
 functions of afindex, afsearch, and afadmin.  The old tools are
 planned to be phased out over time.  Note that there are now two
 versions of the tutorial (PDF), one for the old tools and one for the
-new.
+new.  There is also a new man page for af which is updated frequently.
 
 * Experimental "amberfishd" server.  This is part of a
 proof-of-concept for the girtools project and is not currently usable
