@@ -12,12 +12,12 @@ build:
 	cd doc ; ${MAKE} all
 
 install:
-	cd src ; ${MAKE} install
-	cd doc ; ${MAKE} install
+	cd src ; ${MAKE} ${MAKEFLAGS} install
+	cd doc ; ${MAKE} ${MAKEFLAGS} install
 
 uninstall:
-	cd src ; ${MAKE} uninstall
-	cd doc ; ${MAKE} uninstall
+	cd src ; ${MAKE} ${MAKEFLAGS} uninstall
+	cd doc ; ${MAKE} ${MAKEFLAGS} uninstall
 
 clean:
 	rm -fr autom4te.cache

@@ -22,8 +22,9 @@ CC =		@CC@
 CXX =		@CXX@
 
 LIBS =		@LDFLAGS@ @LIBS@ -L. -laf -lm
-PREFIX =	@prefix@
-PREFIXBIN =	${PREFIX}/bin
+prefix =	@prefix@
+exec_prefix =	@exec_prefix@
+PREFIXBIN =	${DESTDIR}@bindir@
 
 LIBAF =		libaf.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \

@@ -5,7 +5,9 @@ RELEASE NOTES
 
 RECENT CHANGES
 
-* Implemented '--mandir' option in configure.
+1.5.8
+
+* Various changes related to RPM packaging.
 
 * Fixed the HTML version of the tutorial.
 

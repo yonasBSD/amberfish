@@ -1,4 +1,6 @@
-MANDIR =	@mandir@
+prefix =	@prefix@
+exec_prefix =	@exec_prefix@
+MANDIR =	${DESTDIR}@mandir@
 MAN1 =		af.1.gz
 
 all: ${MAN1} html pdf
