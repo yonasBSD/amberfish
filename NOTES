@@ -5,26 +5,17 @@ RELEASE NOTES
 
 RECENT CHANGES
 
-* Stable release branch 1.2.x is stable in a relative sense; the
-branch is being made because of upcoming major changes.
+* The 1.3.x development track will be very unstable for a while as it
+undergoes major changes.
 
-* Support for a Porter stemmer has been added.  See the INSTALL file
-for details.
+
+OTHER NOTES, BUGS, AND OUTSTANDING ISSUES
 
 * There is a new, experimental "af" tool that combines most of the
 functions of afindex, afsearch, and afadmin.  The old tools are
 planned to be phased out over time.  Note that there are now two
 versions of the tutorial (PDF), one for the old tools and one for the
 new.
-
-* Fixed bug causing multiple error messages when afindex is given bad
-input files.
-
-* The configure script now takes the --disable-xml option, which tells
-it not to try to link with Xerces.
-
-
-OTHER NOTES, BUGS, AND OUTSTANDING ISSUES
 
 * Experimental "amberfishd" server.  This is part of a
 proof-of-concept for the girtools project and is not currently usable
