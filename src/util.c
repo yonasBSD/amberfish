@@ -83,6 +83,33 @@ int afmakefn(int type, const char *db, char *buf)
 	return 0;
 }
 
+/*
+int afgetfsize_nonansi(FILE *f, off_t *size)
+{
+	struct stat st;
+	
+	if (fstat(fileno(f), &st) < 0)
+		return aferr(AFEDBIO);
+	*size = st.st_size;
+	return 0;
+}
+*/
+
+int afgetfsize(FILE *f, off_t *size)
+{
+	off_t save;
+
+	if ((save = ftello(f)) < 0)
+		return aferr(AFEDBIO);
+	if (fseeko(f, 0, SEEK_END) < 0)
+		return aferr(AFEDBIO);
+	if ((*size = ftello(f)) < 0)
+		return aferr(AFEDBIO);
+	if (fseeko(f, save, SEEK_SET) < 0)
+		return aferr(AFEDBIO);
+	return 0;
+}
+
 /* old */
 	
 #include <stdlib.h>

@@ -10,6 +10,9 @@
 #include "lock.h"
 #include "util.h"
 #include "info.h"
+#include "linbuf.h"
+
+#define LINBUF_SIZE (64)
 
 static inline void afprintvp(int verbose, int minimum)
 {
@@ -131,33 +134,6 @@ static inline int closefiles(Affile *f)
 	return 0;
 }
 
-/*
-int afgetfsize_nonansi(FILE *f, off_t *size)
-{
-	struct stat st;
-	
-	if (fstat(fileno(f), &st) < 0)
-		return aferr(AFEDBIO);
-	*size = st.st_size;
-	return 0;
-}
-*/
-
-int afgetfsize(FILE *f, off_t *size)
-{
-	off_t save;
-
-	if ((save = ftello(f)) < 0)
-		return aferr(AFEDBIO);
-	if (fseeko(f, 0, SEEK_END) < 0)
-		return aferr(AFEDBIO);
-	if ((*size = ftello(f)) < 0)
-		return aferr(AFEDBIO);
-	if (fseeko(f, save, SEEK_SET) < 0)
-		return aferr(AFEDBIO);
-	return 0;
-}
-
 typedef struct {
 	const Aflinear *rq;
 	int postx;
@@ -248,6 +224,7 @@ static inline int readpagel(Aflinst *t)
 
 static inline int readupost(Aflinst *t)
 {
+	/*
 	if (fseeko(t->f.upost,
 		   (off_t) ( ((off_t) (t->upostp - 1)) *
 			     ((off_t) (sizeof t->upost)) ),
@@ -255,7 +232,12 @@ static inline int readupost(Aflinst *t)
 		return aferr(AFEDBIO);
 	if (fread(&(t->upost), 1, sizeof t->upost, t->f.upost) < sizeof t->upost)
 		return aferr(AFEDBIO);
-
+	*/
+	aflinread(&(t->upost), 
+		  (off_t) ( ((off_t) (t->upostp - 1)) *
+			    ((off_t) (sizeof t->upost)) ),
+		  sizeof t->upost);
+		  
 	return 0;
 }
 
@@ -496,6 +478,8 @@ static inline int linopen(Aflinst *t)
 	if (getfsizes(t) < 0)
 		return -1;
 
+	aflinbuf(t->f.upost, LINBUF_SIZE);
+	
 	return 0;
 }
 
