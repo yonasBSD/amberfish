@@ -6,13 +6,14 @@
 
 extern int aferrno;
 
-#define AFEMEM          (1)     /* Out of memory (failed malloc) */
-#define AFEBUFOVER      (2)     /* Buffer overflow (usually char[]) */
-#define AFEUNDEF        (3)     /* Undefined/unknown value */
-#define	AFEDBIO        (10)     /* I/O error while accessing a database file */
-#define	AFEDBLOCK      (11)     /* Database locked */
-#define	AFEVERSION     (12)     /* Incompatible database version */
-#define	AFEBADDB       (13)     /* Corrupted database file */
+#define AFEMEM          (1)   /* Out of memory (failed malloc) */
+#define AFEBUFOVER      (2)   /* Buffer overflow (usually char[]) */
+#define AFEUNDEF        (3)   /* Undefined/unknown value */
+#define	AFEDBIO        (10)   /* I/O error while accessing a database file */
+#define	AFEDBLOCK      (11)   /* Database locked */
+#define	AFEVERSION     (12)   /* Incompatible database version */
+#define	AFEBADDB       (13)   /* Corrupted database file */
+#define	AFELINEAR      (14)   /* Unsupported operation on linearized database */
 
 static inline int aferr(int err)
 {

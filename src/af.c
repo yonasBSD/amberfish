@@ -542,8 +542,11 @@ static int exec_linearize()
 		rq.verbose = verbose;
 		rq.memory = index_memory;
 		rq.nobuffer = index_no_linear_buffer;
-		if (aflinear(&rq) < 0)
+		if (aflinear(&rq) < 0) {
+			if (aferrno == AFELINEAR)
+				aferror("Database is already linearized");
 			return -1;
+		}
 /*			if (etymon_index_optimize_new(&index_options) == -1)
 			return -1;*/
 	}

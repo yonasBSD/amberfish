@@ -30,10 +30,15 @@ is a text-based interface to Amberfish functions for indexing and
 searching documents.  A simple indexing example would look something
 like:
 
-af -i -d mydb -C -vv *.txt
+af -iCv -d mydb *.txt
 
 This creates a new database, mydb, containing an index to the set of
-files, *.txt.  Here is a typical search command:
+files, *.txt.  To allow faster searching, an optional "linearize" step
+can be done (this may take a while):
+
+af -L -d mydb
+
+Here is a typical search command:
 
 af -s -d mydb -Q 'cat & (dog | mouse)'
 
@@ -110,7 +115,8 @@ name.
 
 .TP
 .BI "-m, --memory " maximum
-Set the maximum amount of memory in MB to use for indexing.
+Set the maximum amount of memory in megabytes to use for indexing.
+More memory speeds up indexing.
 
 .TP
 .B --phrase
@@ -188,7 +194,8 @@ command.
 
 .TP
 .BI "-m, --memory " maximum
-Set the maximum amount of memory in MB to use for linearizing.
+Set the maximum amount of memory in megabytes to use for linearizing.
+More memory speeds up linearizing.
 
 .TP
 .B --no-linear-buffer

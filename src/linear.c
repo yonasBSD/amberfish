@@ -496,8 +496,13 @@ int aflinear(const Aflinear *rq)
 		return -1;
 	afprintv(rq->verbose, 4, "Checking if database is linearized");
 	/* exit if db is already linearized */
-	if (t.info.optimized)
-		return afclosedbf(&t.f);
+	if (t.info.optimized) {
+		if (afclosedbf(&t.f) < 0)
+			return -1;
+		if (freelock(t.rq->db) < 0)
+			return -1;
+		return aferr(AFELINEAR);
+	}
 
 	afprintv(rq->verbose, 3, "Performing linearize process");
 	if (linearize(&t) < 0)

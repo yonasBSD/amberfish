@@ -192,9 +192,9 @@ Here is a simple indexing command (@samp{$} is the UNIX prompt):
 @pindex af, -i
 @pindex af, -d
 @pindex af, -C
-@pindex af, -vv
+@pindex af, -v
 @example
-$ af -i -d mydb -C -vv *.txt
+$ af -i -d mydb -C -v *.txt
 @end example
 
 @cindex Database name
@@ -208,10 +208,9 @@ The @option{-d} option specifies the database name, in this case,
 @file{mydb}.  The @option{-C} option indicates that we want to create
 a new database (overwriting any existing database called @file{mydb}).
 Finally, the @option{-v} option tells @command{af} to print
-information about the indexing process as it goes along; we used two
-@option{-v}s for more verbose output.  (Another option, @option{-m},
-may be added to increase the amount of memory used for indexing, which
-will generally reduce indexing time.)
+information about the indexing process as it goes along.  (Another
+option, @option{-m}, may be added to increase the amount of memory
+used for indexing, which will generally reduce indexing time.)
 
 @ignore
 
@@ -221,10 +220,10 @@ The above example may alternatively be entered as two separate commands:
 @pindex af, -i
 @pindex af, -d
 @pindex af, -C
-@pindex af, -vv
+@pindex af, -v
 @example
 $ af -i -d mydb -C --no-linear
-$ af -i -d mydb -vv *.txt
+$ af -i -d mydb -v *.txt
 @end example
 
 @cindex Creating a database
@@ -421,7 +420,7 @@ delimiter that indicates the boundaries between documents in a file.
 For example:
 
 @example
-$ af -i -d mydb -C --split '#####' -vv *.txt
+$ af -i -d mydb -C --split '#####' -v *.txt
 @end example
 
 @noindent
@@ -525,7 +524,7 @@ Suppose we index the following XML data, contained in a file called,
 with the following command:
 
 @example
-$ af -i -d mydb -C -t xml -vv jones.xml
+$ af -i -d mydb -C -t xml -v jones.xml
 @end example
 
 @noindent
@@ -771,7 +770,7 @@ results.  This is regulated with the @command{af} option
 processed during indexing.  For example:
 
 @example
-$ af -i -d mydb -C -t xml --dlevel 2 -vv medline.xml
+$ af -i -d mydb -C -t xml --dlevel 2 -v medline.xml
 @end example
 
 Specifying @option{--dlevel 1} will define each XML file as a single

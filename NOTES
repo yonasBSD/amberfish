@@ -6,7 +6,9 @@ RELEASE NOTES
 RECENT CHANGES
 
 * Development versions 1.5.x contain experimental code that allow
-searching of unlinearized databases.
+searching of unlinearized databases.  Linearizing is no longer
+performed by default but must be specified explicitly with the '-L'
+command option.
 
 * The linearizing (optimizing) code has been completely rewritten and
 is now somewhat faster.  The '--old-linear' option disables the new
