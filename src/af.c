@@ -33,7 +33,7 @@ static int index_no_linear_buffer = 0;
 static int index_old_linear = 0;
 static char *index_doctype = "text";
 static char *index_split = "";
-static int index_files_stdin = 0; /* deprecated */
+static int index_files_stdin = 0;
 
 static int cmd_linearize = 0;
 
@@ -206,7 +206,7 @@ static void dump_opt()
 	printf("index_dlevel = %i\n", index_dlevel);
 	printf("index_doctype = %s\n", index_doctype);
 	printf("index_split = %s\n", index_split);
-	printf("index_files_stdin = %i (deprecated)\n", index_files_stdin);
+	printf("index_files_stdin = %i\n", index_files_stdin);
 	printf("cmd_search = %i\n", cmd_search);
 	printf("search_query_boolean = %s\n", search_query_boolean);
 	printf("search_style = %i\n", search_style);
@@ -492,7 +492,7 @@ static int exec_index()
 	index_options.dclass = index_doctype;
 	index_options.files = nonopt_argv;
 	index_options.files_n = nonopt_argv_n;
-	index_options.files_stdin = index_files_stdin; /* deprecated */
+	index_options.files_stdin = index_files_stdin;
 /*	index_options.word_proximity = 0; */
 	index_options.split = index_split;
 	index_options.verbose = verbose;
@@ -526,7 +526,7 @@ static int exec_linearize()
 	index_options.dclass = index_doctype;
 	index_options.files = nonopt_argv;
 	index_options.files_n = nonopt_argv_n;
-	index_options.files_stdin = index_files_stdin; /* deprecated */
+	index_options.files_stdin = index_files_stdin;
 /*	index_options.word_proximity = 0; */
 	index_options.split = index_split;
 	index_options.verbose = verbose;
@@ -648,7 +648,7 @@ static int validate_opt_index()
 {
 	if (!cmd_index)
 		return 0;
-	if (nonopt_argv_n == 0 && !index_create)
+	if (nonopt_argv_n == 0 && !index_create && !index_files_stdin)
 		return aferror("No files specified for indexing");
 	return 0;
 }
