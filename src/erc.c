@@ -4,7 +4,7 @@
  *  Authors:  Nassib Nassar
  */
 
-#include "syr1.h"
+#include "erc.h"
 #include "fdef.h"
 #include "util.h"
 #include <stdio.h>
@@ -13,12 +13,12 @@
 
 
 /* returns 0 if everything went OK */
-int dc_syr1_init(ETYMON_AF_DC_INIT* dc_init) {
+int dc_erc_init(ETYMON_AF_DC_INIT* dc_init) {
 	return 0;
 }
 
 
-unsigned char dc_syr1_next_char(ETYMON_DOCBUF* docbuf,
+unsigned char dc_erc_next_char(ETYMON_DOCBUF* docbuf,
 				       etymon_af_off_t* offset) {
 	(*offset)++;
 	return etymon_docbuf_next_char(docbuf);
@@ -26,7 +26,7 @@ unsigned char dc_syr1_next_char(ETYMON_DOCBUF* docbuf,
 
 
 /* returns 0 if everything went OK */
-int dc_syr1_index(ETYMON_AF_DC_INDEX* dc_index) {
+int dc_erc_index(ETYMON_AF_DC_INDEX* dc_index) {
 	ETYMON_DOCBUF* docbuf = dc_index->docbuf;
 	ETYMON_AF_INDEX_ADD_DOC add_doc;
 	ETYMON_AF_INDEX_ADD_WORD add_word;
@@ -81,7 +81,7 @@ int dc_syr1_index(ETYMON_AF_DC_INDEX* dc_index) {
 
 			/* loop past non alphanumeric chars */
 			while ( (docbuf->eof == 0) && (offset < add_doc.end) && (isalnum(ch =
-							       dc_syr1_next_char(docbuf, &offset)) == 0) ) {
+							       dc_erc_next_char(docbuf, &offset)) == 0) ) {
 				old_ch = ch;
 			}
 			
@@ -96,7 +96,7 @@ int dc_syr1_index(ETYMON_AF_DC_INDEX* dc_index) {
 					(x < (ETYMON_MAX_WORD_SIZE - 1)) && (docbuf->eof == 0) &&
 					(offset < add_doc.end) &&
 					( ((good = isalnum(ch =
-							   dc_syr1_next_char(docbuf, &offset))) != 0) ||
+							   dc_erc_next_char(docbuf, &offset))) != 0) ||
 					  (good = (ch == '.')) ||
 					  (good = (ch == '-')) )
 					) {
@@ -111,7 +111,7 @@ int dc_syr1_index(ETYMON_AF_DC_INDEX* dc_index) {
 						(docbuf->eof == 0) &&
 						(offset < add_doc.end) &&
 						( (isalnum(ch =
-							   dc_syr1_next_char(docbuf, &offset)) != 0) ||
+							   dc_erc_next_char(docbuf, &offset)) != 0) ||
 						  (ch == '.') ||
 						  (ch == '-') )
 						) {

@@ -1,8 +1,8 @@
 # Changes should be made in Makefile.in instead of Makefile,
 # or else they will be overwritten by configure.
 
-#OPT =		-O3 -funroll-loops
-DEBUG =		-g
+#DEBUG =		-g
+OPT =		-O3 -funroll-loops
 
 LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
@@ -26,7 +26,7 @@ PREFIXBIN =	${DESTDIR}@bindir@
 LIBAF =		libaf.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 		docbuf.o admin.o explain.o stem.o \
-		text.o xml.o xml_test.o syr1.o \
+		text.o xml.o xml_test.o erc.o \
 		err.o info.o linear.o linbuf.o
 BINOBJ =	afmain.o af.o
 

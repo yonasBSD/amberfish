@@ -17,7 +17,7 @@
 #include "text.h"
 #include "xml.h"
 #include "xml_test.h"
-#include "syr1.h"
+#include "erc.h"
 
 #include "open.h"
 extern ETYMON_AF_STATE *etymon_af_state[];
@@ -1919,7 +1919,7 @@ int etymon_index_add_files(Afindex *opt) {
 		break;
 	case 100:
 		dc_index.dclass_id = 100;
-		result = dc_syr1_init(&dc_init);
+		result = dc_erc_init(&dc_init);
 		break;
 	case 1:
 #ifdef ETYMON_AF_XML
@@ -2110,7 +2110,7 @@ int etymon_index_add_files(Afindex *opt) {
 				break;
 			case 100:
 				dc_index.dclass_id = 100;
-				result = dc_syr1_index(&dc_index);
+				result = dc_erc_index(&dc_index);
 				break;
 			case 1:
 #ifdef ETYMON_AF_XML
