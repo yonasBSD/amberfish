@@ -5,6 +5,11 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+1.5.3
+
+* Experimental search options, -n (--numhits), --skiphits, and
+--totalhits.
+
 1.5.2
 
 * Fixed bug in 1.5.1 that caused incremental indexing (i.e. adding to

@@ -40,6 +40,9 @@ static int cmd_linearize = 0;
 static int cmd_search = 0;
 static char *search_query_boolean = "";
 static int search_style = 0;
+static int search_skiphits = 0;
+static int search_numhits = -1;
+static int search_totalhits = 0;
 
 static int cmd_list = 0;
 
@@ -62,6 +65,16 @@ static int process_opt_long(char *opt, char *arg)
 	}
 	if (!strcmp(opt, "dlevel")) {
 		index_dlevel = atoi(arg);
+		return 0;
+	}
+	if (!strcmp(opt, "skiphits")) {
+		search_skiphits = atoi(arg);
+		if (search_skiphits < 0)
+			search_skiphits = 0;
+		return 0;
+	}
+	if (!strcmp(opt, "totalhits")) {
+		search_totalhits = 1;
 		return 0;
 	}
 	if (!strcmp(opt, "style")) {
@@ -110,12 +123,15 @@ static int process_opt(int argc, char *argv[])
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear-buffer", 0, 0, 0 },
 		{ "no-stem", 0, 0, 0 },
+		{ "numhits", 1, 0, 'n' },
 		{ "old-linear", 0, 0, 0 },
+		{ "phrase", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
+		{ "skiphits", 1, 0, 0 },
 		{ "split", 1, 0, 0 },
 		{ "style", 1, 0, 0 },
-		{ "phrase", 0, 0, 0 },
+		{ "totalhits", 0, 0, 0 },
 		{ "verbose", 0, 0, 'v' },
 		{ "version", 0, 0, 0 },
 		{ 0, 0, 0, 0 }
@@ -125,7 +141,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CDFLQ:d:ilm:st:v",
+				"CDFLQ:d:ilm:n:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -175,6 +191,11 @@ static int process_opt(int argc, char *argv[])
 			index_memory = atoi(optarg);
 			if (index_memory < MEMORYMIN)
 				index_memory = MEMORYMIN;
+			break;
+		case 'n':
+			search_numhits = atoi(optarg);
+			if (search_numhits < 0)
+				search_numhits = 0;
 			break;
 		case 't':
 			index_doctype = optarg;
@@ -295,6 +316,7 @@ static int exec_search()
 	char** p;
 	AFSEARCH_RESULT* res;
 	int res_n;
+	int r;
 /*
 //	AFSEARCH_RLIST* rlist_head = 0;
 //	AFSEARCH_RLIST* rlist_tail = 0;
@@ -342,15 +364,51 @@ static int exec_search()
 	sea.score_results = ETYMON_AF_SCORE_DEFAULT;
 	sea.sort_results = ETYMON_AF_SORT_SCORE;
 	sea.log = &log;
-	if (etymon_af_search(&sea) != -1) {
+	
+	r = etymon_af_search(&sea);
 
+	if (r != -1) {
+		if (search_totalhits)
+			printf("%i\n", sea.results_n);
+	}
+	
+	if (r != -1 && search_numhits) {
+
+		if (search_skiphits) {
+			if (search_skiphits < sea.results_n) {
+				size_t movebytes = (sea.results_n - search_skiphits) *
+					sizeof (ETYMON_AF_RESULT);
+				memmove(sea.results,
+					sea.results + search_skiphits,
+					movebytes);
+				sea.results = (ETYMON_AF_RESULT *) realloc(
+					sea.results,
+					movebytes);
+				sea.results_n = sea.results_n - search_skiphits;
+			} else {
+				sea.results = (ETYMON_AF_RESULT *) realloc(
+					sea.results, sizeof (ETYMON_AF_RESULT));
+				sea.results_n = 0;
+			}
+		}
+		
+		if (search_numhits > 0 && sea.results_n > search_numhits) {
+			sea.results_n = search_numhits;
+			sea.results = (ETYMON_AF_RESULT *) realloc(
+				sea.results,
+				search_numhits * sizeof (ETYMON_AF_RESULT));
+		}
+		
 		res_n = sea.results_n;
 		eresults = (ETYMON_AF_ERESULT*)(malloc((res_n + 1) * sizeof(ETYMON_AF_ERESULT)));
 		res = (AFSEARCH_RESULT*)(malloc((res_n + 1) * sizeof(AFSEARCH_RESULT)));
 		if ( (!eresults) || (!res) ) {
 			fprintf(stderr, "af: unable to allocate memory for search results\n");
 		} else {
-			if (etymon_af_resolve_results(sea.results, res_n, eresults, &log) != -1) {
+			if (etymon_af_resolve_results(sea.results,
+						      res_n,
+						      eresults,
+						      &log) != -1) {
 				for (x = 0; x < res_n; x++) {
 					res[x].score = sea.results[x].score;
 					strcpy(res[x].dbname,
