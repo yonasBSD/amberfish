@@ -256,7 +256,8 @@ void etymon_sei_execute(ETYMON_SEI_OPTIONS* sei_options) {
 	db_options->dbname = sei_options->dbname;
 	db_options->memory = sei_options->memory;
 	db_options->phrase = sei_options->phrase;
-
+	db_options->stemming = 0;
+	
 	/* set indexing options */
 	index_options = (ETYMON_INDEX_OPTIONS*)(malloc(sizeof(ETYMON_INDEX_OPTIONS)));
 	index_options->log.error = etymon_sei_log_error;
@@ -267,8 +268,8 @@ void etymon_sei_execute(ETYMON_SEI_OPTIONS* sei_options) {
 	index_options->files = sei_options->files;
 	index_options->files_n = count_files(sei_options->files);
 	index_options->files_stdin = sei_options->files_stdin;
-	index_options->phrase = sei_options->phrase;
-	index_options->word_proximity = 0;
+//	index_options->phrase = sei_options->phrase;
+//	index_options->word_proximity = 0;
 	index_options->split = sei_options->split;
 	index_options->verbose = sei_options->verbose;
 	index_options->dc_options = sei_options->dc_options;

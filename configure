@@ -3161,6 +3161,20 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+stemmer=no
+rm -f src/stem.d
+echo "$as_me:$LINENO: checking for stemmer" >&5
+echo $ECHO_N "checking for stemmer... $ECHO_C" >&6
+if test -f src/porter.cc; then
+	stemmer=yes
+	cat >>confdefs.h <<\_ACEOF
+#define HAVE_STEMMER 1
+_ACEOF
+
+fi
+echo "$as_me:$LINENO: result: $stemmer" >&5
+echo "${ECHO_T}$stemmer" >&6
+
 echo "$as_me:$LINENO: checking for short int" >&5
 echo $ECHO_N "checking for short int... $ECHO_C" >&6
 if test "${ac_cv_type_short_int+set}" = set; then

@@ -8,6 +8,7 @@
 #include "lock.h"
 #include "util.h"
 #include "fdef.h"
+#include "stem.h"
 
 #include "text.h"
 #include "xml.h"
@@ -1709,6 +1710,20 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 		exit(1);
 	}
 
+	if (dbinfo.stemming && !af_stem_available()) {
+		int e;
+		char s[ETYMON_MAX_MSG_SIZE];
+		sprintf(s, "%s: Database requires stemming support", opt->dbname);
+		e = opt->log.error(s, 1);
+		close(dbinfo_fd);
+		if (e != 0) {
+			exit(e);
+		}
+		return 0;
+		/* This appears to leave the database in a "not ready"
+		   state. */
+	}
+	
 	/* we can only add files if the database is not optimized */
 	if (dbinfo.optimized == 1) {
 		int e;
@@ -1822,6 +1837,7 @@ int etymon_index_add_files(ETYMON_INDEX_OPTIONS* opt) {
 	/* turn on word numbering */
 	state->phrase = dbinfo.phrase;
 	state->word_proximity = dbinfo.word_proximity;
+	state->stemming = dbinfo.stemming;
 	if ( (dbinfo.phrase) || (dbinfo.word_proximity) ) {
 		state->number_words = 1;
 	} else {
@@ -2236,6 +2252,19 @@ int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 	int done;
 	int full;
 
+	/*
+	size_t tmp_len = strlen((const char*)opt->word);
+	char tmp_word[1024];
+	strcpy(tmp_word, (const char*)opt->word);
+	af_stem(opt->word);
+	if (strlen((const char*)opt->word) != tmp_len) {
+		printf("%s -> ", tmp_word);
+		printf("%s\n", (const char*)opt->word);
+	}
+	*/
+	if (state->stemming)
+		af_stem(opt->word);
+	
 	/* if any caches are full, then index this block and clear the caches */
 	if (state->number_words) {
 		full = (state->wcache_count == state->wcache_size) ||

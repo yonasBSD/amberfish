@@ -19,7 +19,7 @@ PREFIXBIN =	${PREFIX}/bin
 
 LIBAMBERFISH =	libamberfish.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
-		docbuf.o admin.o explain.o \
+		docbuf.o admin.o explain.o stem.o \
 		text.o xml.o xml_test.o syr1.o
 BINOBJ =	af.o afindex.o afsearch.o afadmin.o affetch.o
 

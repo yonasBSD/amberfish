@@ -26,6 +26,15 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+stemmer=no
+rm -f src/stem.d
+AC_MSG_CHECKING(for stemmer)
+if test -f src/porter.cc; then
+	stemmer=yes
+	AC_DEFINE(HAVE_STEMMER)
+fi
+AC_MSG_RESULT($stemmer)
+
 AC_CHECK_SIZEOF(short int, 0)
 AC_CHECK_SIZEOF(int, 0)
 AC_CHECK_SIZEOF(long int, 0)

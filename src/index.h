@@ -13,8 +13,8 @@ typedef struct {
 	char** files; /* list of files to index */
 	int files_n;
 	int files_stdin; /* boolean: read files to index from standard input */
-	int phrase; /* boolean: enable phrase search */
-	int word_proximity; /* boolean: enable word proximity operator */
+//	int phrase; /* boolean: enable phrase search */
+//	int word_proximity; /* boolean: enable word proximity operator */
 	char* split; /* delimiter of multiple documents (if any)
                         within a file */
 	int verbose; /* boolean: verbose output */

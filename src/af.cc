@@ -22,6 +22,7 @@
 static int cmd_index = 0;
 static int index_create = 0;
 static int index_phrase = 0;
+static int index_stemming = 1;
 static int index_memory = 3;
 static int index_dlevel = 1;
 static int index_no_linear = 0;
@@ -64,6 +65,10 @@ static int process_opt_long(char *opt, char *arg)
 		index_phrase = 1;
 		return 0;
 	}
+	if (!strcmp(opt, "no-stem")) {
+		index_stemming = 0;
+		return 0;
+	}
 	if (!strcmp(opt, "version")) {
 		cmd_version = 1;
 		return 0;
@@ -86,6 +91,7 @@ static int process_opt(int argc, char *argv[])
 		{ "list", 0, 0, 'l' },
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear", 0, 0, 0 },
+		{ "no-stem", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
 		{ "split", 1, 0, 0 },
@@ -165,6 +171,7 @@ static void dump_opt()
 	printf("cmd_index = %i\n", cmd_index);
 	printf("index_create = %i\n", index_create);
 	printf("index_phrase = %i\n", index_phrase);
+	printf("index_stemming = %i\n", index_stemming);
 	printf("index_memory = %i\n", index_memory);
 	printf("index_dlevel = %i\n", index_dlevel);
 	printf("index_doctype = %s\n", index_doctype);
@@ -426,6 +433,7 @@ static int exec_index()
 	db_options.dbname = *dbname;
 	db_options.memory = index_memory;
 	db_options.phrase = index_phrase;
+	db_options.stemming = index_stemming;
 	/* set indexing options */
 	memset(&index_options, 0, sizeof(ETYMON_INDEX_OPTIONS));
 	index_options.log.error = log_error;
@@ -436,8 +444,7 @@ static int exec_index()
 	index_options.files = nonopt_argv;
 	index_options.files_n = nonopt_argv_n;
 	index_options.files_stdin = index_files_stdin; /* deprecated */
-	index_options.phrase = index_phrase;
-	index_options.word_proximity = 0;
+//	index_options.word_proximity = 0;
 	index_options.split = index_split;
 	index_options.verbose = verbose;
 	index_options.dc_options = ""; /*sei_options->dc_options;*/

@@ -69,6 +69,7 @@ typedef struct {
 	int optimized; /* flag: if database is optimized */
 	int phrase; /* flag: if database supports phrase searching */
 	int word_proximity; /* flag: if database supports word proximity */
+	int stemming; /* flag: if words are stemmed */
 } ETYMON_DB_INFO;
 
 typedef struct {
@@ -257,6 +258,7 @@ typedef struct {
 	uint2 fdef_count;
 	int phrase; /* enable phrase searching */
 	int word_proximity; /* enable word proximity operator */
+	int stemming; /* enable stemming */
 	int number_words; /* enable recordings of word number data */
 	int doc_n; /* total number of (non-deleted) documents in
 		     database */

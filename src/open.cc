@@ -160,6 +160,7 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 		etymon_af_state[db_id]->info.optimized = 0;
 		etymon_af_state[db_id]->info.phrase = 0;
 		etymon_af_state[db_id]->info.word_proximity = 0;
+		etymon_af_state[db_id]->info.stemming = 0;
 		/* write db info */
 		nbytes = write(etymon_af_state[db_id]->fd[ETYMON_DBF_INFO], &(etymon_af_state[db_id]->info), sizeof(ETYMON_DB_INFO));
 		if (nbytes != sizeof(ETYMON_DB_INFO)) {

@@ -77,7 +77,7 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 			if ( (docbuf->eof == 0) && (offset < add_doc.end) ) {
 				
 				/* otherwise ch is the first char of the word */
-				word[0] = toupper(ch);
+				word[0] = tolower(ch);
 				
 				/* add the rest of the chars to the word */
 				x = 1;
@@ -90,7 +90,7 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 					  (good = (ch == '-')) )
 					) {
 					/* add ch to the word */
-					word[x++] = toupper(ch);
+					word[x++] = tolower(ch);
 				}
 				
 				/* iterate past any remaining chars (if the word was truncated because it was too long to fit in word[] */

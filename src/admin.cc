@@ -11,6 +11,7 @@
 #include "admin.h"
 #include "lock.h"
 #include "util.h"
+#include "stem.h"
 
 void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 	char fn[ETYMON_MAX_PATH_SIZE];
@@ -200,6 +201,7 @@ int etymon_db_init(ETYMON_DB_OPTIONS* opt) {
 	dbinfo.optimized = 0;
 	dbinfo.phrase = opt->phrase;
 	dbinfo.word_proximity = 0;
+	dbinfo.stemming = af_stem_available() ? opt->stemming : 0;
 	/* write db info */
 	nbytes = write(fd, &dbinfo, sizeof(ETYMON_DB_INFO));
 	if (nbytes != sizeof(ETYMON_DB_INFO)) {

@@ -13,6 +13,7 @@
 #include "open.h"
 #include "fdef.h"
 #include "index.h"
+#include "stem.h"
 
 extern ETYMON_AF_STATE* etymon_af_state[];
 
@@ -202,6 +203,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 	int search_field_len;
 	unsigned char word[ETYMON_MAX_WORD_SIZE];
 	int word_len;
+	int unstemmed_word_len;
 	int phrase_operator;
 	uint4 udict_p;
 	uint1 leaf_flag;
@@ -325,15 +327,15 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 		/* to be implemented */
 		/* for now, leave the phrase operator as 0 (phrase) */
 		
-		/* isolate word to search on, and convert to uppercase */
+		/* isolate word to search on, and convert to lowercase */
 		word_len = 0;
 		while ( (word_len < (ETYMON_MAX_WORD_SIZE - 1)) && (phrase_p[word_len] != ' ') &&
 			(phrase_p[word_len] != '"') && (phrase_p[word_len] != '\0') ) {
-			word[word_len] = toupper(phrase_p[word_len]);
+			word[word_len] = tolower(phrase_p[word_len]);
 			word_len++;
 		}
 		word[word_len] = '\0';
-
+		
 		/* search for word */
 
 		udict_p = etymon_af_state[state->db_id]->info.udict_root;
@@ -348,7 +350,11 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 		} else {
 			right_truncation = 0;
 		}
-		
+
+		unstemmed_word_len = word_len;
+		if (etymon_af_state[state->db_id]->info.stemming)
+			word_len = af_stem(word);
+
 		do {
 			if (etymon_af_lseek(etymon_af_state[state->db_id]->fd[ETYMON_DBF_UDICT], (etymon_af_off_t)udict_p, SEEK_SET) == -1) {
 				perror("etymon_af_search_term():lseek()");
@@ -828,7 +834,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 		}
 			
 		word_counter++;
-		phrase_p += word_len;
+		phrase_p += unstemmed_word_len;
 		if (right_truncation) {
 			phrase_p++;
 		}
@@ -1317,6 +1323,12 @@ int etymon_af_search(ETYMON_AF_SEARCH* opt) {
 		if (etymon_af_state[*p_db]->info.optimized == 0) {
 			fprintf(stderr,
 				"afsearch: %s: The current version cannot search an unoptimized database (run \"afindex -O\" on the database)\n",
+				etymon_af_state[*p_db]->dbname);
+			return -1;
+		}
+		if (etymon_af_state[*p_db]->info.stemming && !af_stem_available()) {
+			fprintf(stderr,
+				"af: %s: Database requires stemming support\n",
 				etymon_af_state[*p_db]->dbname);
 			return -1;
 		}

@@ -69,11 +69,11 @@ void etymon_db_construct_path(int ftype, char* dbname, char* buf) {
 }
 
 
-void etymon_toupper(char* s) {
+void etymon_tolower(char* s) {
 	char* p = s;
 
 	while (*p != '\0') {
-		*p = toupper(*p);
+		*p = tolower(*p);
 		p++;
 	}
 }

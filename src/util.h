@@ -3,7 +3,7 @@
 
 void etymon_db_construct_path(int ftype, char* dbname, char* buf);
 
-void etymon_toupper(char* s);
+void etymon_tolower(char* s);
 
 char*** etymon_split_options(int argc, char *argv[]);
 

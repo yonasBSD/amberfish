@@ -124,6 +124,15 @@ elements returned from searches and is unrelated to nested queries
 which have much higher (fixed) resolution.
 
 .TP
+.B --no-stem
+Do not perform stemming.  This can only be used together with
+.BR -C.
+Normally, stemming is automatically enabled if Amberfish was compiled
+with the stemming function.  This option disables stemming even if it
+is available.  Note that the stemming function is not distributed with
+this package and must be installed manually.
+
+.TP
 .B --no-linear
 Do not linearize the indexes in the database.  By default, the
 database is automatically linearized.  Linearizing reduces searching

@@ -134,7 +134,7 @@ int dc_syr1_index(ETYMON_AF_DC_INDEX* dc_index) {
 					fields[0] = x;
 				} else {
 					/* indexable word */
-					etymon_toupper((char*)word);
+					etymon_tolower((char*)word);
 					if (etymon_af_index_add_word(&add_word) == -1) {
 						return -1;
 					}

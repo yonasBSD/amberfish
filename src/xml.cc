@@ -141,7 +141,7 @@ void DcXmlHandlers::addWords(char* text) {
 		}
 
 		// *p is the first char of the word
-		word[0] = toupper(*p);
+		word[0] = tolower(*p);
 		p++;
 
 		// add the rest of the chars to the word
@@ -153,7 +153,7 @@ void DcXmlHandlers::addWords(char* text) {
 			  (good = (*p == '-')) )
 			) {
 			// add ch to the word
-			word[x++] = toupper(*p);
+			word[x++] = tolower(*p);
 			p++;
 		}
 		

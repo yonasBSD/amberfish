@@ -92,7 +92,7 @@ int dc_xml_test_index(ETYMON_AF_DC_INDEX* dc_index) {
 
 			/* make it the first character of a new token */
 			if (token_alnum) {
-				word_upper[0] = toupper(ch);
+				word_upper[0] = tolower(ch);
 			} else {
 				word_upper[0] = ch;
 			}
@@ -111,7 +111,7 @@ int dc_xml_test_index(ETYMON_AF_DC_INDEX* dc_index) {
 						done = 1;
 					} else {
 						if (x < (ETYMON_MAX_WORD_SIZE - 1)) {
-							word_upper[x] = toupper(ch);
+							word_upper[x] = tolower(ch);
 							word[x++] = ch;
 						}
 						etymon_docbuf_next_char(docbuf);
