@@ -32,7 +32,7 @@ LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 BINOBJ =	afmain.o af.o
 
 # Be careful about changing BIN; see the uninstall target below first.
-BIN =		af
+BIN =		af affetch
 
 SHELL =		/bin/sh
 
