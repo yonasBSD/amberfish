@@ -9,7 +9,6 @@ typedef Uint4 Afdbver_t;
 
 FILE *afopendbf(const char *db, int type, const char *mode);
 int afclosedbf(Affile *f);
-int afdbver(FILE *info);
 int afmakefn(int type, const char *db, char *buf);
 
 /* old */

@@ -1,6 +1,7 @@
 #ifndef _AF_IO_H
 #define _AF_IO_H
 
+/*
 #include <stdio.h>
 
 #define AF_FILE FILE
@@ -29,5 +30,6 @@ static inline int af_fseek(AF_FILE *stream, long offset, int whence)
 {
 	return fseek(stream, offset, whence);
 }
+*/
 
 #endif

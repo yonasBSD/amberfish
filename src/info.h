@@ -18,6 +18,7 @@ typedef struct {
 	int stemming; /* flag: if words are stemmed */
 } Dbinfo;
 
+int afdbver(FILE *info);
 int afreadinfo(FILE *f, Dbinfo *info);
 
 /* old */
