@@ -40,6 +40,8 @@ int dc_xml_test_index(ETYMON_AF_DC_INDEX* dc_index) {
 	int attr;
 	int special_tag;
 
+	ch = 0;
+
 	/* return if the document size is 0 */
 	if (docbuf->data_len == 0) {
 		return 0;
