@@ -3,16 +3,18 @@ exec_prefix =	@exec_prefix@
 MANDIR =	${DESTDIR}@mandir@
 MAN1 =		af.1.gz
 
-all: ${MAN1} html pdf
+all: man html pdf
+
+man: ${MAN1}
 
 html: html/index.html
 
 pdf: amberfish.pdf
 
-html/index.html: amberfish.texi
+html/index.html: amberfish.texi version.texi
 	makeinfo --force --html -I. amberfish.texi -o html
 
-amberfish.pdf: amberfish.texi
+amberfish.pdf: amberfish.texi version.texi
 	texi2dvi --pdf amberfish.texi
 
 %.1.gz: %.1
@@ -37,7 +39,7 @@ clean:
 		amberfish.aux amberfish.cp amberfish.cps amberfish.fn \
 		amberfish.fns amberfish.ky amberfish.log amberfish.pg \
 		amberfish.tmp amberfish.toc amberfish.tp amberfish.vr \
-		amberfish.vrs
+		amberfish.vrs amberfish.pdf
 
 distclean:
 	${MAKE} clean

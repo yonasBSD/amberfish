@@ -82,7 +82,7 @@ afd: ${LIBAF} ${GIRS}/src/libgirs.a afdmain.o afd.o
 ${LIBAF}: ${LIBOBJ}
 	ar rs ${LIBAF} ${LIBOBJ}
 
-install:
+install: all
 	mkdir -p ${PREFIXBIN}
 	cp ${BIN} ${PREFIXBIN}/.
 

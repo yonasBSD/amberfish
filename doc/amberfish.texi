@@ -55,11 +55,9 @@
 
 @sp 4
 
-@ignore
 This document describes Amberfish Version @value{VERSION}.  Updates
 and information are available from the Etymon web site at
 @url{http://www.etymon.com/}.
-@end ignore
 
 @vskip 0pt plus 1filll
 
@@ -148,16 +146,6 @@ systems.  Except where otherwise noted, a UNIX platform is assumed.
 @node Tutorial, (dir), Top, Top
 @chapter Tutorial
 @cindex Tutorial
-
-@ignore
-@noindent
-@sc{This} document serves as an introduction to the Amberfish text
-retrieval system.  It is intended for both beginning UNIX users and
-professional system administrators.  Amberfish is text-based software
-and does not currently have a graphical user interface, although it is
-hoped that the tools provided will be easy to integrate into existing
-systems.  Except where otherwise noted, a UNIX platform is assumed.
-@end ignore
 
 @menu
 * Introduction::          
