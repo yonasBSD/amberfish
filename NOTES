@@ -1,16 +1,16 @@
 
-RELEASE NOTES (SINCE AMBERFISH 1.1.8)
+RELEASE NOTES
+
+1.1.10
+
+* Fixed bug causing multiple error messages when afindex is given bad
+input files.
 
 * The configure script now takes the --disable-xml option, which tells
 it not to try to link with Xerces.
 
 
 OTHER NOTES, BUGS, AND OUTSTANDING ISSUES
-
-* Indexing non-regular files.  There is a known bug that causes many
-error message to be printed if afindex is used with non-regular files
-such as directories.  For now it is best to ensure that only regular
-files are passed to afindex.
 
 * Documentation errors.  Building the documentation generates lots of
 errors.  They are related to navigation and are harmless for the most
@@ -22,8 +22,8 @@ have been optimized with -O.
 * Optimization speed.  The optimize (-O) code is slow and needs to be
 rewritten.
 
-* Memory leaks.  There are known memory leaks associated with
-searching.  We could use assistance in tracking these down.
+* Memory leaks.  There seems to be a memory leak in the search code.
+We could use assistance in tracking this down.
 
 * Indexing with '-t xml' apparently does not return an error message
 (as it should) when XML support is disabled.  Not sure what it
