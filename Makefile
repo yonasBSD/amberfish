@@ -6,30 +6,30 @@ all:
 	@if [ ! -f src/Makefile ] ; then \
 		echo '*** Makefile not found in src/.  Did you forget to ./configure ? ***' ; \
 	else \
-		make build ; \
+		${MAKE} build ; \
 	fi
 
 build:
-	cd src ; make all
-	cd doc ; make all
+	cd src ; ${MAKE} all
+	cd doc ; ${MAKE} all
 
 install:
-	cd src ; make install
-	cd doc ; make install
+	cd src ; ${MAKE} install
+	cd doc ; ${MAKE} install
 
 uninstall:
-	cd src ; make uninstall
+	cd src ; ${MAKE} uninstall
 
 clean:
 	rm -fr autom4te.cache
 	rm -f config.log config.status
-	cd src ; make clean
-	cd doc ; make clean
+	cd src ; ${MAKE} clean
+	cd doc ; ${MAKE} clean
 
 distclean:
-	make clean
-	cd src ; make distclean
-	cd doc ; make distclean
+	${MAKE} clean
+	cd src ; ${MAKE} distclean
+	cd doc ; ${MAKE} distclean
 	rm -f src/Makefile src/config.h src/version.h \
 		doc/Makefile doc/version.texi
 	rm -f *~ *#

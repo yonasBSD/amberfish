@@ -18,8 +18,8 @@ CFLAGS =	-std=c89 -pedantic ${FLAGS}
 CXXFLAGS =	-ansi -pedantic ${FLAGS} @CPPFLAGS@
 # Not sure if we still use @CPPFLAGS@?
 
-CXX =		g++
-CC =		gcc
+CC =		@CC@
+CXX =		@CXX@
 
 LIBS =		@LDFLAGS@ @LIBS@ -L. -laf -lm
 PREFIX =	@prefix@
@@ -94,5 +94,5 @@ clean:
 		${BINOBJ} ${LIBOBJ} ${LIBAF}
 
 distclean:
-	make clean
+	${MAKE} clean
 	rm -f *~ *#

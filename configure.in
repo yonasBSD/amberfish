@@ -1,5 +1,8 @@
 AC_INIT()
 
+CPPFLAGS="-I/usr/local/include $CPPFLAGS"
+LDFLAGS="-L/usr/local/lib $LDFLAGS"
+
 AC_MSG_CHECKING(for VERSION)
 if test -f VERSION; then
 	af_version=`cat VERSION`
@@ -9,6 +12,7 @@ else
 	AC_MSG_RESULT(no; using $af_version)
 fi
 
+AC_PROG_CC
 AC_PROG_CXX
 
 AC_CHECK_SIZEOF(short int, 0)
@@ -24,10 +28,22 @@ AC_ARG_ENABLE(xml, [  --disable-xml           disable linking with Xerces and XM
 AC_MSG_CHECKING(whether xml is enabled)
 if test "$xml" = "yes"; then
 	AC_MSG_RESULT(yes)
-	AC_CHECK_LIB(xerces-c, main)
-	AC_CHECK_HEADERS([xercesc/util/XercesVersion.hpp])
+	AC_CHECK_LIB(xerces-c, main, [
+			xmllib=yes
+			LIBS="-lxerces-c $LIBS"
+			AC_DEFINE(HAVE_LIBXERCES_C)
+		], 
+		xmllib=no)
+	AC_CHECK_HEADERS([xercesc/util/XercesVersion.hpp], xmlinc=yes, xmlinc=no)
 else
 	AC_MSG_RESULT(no)
+fi
+xmlon=no
+if test "$xmllib" = "yes"; then
+	if test "$xmlinc" = "yes"; then
+		xmlon=yes
+		AC_DEFINE(ETYMON_AF_XML)
+	fi
 fi
 
 stemmer=no
@@ -49,3 +65,24 @@ AC_CONFIG_FILES(src/Makefile)
 AC_CONFIG_FILES(doc/Makefile)
 
 AC_OUTPUT()
+
+echo ""
+echo "User options"
+echo "------------"
+echo "Install prefix            : $prefix"
+echo "CPPFLAGS                  : $CPPFLAGS"
+echo "LDFLAGS                   : $LDFLAGS"
+echo "Enable XML                : $xml"
+echo ""
+echo "Configure results"
+echo "-----------------"
+echo "Amberfish version         : $af_version"
+echo "C compiler                : $CC"
+echo "C++ compiler              : $CXX"
+if test "$xml" = "yes"; then
+	echo "Xerces-C library found    : $xmllib"
+	echo "Xerces-C headers found    : $xmlinc"
+fi
+echo "XML support enabled       : $xmlon"
+echo "Stemmer enabled           : $stemmer"
+echo ""

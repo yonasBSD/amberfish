@@ -9,15 +9,8 @@
 #undef SIZEOF_INT
 #undef SIZEOF_LONG_INT
 #undef SIZEOF_SHORT_INT
-#undef HAVE_XERCESC_UTIL_XERCESVERSION_HPP
-#undef HAVE_LIBXERCES_C
+#undef ETYMON_AF_XML
 #undef HAVE_STEMMER
-
-#if (HAVE_LIBXERCES_C == 1)
-#	if (HAVE_XERCESC_UTIL_XERCESVERSION_HPP == 1)
-#		define ETYMON_AF_XML
-#	endif
-#endif
 
 typedef char Int1;
 typedef unsigned char Uint1;
