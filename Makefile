@@ -29,5 +29,6 @@ distclean:
 	make clean
 	cd src ; make distclean
 	cd doc ; make distclean
-	rm -f src/Makefile src/af_auto.h doc/Makefile
+	rm -f src/Makefile src/af_auto.h src/version.h \
+		doc/Makefile doc/version.texi
 	rm -f *~ *#

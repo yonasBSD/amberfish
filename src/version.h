@@ -1,1 +1,0 @@
-#define ETYMON_AF_VERSION "1.1.12"
