@@ -69,6 +69,7 @@ static int cmd_version = 0;
 static char *dbname[MAX_DBS];
 static int dbname_n = 0;
 static int verbose = 0;
+static char *host = "";
 
 static char **nonopt_argv = NULL;
 static int nonopt_argv_n = 0;
@@ -152,6 +153,7 @@ static int process_opt(int argc, char *argv[])
 		{ "dlevel", 1, 0, 0 },
 		{ "doctype", 1, 0, 't' },
 		{ "fetch", 0, 0, 0 },
+		{ "host", 1, 0, 'h' },
 		{ "index", 0, 0, 'i' },
 		{ "linearize", 0, 0, 'L' },
 		{ "list", 0, 0, 'l' },
@@ -178,7 +180,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CDFLQ:d:ilm:n:st:v",
+				"CDFLQ:d:h:ilm:n:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -236,6 +238,9 @@ static int process_opt(int argc, char *argv[])
 			break;
 		case 't':
 			index_doctype = optarg;
+			break;
+		case 'h':
+			host = optarg;
 			break;
 		case 'Q':
 			search_query_boolean = optarg;
@@ -791,6 +796,25 @@ static int exec_version()
 	return 0;
 }
 
+static int exec_client()
+{
+	struct soap *soap;
+	char *s;
+	soap =  soap_new();
+	printf("Connecting to server...\n");
+	if (soap_call_ns1__test(soap, host, "", &s)) {
+		soap_print_fault(soap, stderr);
+		soap_print_fault_location(soap, stderr);
+	} else {
+		printf("Connected.\nReturn string: \"%s\"\n", s);
+	}
+	soap_dealloc(soap, s);
+	soap_destroy(soap);
+	soap_end(soap);
+	free(soap);
+	return 0;
+}
+
 static int validate_opt_cmd()
 {
 	if ( (!cmd_index) &&
@@ -881,9 +905,12 @@ int afmain(int argc, char *argv[])
 		fprintf(stderr, "%s: Defaulting to '--split erc:' for erc doctype\n", argv0);
 	}
 	
+	if (*host != '\0')
+		return exec_client();
+	
 	if (validate_opt() < 0)
 		exit(-1);
-	
+
 	if (cmd_index)
 		return exec_index();
 	if (cmd_linearize)
