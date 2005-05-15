@@ -9,12 +9,11 @@ LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 # GIRS server (afd) is experimental and not compiled by default.
 #GIRS =		/usr/local/girtools/girs
 
-#FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function \
-#		${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src
-FLAGS =		${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src
-#CFLAGS =	-std=c89 -pedantic ${FLAGS}
-CFLAGS =	${FLAGS}
-CXXFLAGS =	-ansi -pedantic ${FLAGS} @CPPFLAGS@
+FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function \
+		-Wno-strict-aliasing \
+		${DEBUG} ${OPT} ${LARGEFILE} -I${GIRS}/src
+CFLAGS =	-std=c89 ${FLAGS}
+CXXFLAGS =	-ansi ${FLAGS} @CPPFLAGS@
 # Not sure if we still use @CPPFLAGS@?
 
 CC =		@CC@
@@ -69,6 +68,9 @@ afd: ${LIBAF} afdmain.o afd.o soapC.o soapServer.o
 
 ${LIBAF}: ${LIBOBJ}
 	ar rs ${LIBAF} ${LIBOBJ}
+
+stubs:
+	soapcpp2 afw.h
 
 strip:
 	strip af
