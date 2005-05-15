@@ -19,6 +19,18 @@
 #include "linear.h"
 /* #include "search_new.h" */
 
+#ifdef ETYMON_AF_GSOAP
+#include "soapH.h"
+struct Namespace namespaces[] = {
+	{ "SOAP-ENV", "http://schemas.xmlsoap.org/soap/envelope/" },
+	{ "SOAP-ENC", "http://schemas.xmlsoap.org/soap/encoding/" },
+	{ "xsi", "http://www.w3.org/2001/XMLSchema-instance", "http://www.w3.org/*/XMLSchema-instance" },
+	{ "xsd", "http://www.w3.org/2001/XMLSchema", "http://www.w3.org/*/XMLSchema" },
+	{ "ns1", "urn:af" },
+	{ NULL, NULL }
+};
+#endif
+
 #define MAX_DBS (256)
 #define MEMORYMIN (3)
 

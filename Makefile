@@ -38,6 +38,10 @@ distclean:
 	${MAKE} clean
 	cd src ; ${MAKE} distclean
 	cd doc ; ${MAKE} distclean
-	rm -f src/Makefile src/config.h src/version.h \
-		doc/Makefile doc/version.texi
+	cd src ; rm -f Makefile config.h version.h \
+		af.*.re?.xml af.nsmap af.wsdl ns1.xsd \
+		soapC.c soapClient.c soapClientLib.c \
+		soapH.h soapServer.c soapServerLib.c \
+		soapStub.h
+	cd doc ; rm -f doc/Makefile doc/version.texi
 	rm -f *~ *#

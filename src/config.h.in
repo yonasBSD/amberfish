@@ -10,6 +10,7 @@
 #undef SIZEOF_LONG_INT
 #undef SIZEOF_SHORT_INT
 #undef ETYMON_AF_XML
+#undef ETYMON_AF_GSOAP
 #undef HAVE_STEMMER
 
 typedef char Int1;

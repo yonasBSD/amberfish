@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX CPP EGREP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX CPP EGREP gsoapcpp LIBGSOAP GSOAPCLIENT BIN GSOAPOBJ LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -848,6 +848,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-xml           disable linking with Xerces and XML support
+  --disable-gsoap           disable linking with gSOAP and web services support
 
 Some influential environment variables:
   CC          C compiler command
@@ -4757,6 +4758,146 @@ _ACEOF
 	fi
 fi
 
+gsoap=yes
+# Check whether --enable-gsoap or --disable-gsoap was given.
+if test "${enable_gsoap+set}" = set; then
+  enableval="$enable_gsoap"
+
+	if test "$enableval" = "no"; then
+		gsoap=no
+	fi
+
+fi;
+echo "$as_me:$LINENO: checking whether gsoap is enabled" >&5
+echo $ECHO_N "checking whether gsoap is enabled... $ECHO_C" >&6
+if test "$gsoap" = "yes"; then
+	echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+	echo "$as_me:$LINENO: checking for main in -lgsoap++" >&5
+echo $ECHO_N "checking for main in -lgsoap++... $ECHO_C" >&6
+if test "${ac_cv_lib_gsoappp_main+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgsoap++  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+main ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_gsoappp_main=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_gsoappp_main=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_gsoappp_main" >&5
+echo "${ECHO_T}$ac_cv_lib_gsoappp_main" >&6
+if test $ac_cv_lib_gsoappp_main = yes; then
+
+			gsoaplib=yes
+			libgsoap="-lgsoap++"
+			bin="afd $bin"
+			cat >>confdefs.h <<\_ACEOF
+#define HAVE_LIBXERCES_C 1
+_ACEOF
+
+
+else
+  gsoaplib=no
+fi
+
+	# Extract the first word of "soapcpp2", so it can be a program name with args.
+set dummy soapcpp2; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_gsoapcpp+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$gsoapcpp"; then
+  ac_cv_prog_gsoapcpp="$gsoapcpp" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_gsoapcpp="yes"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_prog_gsoapcpp" && ac_cv_prog_gsoapcpp="no"
+fi
+fi
+gsoapcpp=$ac_cv_prog_gsoapcpp
+if test -n "$gsoapcpp"; then
+  echo "$as_me:$LINENO: result: $gsoapcpp" >&5
+echo "${ECHO_T}$gsoapcpp" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+else
+	echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+gsoapon=no
+if test "$gsoaplib" = "yes"; then
+	if test "$gsoapcpp" = "yes"; then
+		gsoapon=yes
+		cat >>confdefs.h <<\_ACEOF
+#define ETYMON_AF_GSOAP 1
+_ACEOF
+
+		gsoapclient='${GSOAPCL}'
+		gsoapobj='${GSOAPO}'
+	fi
+fi
+
 stemmer=no
 rm -f src/stem.d
 echo "$as_me:$LINENO: checking for stemmer" >&5
@@ -4783,6 +4924,15 @@ echo "@set VERSION $af_version" > doc/version.texi
           ac_config_files="$ac_config_files src/Makefile"
 
           ac_config_files="$ac_config_files doc/Makefile"
+
+
+LIBGSOAP=$libgsoap
+
+GSOAPCLIENT=$gsoapclient
+
+BIN=$bin
+
+GSOAPOBJ=$gsoapobj
 
 
 cat >confcache <<\_ACEOF
@@ -5408,6 +5558,11 @@ s,@CXXFLAGS@,$CXXFLAGS,;t t
 s,@ac_ct_CXX@,$ac_ct_CXX,;t t
 s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
+s,@gsoapcpp@,$gsoapcpp,;t t
+s,@LIBGSOAP@,$LIBGSOAP,;t t
+s,@GSOAPCLIENT@,$GSOAPCLIENT,;t t
+s,@BIN@,$BIN,;t t
+s,@GSOAPOBJ@,$GSOAPOBJ,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
@@ -5896,24 +6051,35 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+if test "$gsoap" = "yes"; then
+	echo ""
+	echo "creating gSOAP stubs"
+	cd src; soapcpp2 afw.h
+fi
 
 echo ""
 echo "User options"
 echo "------------"
-echo "Install prefix            : $prefix"
-echo "CPPFLAGS                  : $USER_CPPFLAGS"
-echo "LDFLAGS                   : $USER_LDFLAGS"
-echo "Enable XML                : $xml"
+echo "Install prefix                : $prefix"
+echo "CPPFLAGS                      : $USER_CPPFLAGS"
+echo "LDFLAGS                       : $USER_LDFLAGS"
+echo "Enable XML                    : $xml"
+echo "Enable gSOAP                  : $gsoap"
 echo ""
 echo "Configure results"
 echo "-----------------"
-echo "Amberfish version         : $af_version"
-echo "C compiler                : $CC"
-echo "C++ compiler              : $CXX"
+echo "Amberfish version             : $af_version"
+echo "C compiler                    : $CC"
+echo "C++ compiler                  : $CXX"
 if test "$xml" = "yes"; then
-	echo "Xerces-C library found    : $xmllib"
-	echo "Xerces-C headers found    : $xmlinc"
+	echo "Xerces-C library found        : $xmllib"
+	echo "Xerces-C headers found        : $xmlinc"
 fi
-echo "XML support enabled       : $xmlon"
-echo "Stemmer enabled           : $stemmer"
+echo "XML support enabled           : $xmlon"
+if test "$gsoap" = "yes"; then
+	echo "gSOAP soapcpp2 found          : $gsoapcpp"
+	echo "gSOAP library found           : $gsoaplib"
+fi
+echo "Web services support enabled  : $gsoapon"
+echo "Stemmer enabled               : $stemmer"
 echo ""
