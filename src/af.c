@@ -70,6 +70,7 @@ static char *dbname[MAX_DBS];
 static int dbname_n = 0;
 static int verbose = 0;
 static char *host = "";
+static char *port = "8080";
 
 static char **nonopt_argv = NULL;
 static int nonopt_argv_n = 0;
@@ -163,6 +164,7 @@ static int process_opt(int argc, char *argv[])
 		{ "no-stem", 0, 0, 0 },
 		{ "numhits", 1, 0, 'n' },
 		{ "phrase", 0, 0, 0 },
+		{ "port", 1, 0, 'P' },
 		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
 		{ "skiphits", 1, 0, 0 },
@@ -180,7 +182,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CDFLQ:d:h:ilm:n:st:v",
+				"CDFLP:Q:d:h:ilm:n:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -241,6 +243,9 @@ static int process_opt(int argc, char *argv[])
 			break;
 		case 'h':
 			host = optarg;
+			break;
+		case 'P':
+			port = optarg;
 			break;
 		case 'Q':
 			search_query_boolean = optarg;
@@ -796,13 +801,18 @@ static int exec_version()
 	return 0;
 }
 
+#ifdef ETYMON_AF_GSOAP
 static int exec_client()
 {
 	struct soap *soap;
+	char target[1024];
 	char *s;
 	soap =  soap_new();
 	printf("Connecting to server...\n");
-	if (soap_call_ns1__test(soap, host, "", &s)) {
+	strcpy(target, host);
+	strcat(target, ":");
+	strcat(target, port);
+	if (soap_call_ns1__test(soap, target, "", &s)) {
 		soap_print_fault(soap, stderr);
 		soap_print_fault_location(soap, stderr);
 	} else {
@@ -814,6 +824,7 @@ static int exec_client()
 	free(soap);
 	return 0;
 }
+#endif
 
 static int validate_opt_cmd()
 {
@@ -905,8 +916,10 @@ int afmain(int argc, char *argv[])
 		fprintf(stderr, "%s: Defaulting to '--split erc:' for erc doctype\n", argv0);
 	}
 	
+#ifdef ETYMON_AF_GSOAP
 	if (*host != '\0')
 		return exec_client();
+#endif
 	
 	if (validate_opt() < 0)
 		exit(-1);
