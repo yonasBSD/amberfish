@@ -58,7 +58,7 @@ all: ${BIN}
 
 -include $(LIBOBJ:.o=.d)
 -include $(BINOBJ:.o=.d)
--include $(GSOAPOBJ:.o=.d)
+@GSOAPINC@
 
 af: ${LIBAF} afmain.o af.o ${GSOAPCLIENT}
 	${CXX} -o af afmain.o af.o ${GSOAPCLIENT} ${LIBS} ${LIBGSOAP}

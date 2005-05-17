@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX CPP EGREP gsoapcpp LIBGSOAP GSOAPCLIENT BIN GSOAPOBJ LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX CPP EGREP gsoapcpp LIBGSOAP GSOAPCLIENT BIN GSOAPOBJ GSOAPINC LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4836,6 +4836,7 @@ if test $ac_cv_lib_gsoappp_main = yes; then
 			gsoaplib=yes
 			libgsoap="-lgsoap++"
 			bin="afd $bin"
+			gsoapinc='-include $(GSOAPOBJ:.o=.d)'
 			cat >>confdefs.h <<\_ACEOF
 #define HAVE_LIBXERCES_C 1
 _ACEOF
@@ -4933,6 +4934,8 @@ GSOAPCLIENT=$gsoapclient
 BIN=$bin
 
 GSOAPOBJ=$gsoapobj
+
+GSOAPINC=$gsoapinc
 
 
 cat >confcache <<\_ACEOF
@@ -5563,6 +5566,7 @@ s,@LIBGSOAP@,$LIBGSOAP,;t t
 s,@GSOAPCLIENT@,$GSOAPCLIENT,;t t
 s,@BIN@,$BIN,;t t
 s,@GSOAPOBJ@,$GSOAPOBJ,;t t
+s,@GSOAPINC@,$GSOAPINC,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

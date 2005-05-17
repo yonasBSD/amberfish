@@ -807,6 +807,8 @@ static int exec_client()
 	struct soap *soap;
 	char target[1024];
 	char *s;
+	struct ns1__search_rq srq;
+	struct ns1__search_rs srs;
 	soap =  soap_new();
 	printf("Connecting to server...\n");
 	strcpy(target, host);
@@ -818,6 +820,16 @@ static int exec_client()
 	} else {
 		printf("Connected.\nReturn string: \"%s\"\n", s);
 	}
+
+	srq.db = "...";
+	srq.query = "...";
+	if (soap_call_ns1__search(soap, target, "", &srq, &srs)) {
+		soap_print_fault(soap, stderr);
+		soap_print_fault_location(soap, stderr);
+	} else {
+		printf("resultn: %d\n", srs.resultn);
+	}
+
 	soap_dealloc(soap, s);
 	soap_destroy(soap);
 	soap_end(soap);

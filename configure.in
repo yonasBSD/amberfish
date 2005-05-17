@@ -63,6 +63,7 @@ if test "$gsoap" = "yes"; then
 			gsoaplib=yes
 			libgsoap="-lgsoap++"
 			bin="afd $bin"
+			gsoapinc='-include $(GSOAPOBJ:.o=.d)'
 			AC_DEFINE(HAVE_LIBXERCES_C)
 		], 
 		gsoaplib=no)
@@ -102,6 +103,7 @@ AC_SUBST(LIBGSOAP, $libgsoap)
 AC_SUBST(GSOAPCLIENT, $gsoapclient)
 AC_SUBST(BIN, $bin)
 AC_SUBST(GSOAPOBJ, $gsoapobj)
+AC_SUBST(GSOAPINC, $gsoapinc)
 
 AC_OUTPUT()
 if test "$gsoap" = "yes"; then

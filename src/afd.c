@@ -1,4 +1,6 @@
 #include "soapH.h"
+#include "open.h"
+#include "search.h"
 
 struct Namespace namespaces[] = {
 	{ "SOAP-ENV", "http://schemas.xmlsoap.org/soap/envelope/" },
@@ -12,6 +14,128 @@ struct Namespace namespaces[] = {
 int ns1__test(struct soap *soap, char **s)
 {
 	*s = (char *) soap_strdup(soap, "Welcome to Amberfish.");
+	return SOAP_OK;
+}
+
+int ns1__search(struct soap *soap, struct ns1__search_rq *srq,
+		    struct ns1__search_rs *srs)
+{
+	Afopen op;
+        Afopen_r opr;
+        Afsearch se;
+        Afsearch_r ser;
+        Afclose cl;
+        Afclose_r clr;
+	ETYMON_AF_LOG log;
+        Uint2 dbid[ETYMON_AF_MAX_OPEN];
+        int dbidn;
+        int x;
+        Afresultmd* resultmd;
+        char** p;
+/*        AFSEARCH_RESULT* res; */
+        int res_n;
+        int r;
+
+	char *dbname = srq->db;
+	int dbname_n = 1;
+	
+	op.mode = "r";
+        for (x = 0; x < dbname_n; x++) {
+                op.dbpath = dbname/*[x]*/;
+                if (afopen(&op, &opr) < 0) {
+/*                        return searcherr();*/
+		}
+                dbid[x] = opr.dbid;
+        }
+        dbidn = x;
+        
+        se.dbid = dbid;
+        se.dbidn = dbidn;
+        se.query = (Afchar *) srq->query;
+        se.qtype = AFQUERYBOOLEAN;
+        se.score = AFSCOREDEFAULT;
+        
+        r = afsearch(&se, &ser);
+        afsortscore(ser.result, ser.resultn);
+
+        /*
+        if (r != -1 && search_numhits) {
+
+                if (search_skiphits) {
+                        if (search_skiphits < ser.resultn) {
+                                size_t movebytes = (ser.resultn - search_skiphits) *
+                                        sizeof (Afresult);
+                                memmove(ser.result,
+                                        ser.result + search_skiphits,
+                                        movebytes);
+                                ser.result = (Afresult *) realloc(
+                                        ser.result,
+                                        movebytes);
+				                                ser.resultn = ser.resultn - search_skiphits;
+                        } else {
+                                ser.result = (Afresult *) realloc(
+                                        ser.result, sizeof (Afresult));
+                                ser.resultn = 0;
+                        }
+                }
+                
+                if (search_numhits > 0 && ser.resultn > search_numhits) {
+                        ser.resultn = search_numhits;
+                        ser.result = (Afresult *) realloc(
+                                ser.result,
+                                search_numhits * sizeof (Afresult));
+                }
+                
+                res_n = ser.resultn;
+                resultmd = (Afresultmd*)(malloc((res_n + 1) * sizeof(Afresultmd)));
+                res = (AFSEARCH_RESULT*)(malloc((res_n + 1) * sizeof(AFSEARCH_RESULT)));
+                if ( (!resultmd) || (!res) ) {
+                        fprintf(stderr, "af: unable to allocate memory for search results\n");
+                } else {
+                        if (afgetresultmd(ser.result,
+                                                      res_n,
+                                                      resultmd) != -1) {
+                                for (x = 0; x < res_n; x++) {
+                                        res[x].score = ser.result[x].score;
+                                        strcpy(res[x].dbname,
+                                               dbname[ser.result[x].dbid - 1]);
+                                        res[x].db_id =
+                                                ser.result[x].dbid;
+                                        res[x].doc_id =
+                                                ser.result[x].docid;
+                                        res[x].parent =
+                                                resultmd[x].parent;
+                                        memcpy(res[x].filename, resultmd[x].docpath, AFPATHSIZE);
+                                        res[x].begin = resultmd[x].begin;
+                                        res[x].end = resultmd[x].end;
+
+                                        if (search_style == 1) {
+                                        } else {
+                                                if (search_style == 3)
+                                                        presult_trec(res + x, x + 1);
+                                                else 
+                                                        ses_presult(res + x);
+                                        }
+                                        
+                                }
+                        }
+
+                        free(resultmd);
+                }
+
+                if (ser.result) {
+                        free(ser.result);
+                }
+                free(res);
+        }
+	*/
+	
+        for (x = 0; x < dbidn; x++) {
+                cl.dbid = dbid[x];
+                afclose(&cl, &clr);
+        }
+
+	srs->resultn = ser.resultn;
 	return SOAP_OK;
 }
 
