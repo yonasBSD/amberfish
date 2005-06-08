@@ -139,12 +139,29 @@ int ns1__search(struct soap *soap, struct ns1__search_rq *srq,
 	return SOAP_OK;
 }
 
+int http_get(struct soap *soap)
+{
+	char *s = strchr(soap->path, '?');
+	if (s && !strcmp(s, "?test")) {
+		soap_response(soap, SOAP_HTML);
+		soap_send(soap, "<HTML>You called test().</HTML>");
+		soap_end_send(soap);
+		return SOAP_OK;
+	}
+	
+	soap_response(soap, SOAP_HTML);
+	soap_send(soap, "<HTML>success - afd is running</HTML>");
+	soap_end_send(soap);
+	return SOAP_OK;
+}
+
 int afdmain(int argc, char **argv)
 {
 	struct soap *soap;
 	int child_socket;
 
 	soap = soap_new();
+	soap->fget = http_get;
 	if (soap_bind(soap, "localhost", 8080, 100) < 0) {
 		soap_print_fault(soap, stderr);
 		return -1;
