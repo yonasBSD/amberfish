@@ -9,20 +9,12 @@
 
 ns1__test(char **s);
 
-struct ns1__search_rq {
-	char *db;
+struct ns1__searchRetrieveRequest {
         char *query;
 };
 
-struct ns1__result {
-	int docid;
-	int score;
-	int dbid;
+struct ns1__searchRetrieveResponse {
+        int numberOfRecords;
 };
 
-struct ns1__search_rs {
-	struct ns1__result *result;
-        int resultn;
-};
-
-int ns1__search(struct ns1__search_rq *srq, struct ns1__search_rs *srs);
+int ns1__search(struct ns1__searchRetrieveRequest *srq, struct ns1__searchRetrieveResponse *srs);

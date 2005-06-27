@@ -807,30 +807,41 @@ static int exec_client()
 	struct soap *soap;
 	char target[1024];
 	char *s;
-	struct ns1__search_rq srq;
-	struct ns1__search_rs srs;
+	struct ns1__searchRetrieveRequest srq;
+	struct ns1__searchRetrieveResponse srs;
+
 	soap =  soap_new();
-	printf("Connecting to server...\n");
-	strcpy(target, host);
+	printf("(Connecting to host `%s' on port %s)\n", host, port);
+	strcpy(target, "http://");
+	strcat(target, host);
 	strcat(target, ":");
 	strcat(target, port);
+	strcat(target, "/");
+	if (dbname[0])
+		strcat(target, dbname[0]);
+
+
+/*
 	if (soap_call_ns1__test(soap, target, "", &s)) {
 		soap_print_fault(soap, stderr);
 		soap_print_fault_location(soap, stderr);
 	} else {
 		printf("Connected.\nReturn string: \"%s\"\n", s);
 	}
+*/
 
-	srq.db = "...";
-	srq.query = "...";
+	srq.query = search_query_boolean;
 	if (soap_call_ns1__search(soap, target, "", &srq, &srs)) {
 		soap_print_fault(soap, stderr);
 		soap_print_fault_location(soap, stderr);
 	} else {
-		printf("resultn: %d\n", srs.resultn);
+		if (search_totalhits)
+			printf("%d\n", srs.numberOfRecords);
+		else
+			printf("(Result output not yet working; use --totalhits to see number of results.)\n");
 	}
 
-	soap_dealloc(soap, s);
+/*	soap_dealloc(soap, s); */
 	soap_destroy(soap);
 	soap_end(soap);
 	free(soap);
@@ -927,15 +938,20 @@ int afmain(int argc, char *argv[])
 		index_split = erc_split;
 		fprintf(stderr, "%s: Defaulting to '--split erc:' for erc doctype\n", argv0);
 	}
-	
+
+	if (*host != '\0') {
+		if (!cmd_search)
+			return aferror("Web services interface currently supports only searching.");
+	}
+
+	if (validate_opt() < 0)
+		exit(-1);
+
 #ifdef ETYMON_AF_GSOAP
 	if (*host != '\0')
 		return exec_client();
 #endif
 	
-	if (validate_opt() < 0)
-		exit(-1);
-
 	if (cmd_index)
 		return exec_index();
 	if (cmd_linearize)

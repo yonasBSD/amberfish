@@ -17,8 +17,8 @@ int ns1__test(struct soap *soap, char **s)
 	return SOAP_OK;
 }
 
-int ns1__search(struct soap *soap, struct ns1__search_rq *srq,
-		    struct ns1__search_rs *srs)
+int ns1__search(struct soap *soap, struct ns1__searchRetrieveRequest *srq,
+		    struct ns1__searchRetrieveResponse *srs)
 {
 	Afopen op;
         Afopen_r opr;
@@ -36,8 +36,10 @@ int ns1__search(struct soap *soap, struct ns1__search_rq *srq,
         int res_n;
         int r;
 
-	char *dbname = srq->db;
+	char *dbname = soap->path + 1;
 	int dbname_n = 1;
+
+	printf("Received query `%s' for database `%s'\n", srq->query, dbname);
 	
 	op.mode = "r";
         for (x = 0; x < dbname_n; x++) {
@@ -135,7 +137,8 @@ int ns1__search(struct soap *soap, struct ns1__search_rq *srq,
                 afclose(&cl, &clr);
         }
 
-	srs->resultn = ser.resultn;
+	srs->numberOfRecords = ser.resultn;
+	printf("%i results.\n", srs->numberOfRecords);
 	return SOAP_OK;
 }
 
@@ -166,6 +169,7 @@ int afdmain(int argc, char **argv)
 		soap_print_fault(soap, stderr);
 		return -1;
 	}
+	printf("afd started\n");
 	while (1) {
 		if ((child_socket = soap_accept(soap)) < 0) {
 			soap_print_fault(soap, stderr);
