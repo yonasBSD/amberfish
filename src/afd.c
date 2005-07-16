@@ -7,18 +7,18 @@ struct Namespace namespaces[] = {
 	{ "SOAP-ENC", "http://schemas.xmlsoap.org/soap/encoding/" },
 	{ "xsi", "http://www.w3.org/2001/XMLSchema-instance", "http://wwww.w3.org/*/XMLSchema-instance" },
 	{ "xsd", "http://www.w3.org/2001/XMLSchema", "http://www.w3.org/*/XMLSchema" },
-	{ "ns1", "urn:af" },
+	{ "SRW", "http://www.loc.gov/zing/srw/" },
 	{ NULL, NULL }
 };
 
-int ns1__test(struct soap *soap, char **s)
+int SRW__test(struct soap *soap, char **s)
 {
 	*s = (char *) soap_strdup(soap, "Welcome to Amberfish.");
 	return SOAP_OK;
 }
 
-int ns1__search(struct soap *soap, struct ns1__searchRetrieveRequest *srq,
-		    struct ns1__searchRetrieveResponse *srs)
+int SRW__searchRetrieveRequest(struct soap *soap, char *SRW__query,
+			       struct SRW__searchRetrieveResponse *srs)
 {
 	Afopen op;
         Afopen_r opr;
@@ -39,7 +39,7 @@ int ns1__search(struct soap *soap, struct ns1__searchRetrieveRequest *srq,
 	char *dbname = soap->path + 1;
 	int dbname_n = 1;
 
-	printf("Received query `%s' for database `%s'\n", srq->query, dbname);
+	printf("Received query `%s' for database `%s'\n", SRW__query, dbname);
 	
 	op.mode = "r";
         for (x = 0; x < dbname_n; x++) {
@@ -53,7 +53,7 @@ int ns1__search(struct soap *soap, struct ns1__searchRetrieveRequest *srq,
         
         se.dbid = dbid;
         se.dbidn = dbidn;
-        se.query = (Afchar *) srq->query;
+        se.query = (Afchar *) SRW__query;
         se.qtype = AFQUERYBOOLEAN;
         se.score = AFSCOREDEFAULT;
         
@@ -137,8 +137,17 @@ int ns1__search(struct soap *soap, struct ns1__searchRetrieveRequest *srq,
                 afclose(&cl, &clr);
         }
 
-	srs->numberOfRecords = ser.resultn;
-	printf("%i results.\n", srs->numberOfRecords);
+	srs->SRW__numberOfRecords = ser.resultn;
+	srs->SRW__records.__size = ser.resultn;
+	srs->SRW__records.__ptrSRW__record = (struct SRWRecord *) soap_malloc(
+		soap, ser.resultn * sizeof (struct SRWRecord));
+
+	srs->SRW__records.__ptrSRW__record[0].SRW__recordData = 
+		(char *) soap_strdup(soap, "Record #1");
+	srs->SRW__records.__ptrSRW__record[1].SRW__recordData = 
+		(char *) soap_strdup(soap, "Record #2");
+
+	printf("%i results.\n", srs->SRW__numberOfRecords);
 	return SOAP_OK;
 }
 

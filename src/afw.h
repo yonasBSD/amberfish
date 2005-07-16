@@ -1,20 +1,22 @@
 //gsoapopt c
-//gsoap ns1 service name: af
-//gsoap ns1 service namespace: http://www.etymon.com/af.wsdl
-//gsoap ns1 service location: http://www.etymon.com/
-//gsoap ns1 service executable: afd
-//gsoap ns1 schema namespace: urn:af
 
 #include "search.h"
 
-ns1__test(char **s);
+SRW__test(char **s);
 
-struct ns1__searchRetrieveRequest {
-        char *query;
+struct SRWRecord {
+	char *SRW__recordData;
 };
 
-struct ns1__searchRetrieveResponse {
-        int numberOfRecords;
+struct SRWRecords {
+	struct SRWRecord *__ptrSRW__record;
+	int __size;
 };
 
-int ns1__search(struct ns1__searchRetrieveRequest *srq, struct ns1__searchRetrieveResponse *srs);
+struct SRW__searchRetrieveResponse {
+        int SRW__numberOfRecords;
+	struct SRWRecords SRW__records;
+};
+
+int SRW__searchRetrieveRequest(char *SRW__query, 
+			       struct SRW__searchRetrieveResponse *srs);

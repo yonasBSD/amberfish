@@ -26,7 +26,7 @@ struct Namespace namespaces[] = {
 	{ "SOAP-ENC", "http://schemas.xmlsoap.org/soap/encoding/" },
 	{ "xsi", "http://www.w3.org/2001/XMLSchema-instance", "http://www.w3.org/*/XMLSchema-instance" },
 	{ "xsd", "http://www.w3.org/2001/XMLSchema", "http://www.w3.org/*/XMLSchema" },
-	{ "ns1", "urn:af" },
+	{ "SRW", "http://www.loc.gov/zing/srw/" },
 	{ NULL, NULL }
 };
 #endif
@@ -807,8 +807,8 @@ static int exec_client()
 	struct soap *soap;
 	char target[1024];
 	char *s;
-	struct ns1__searchRetrieveRequest srq;
-	struct ns1__searchRetrieveResponse srs;
+	char *srq_query;
+	struct SRW__searchRetrieveResponse srs;
 
 	soap =  soap_new();
 	printf("(Connecting to host `%s' on port %s)\n", host, port);
@@ -822,7 +822,7 @@ static int exec_client()
 
 
 /*
-	if (soap_call_ns1__test(soap, target, "", &s)) {
+	if (soap_call_SRW__test(soap, target, "", &s)) {
 		soap_print_fault(soap, stderr);
 		soap_print_fault_location(soap, stderr);
 	} else {
@@ -830,18 +830,23 @@ static int exec_client()
 	}
 */
 
-	srq.query = search_query_boolean;
-	if (soap_call_ns1__search(soap, target, "", &srq, &srs)) {
+	srq_query = search_query_boolean;
+	if (soap_call_SRW__searchRetrieveRequest(soap, target, "", srq_query, &srs)) {
 		soap_print_fault(soap, stderr);
 		soap_print_fault_location(soap, stderr);
 	} else {
 		if (search_totalhits)
-			printf("%d\n", srs.numberOfRecords);
+			printf("%d\n", srs.SRW__numberOfRecords);
 		else
 			printf("(Result output not yet working; use --totalhits to see number of results.)\n");
+		printf("[%s], [%s]\n", srs.SRW__records.__ptrSRW__record[0].SRW__recordData, srs.SRW__records.__ptrSRW__record[1].SRW__recordData);
+		
 	}
 
 /*	soap_dealloc(soap, s); */
+	soap_dealloc(soap, srs.SRW__records.__ptrSRW__record[0].SRW__recordData);
+	soap_dealloc(soap, srs.SRW__records.__ptrSRW__record[1].SRW__recordData);
+	soap_dealloc(soap, srs.SRW__records.__ptrSRW__record);
 	soap_destroy(soap);
 	soap_end(soap);
 	free(soap);
