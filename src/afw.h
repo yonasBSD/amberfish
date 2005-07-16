@@ -14,9 +14,10 @@ struct SRWRecords {
 };
 
 struct SRW__searchRetrieveResponse {
+	char *SRW__version;
         int SRW__numberOfRecords;
 	struct SRWRecords SRW__records;
 };
 
-int SRW__searchRetrieveRequest(char *SRW__query, 
+int SRW__searchRetrieveRequest(char *SRW__version, char *SRW__query, 
 			       struct SRW__searchRetrieveResponse *srs);

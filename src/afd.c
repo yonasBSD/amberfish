@@ -17,7 +17,43 @@ int SRW__test(struct soap *soap, char **s)
 	return SOAP_OK;
 }
 
-int SRW__searchRetrieveRequest(struct soap *soap, char *SRW__query,
+typedef struct {
+	int score;
+	char dbname[AFPATHSIZE];
+	int db_id;
+	int doc_id;
+	int parent;  /* doc_id of parent document */
+        char filename[AFPATHSIZE]; /* document source file name */
+	etymon_af_off_t begin; /* starting offset of document within the file */
+        etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
+} AFSEARCH_RESULT;
+
+typedef struct AFSEARCH_RLIST_STRUCT {
+	AFSEARCH_RESULT r;
+	struct AFSEARCH_RLIST_STRUCT* next;
+} AFSEARCH_RLIST;
+
+typedef struct AFSEARCH_RTREE_STRUCT {
+	AFSEARCH_RESULT r;
+	struct AFSEARCH_RTREE_STRUCT* next;
+	struct AFSEARCH_RTREE_STRUCT* child;
+} AFSEARCH_RTREE;
+
+void ses_spresult(char *s, AFSEARCH_RESULT *res)
+{
+	sprintf(s, "%i %s %i %i %s %ld %ld",
+	       res->score / 100,
+	       res->dbname,
+	       res->doc_id,
+	       res->parent,
+	       res->filename,
+	       (long)(res->begin),
+	       (long)(res->end));
+}
+
+int SRW__searchRetrieveRequest(struct soap *soap, 
+			       char *SRW__version,
+			       char *SRW__query,
 			       struct SRW__searchRetrieveResponse *srs)
 {
 	Afopen op;
@@ -35,15 +71,22 @@ int SRW__searchRetrieveRequest(struct soap *soap, char *SRW__query,
 /*        AFSEARCH_RESULT* res; */
         int res_n;
         int r;
+	AFSEARCH_RESULT* res;
+	int search_numhits = -1;
+	int search_skiphits = 0;
 
-	char *dbname = soap->path + 1;
+	char *dbname[1];
+/*	char *dbname = soap->path + 1; */
 	int dbname_n = 1;
 
-	printf("Received query `%s' for database `%s'\n", SRW__query, dbname);
+	dbname[0] = soap->path + 1;
 	
+/*	printf("Received query `%s' for database `%s'\n", SRW__query,
+ * dbname[0]); */
+
 	op.mode = "r";
         for (x = 0; x < dbname_n; x++) {
-                op.dbpath = dbname/*[x]*/;
+                op.dbpath = dbname[x];
                 if (afopen(&op, &opr) < 0) {
 /*                        return searcherr();*/
 		}
@@ -60,8 +103,10 @@ int SRW__searchRetrieveRequest(struct soap *soap, char *SRW__query,
         r = afsearch(&se, &ser);
         afsortscore(ser.result, ser.resultn);
 
-        /*
         if (r != -1 && search_numhits) {
+
+		srs->SRW__records.__ptrSRW__record = (struct SRWRecord *) soap_malloc(
+			soap, ser.resultn * sizeof (struct SRWRecord));
 
                 if (search_skiphits) {
                         if (search_skiphits < ser.resultn) {
@@ -111,14 +156,10 @@ int SRW__searchRetrieveRequest(struct soap *soap, char *SRW__query,
                                         res[x].begin = resultmd[x].begin;
                                         res[x].end = resultmd[x].end;
 
-                                        if (search_style == 1) {
-                                        } else {
-                                                if (search_style == 3)
-                                                        presult_trec(res + x, x + 1);
-                                                else 
-                                                        ses_presult(res + x);
-                                        }
-                                        
+					srs->SRW__records.__ptrSRW__record[x].SRW__recordData = 
+						(char *) soap_malloc(soap, 1024);
+					ses_spresult(srs->SRW__records.__ptrSRW__record[x].SRW__recordData,
+						     res + x);
                                 }
                         }
 
@@ -130,24 +171,17 @@ int SRW__searchRetrieveRequest(struct soap *soap, char *SRW__query,
                 }
                 free(res);
         }
-	*/
 	
         for (x = 0; x < dbidn; x++) {
                 cl.dbid = dbid[x];
                 afclose(&cl, &clr);
         }
 
+	srs->SRW__version = "1.1";
 	srs->SRW__numberOfRecords = ser.resultn;
 	srs->SRW__records.__size = ser.resultn;
-	srs->SRW__records.__ptrSRW__record = (struct SRWRecord *) soap_malloc(
-		soap, ser.resultn * sizeof (struct SRWRecord));
 
-	srs->SRW__records.__ptrSRW__record[0].SRW__recordData = 
-		(char *) soap_strdup(soap, "Record #1");
-	srs->SRW__records.__ptrSRW__record[1].SRW__recordData = 
-		(char *) soap_strdup(soap, "Record #2");
-
-	printf("%i results.\n", srs->SRW__numberOfRecords);
+/*	printf("%i results.\n", srs->SRW__numberOfRecords); */
 	return SOAP_OK;
 }
 
@@ -174,7 +208,7 @@ int afdmain(int argc, char **argv)
 
 	soap = soap_new();
 	soap->fget = http_get;
-	if (soap_bind(soap, "localhost", 8080, 100) < 0) {
+	if (soap_bind(soap, NULL, 8080, 100) < 0) {
 		soap_print_fault(soap, stderr);
 		return -1;
 	}

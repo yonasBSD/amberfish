@@ -809,9 +809,10 @@ static int exec_client()
 	char *s;
 	char *srq_query;
 	struct SRW__searchRetrieveResponse srs;
+	int x;
 
 	soap =  soap_new();
-	printf("(Connecting to host `%s' on port %s)\n", host, port);
+/*	printf("(Connecting to host `%s' on port %s)\n", host, port); */
 	strcpy(target, "http://");
 	strcat(target, host);
 	strcat(target, ":");
@@ -831,15 +832,21 @@ static int exec_client()
 */
 
 	srq_query = search_query_boolean;
-	if (soap_call_SRW__searchRetrieveRequest(soap, target, "", srq_query, &srs)) {
+	if (soap_call_SRW__searchRetrieveRequest(soap, target, "", "1.1", srq_query, &srs)) {
 		soap_print_fault(soap, stderr);
 		soap_print_fault_location(soap, stderr);
 	} else {
 		if (search_totalhits)
 			printf("%d\n", srs.SRW__numberOfRecords);
-		else
-			printf("(Result output not yet working; use --totalhits to see number of results.)\n");
-		printf("[%s], [%s]\n", srs.SRW__records.__ptrSRW__record[0].SRW__recordData, srs.SRW__records.__ptrSRW__record[1].SRW__recordData);
+/*		else
+			printf("(Result output not yet working; use
+			--totalhits to see number of results.)\n"); */
+		for (x = 0; x < srs.SRW__numberOfRecords; x++)
+			printf("%s\n", srs.SRW__records.__ptrSRW__record[x].SRW__recordData);
+
+/*		printf("[%s], [%s]\n",
+ * srs.SRW__records.__ptrSRW__record[0].SRW__recordData,
+ * srs.SRW__records.__ptrSRW__record[1].SRW__recordData); */
 		
 	}
 
@@ -947,6 +954,8 @@ int afmain(int argc, char *argv[])
 	if (*host != '\0') {
 		if (!cmd_search)
 			return aferror("Web services interface currently supports only searching.");
+		if (dbname_n > 1)
+			return aferror("Web services interface does not currently support searching multiple databases at the same time.");
 	}
 
 	if (validate_opt() < 0)
