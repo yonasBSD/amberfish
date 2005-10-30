@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1999-2004 Etymon Systems, Inc.
+ *  Copyright (C) 1999-2005 Etymon Systems, Inc.
  *
  *  Authors:  Nassib Nassar
  */
@@ -16,6 +16,9 @@
 #include "stem.h"
 #include "info.h"
 
+#include "open.h"
+extern ETYMON_AF_STATE *etymon_af_state[];
+
 void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 	char fn[ETYMON_MAX_PATH_SIZE];
 	int doctable_fd, dbinfo_fd;
@@ -24,7 +27,7 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 	etymon_af_off_t doctable_isize;
 	int x, y;
 	ETYMON_DOCTABLE doctable;
-	uint4 magic;
+	Uint4 magic;
 
 	/* make sure database is ready */
 	if (etymon_db_ready(opt->dbname) == 0) {
@@ -51,8 +54,8 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 		}
 		return;
 	}
-	nbytes = read(dbinfo_fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = read(dbinfo_fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		/* ERROR */
 		printf("unable to read %s\n", fn);
 		exit(1);
@@ -103,6 +106,16 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 			}
 			return;
 		}
+		switch (doctable.deleted) {
+		case 0:
+			printf("+ ");
+			break;
+		case 1:
+			printf("D ");
+			break;
+		default:
+			printf("? ");
+		}
 		printf("%i %i %s %ld %ld ",
 		       x + 1,
 		       doctable.parent,
@@ -111,17 +124,18 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 		       (long)(doctable.end));
 		switch (doctable.dclass_id) {
 		case 1:
-			printf("xml\n");
+			printf("xml");
 			break;
 		case 2:
-			printf("xml_test\n");
+			printf("xml_test");
 			break;
 		case 100:
-			printf("erc\n");
+			printf("erc");
 			break;
 		default:
-			printf("text\n");
+			printf("text");
 		}
+		printf("\n");
 	}
 	close(doctable_fd);
 
@@ -174,7 +188,7 @@ int etymon_db_init_empty(char* dbname, int ftype) {
 int etymon_db_init(ETYMON_DB_OPTIONS* opt) {
 	int fd;
 	ETYMON_DB_INFO dbinfo;
-	uint4 magic;
+	Uint4 magic;
 	ssize_t nbytes;
 
 	etymon_db_unlock(opt->dbname);
@@ -194,8 +208,8 @@ int etymon_db_init(ETYMON_DB_OPTIONS* opt) {
 	/* initialize db info */
 	fd = etymon_db_init_empty(opt->dbname, ETYMON_DBF_INFO);
 	magic = ETYMON_INDEX_MAGIC;
-	nbytes = write(fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = write(fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		/* ERROR */
 		printf("error writing MN during db creation\n");
 		exit(1);
@@ -225,4 +239,53 @@ int etymon_db_init(ETYMON_DB_OPTIONS* opt) {
 int etymon_db_create(ETYMON_DB_OPTIONS* opt) {
 	etymon_db_delete(opt);
 	return etymon_db_init(opt);
+}
+
+/* needs to enforce docid is valid and in bounds! */
+int afsetdeleted(Uint2 dbid, Uint4 docid, Uint1 deleted)
+{
+	ETYMON_DOCTABLE doctable;
+	etymon_af_off_t offset;
+
+	offset = (etymon_af_off_t) (((etymon_af_off_t) (docid - 1)) *
+				    ((etymon_af_off_t) (sizeof (ETYMON_DOCTABLE))));
+
+	/* open database files */
+	if (etymon_af_state[dbid]->keep_open == 0) {
+		if (etymon_af_open_files(dbid, O_RDWR)
+		    == -1) {
+			return -1;
+		}
+	}
+
+	/* resolve the docid */
+	if (etymon_af_lseek(etymon_af_state[dbid]->fd[ETYMON_DBF_DOCTABLE], offset,
+			    SEEK_SET) == -1) {
+		perror("afsetdeleted:lseek()");
+	}
+	if (read(etymon_af_state[dbid]->fd[ETYMON_DBF_DOCTABLE], &doctable,
+		 sizeof(ETYMON_DOCTABLE)) == -1) {
+		perror("afsetdeleted():read()");
+	}
+
+	doctable.deleted = deleted;
+
+	/* write out modified record */
+	if (etymon_af_lseek(etymon_af_state[dbid]->fd[ETYMON_DBF_DOCTABLE], offset,
+			    SEEK_SET) == -1) {
+		perror("afsetdeleted:lseek()");
+	}
+	if (write(etymon_af_state[dbid]->fd[ETYMON_DBF_DOCTABLE], &doctable,
+		 sizeof(ETYMON_DOCTABLE)) == -1) {
+		perror("afsetdeleted():write()");
+	}
+
+	/* close database files */
+	if (etymon_af_state[dbid]->keep_open == 0) {
+		if (etymon_af_close_files(dbid) == -1) {
+			return -1;
+		}
+	}
+
+	return 0;
 }

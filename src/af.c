@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  Etymon Systems, Inc.
+ *  Copyright (C) 2005  Etymon Systems, Inc.
  *
  *  Authors:  Nassib Nassar
  */
@@ -57,6 +57,7 @@ static int search_style = 0;
 static int search_skiphits = 0;
 static int search_numhits = -1;
 static int search_totalhits = 0;
+static int search_prune = 0;
 static char *trec_topic = "<topic_number>";
 static char *trec_tag = "<run_tag>";
 
@@ -65,6 +66,8 @@ static int cmd_list = 0;
 static int cmd_fetch = 0;
 
 static int cmd_version = 0;
+
+static int cmd_delete = 0;
 
 static char *dbname[MAX_DBS];
 static int dbname_n = 0;
@@ -132,6 +135,14 @@ static int process_opt_long(char *opt, char *arg)
 		cmd_version = 1;
 		return 0;
 	}
+	if (!strcmp(opt, "delete")) {
+		cmd_delete = 1;
+		return 0;
+	}
+	if (!strcmp(opt, "prune")) {
+		search_prune = 1;
+		return 0;
+	}
 	if (!strcmp(opt, "no-linear-buffer")) {
 		index_no_linear_buffer = 1;
 		return 0;
@@ -151,6 +162,7 @@ static int process_opt(int argc, char *argv[])
 		{ "create", 0, 0, 'C' },
 		{ "db", 1, 0, 'd' },
 		{ "debug", 0, 0, 'D' },
+		{ "delete", 0, 0, 0 },
 		{ "dlevel", 1, 0, 0 },
 		{ "doctype", 1, 0, 't' },
 		{ "fetch", 0, 0, 0 },
@@ -165,6 +177,7 @@ static int process_opt(int argc, char *argv[])
 		{ "numhits", 1, 0, 'n' },
 		{ "phrase", 0, 0, 0 },
 		{ "port", 1, 0, 'P' },
+		{ "prune", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
 		{ "search", 0, 0, 's' },
 		{ "skiphits", 1, 0, 0 },
@@ -325,6 +338,7 @@ typedef struct {
         char filename[AFPATHSIZE]; /* document source file name */
 	etymon_af_off_t begin; /* starting offset of document within the file */
         etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
+	Uint1 deleted;
 } AFSEARCH_RESULT;
 
 typedef struct AFSEARCH_RLIST_STRUCT {
@@ -350,7 +364,11 @@ static void presult_trec(AFSEARCH_RESULT *res, int rank)
 
 void ses_presult(AFSEARCH_RESULT *res)
 {
-	printf("%i %s %i %i %s %ld %ld\n",
+	if (res->deleted)
+		printf("D");
+	else
+		printf("+");
+	printf(" %i %s %i %i %s %ld %ld\n",
 	       res->score / 100,
 	       res->dbname,
 	       res->doc_id,
@@ -485,6 +503,8 @@ static int exec_search()
 					memcpy(res[x].filename, resultmd[x].docpath, AFPATHSIZE);
 					res[x].begin = resultmd[x].begin;
 					res[x].end = resultmd[x].end;
+					res[x].deleted =
+						resultmd[x].deleted;
 
 					if (search_style == 1) {
 						/* add to rlist */
@@ -801,6 +821,33 @@ static int exec_version()
 	return 0;
 }
 
+static int exec_delete()
+{
+	int x;
+
+	Afopen op;
+	Afopen_r opr;
+	Afclose cl;
+	Afclose_r clr;
+
+	op.dbpath = *dbname;
+	op.mode = "r+";
+	if (afopen(&op, &opr) < 0)
+		return searcherr();
+
+	for (x = 0; x < nonopt_argv_n; x++) {
+		printf("Deleting [%li]\n", atol(nonopt_argv[x]));
+		afsetdeleted(opr.dbid,
+			     (Uint4) atol(nonopt_argv[x]),
+			     1);
+	}
+
+	cl.dbid = opr.dbid;
+	afclose(&cl, &clr);
+
+	return 0;
+}
+
 #ifdef ETYMON_AF_GSOAP
 static int exec_client()
 {
@@ -868,6 +915,7 @@ static int validate_opt_cmd()
 	     (!cmd_search) &&
 	     (!cmd_list) &&
 	     (!cmd_fetch) &&
+	     (!cmd_delete) &&
 	     (!cmd_version) )
 		return aferror("No command option specified");
 	if ((cmd_index +
@@ -875,6 +923,7 @@ static int validate_opt_cmd()
 	     cmd_search +
 	     cmd_list +
 	     cmd_fetch +
+	     cmd_delete +
 	     cmd_version) > 1)
 		return aferror("Too many command options specified");
 	return 0;
@@ -978,6 +1027,8 @@ int afmain(int argc, char *argv[])
 		return exec_fetch();
 	if (cmd_version)
 		return exec_version();
+	if (cmd_delete)
+		return exec_delete();
 		
 	return -1;
 }

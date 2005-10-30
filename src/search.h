@@ -23,6 +23,7 @@ typedef struct {
         char docpath[AFPATHSIZE];  /* document source file name */
 	off_t begin;  /* starting offset of document within the file */
         off_t end;  /* ending offset of document within the file (one byte past end) */
+	Uint1 deleted;
 } Afresultmd;
 
 typedef struct {
@@ -68,8 +69,8 @@ typedef struct {
 /*
 typedef struct {
 	int db_id;
-	uint4 doc_id;
-	uint2 score;
+	Uint4 doc_id;
+	Uint2 score;
 } ETYMON_AF_RESULT;
 */
 
@@ -95,7 +96,7 @@ typedef struct {
 
 /*
 typedef struct {
-	uint4 parent;  / doc_id of parent document /
+	Uint4 parent;  / doc_id of parent document /
         char* filename; / document source file name /
 	etymon_af_off_t begin; / starting offset of document within the file /
         etymon_af_off_t end; / ending offset of document within the file (one byte past end) /
@@ -106,7 +107,7 @@ typedef struct {
 	Uint2 dbid;
 	Afsearch* opt;
 	Afsearch_r* optr;
-	uint4 corpus_doc_n;
+	Uint4 corpus_doc_n;
 } ETYMON_AF_SEARCH_STATE;
 
 /*int etymon_af_search(ETYMON_AF_SEARCH* opt);*/

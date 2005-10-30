@@ -103,17 +103,17 @@ int etymon_index_optimize_old_stdio(ETYMON_INDEX_OPTIONS* opt) {
 	FILE* lword_f;
 	int x;
 	etymon_af_off_t udict_size, upost_isize, ufield_isize, uword_isize, lpost_isize, lfield_isize, lword_isize;
-	uint4 magic;
+	Uint4 magic;
 	ETYMON_DB_INFO dbinfo;
 	char fn[ETYMON_MAX_PATH_SIZE];
 	ETYMON_AF_STAT st;
 	ssize_t nbytes;
-	uint4 udict_p, upost_p, lpost_p_save;
-	uint4 ufield_p, lfield_p_save, field_count;
-	uint4 uword_p, lword_p_save, word_count;
+	Uint4 udict_p, upost_p, lpost_p_save;
+	Uint4 ufield_p, lfield_p_save, field_count;
+	Uint4 uword_p, lword_p_save, word_count;
 	ETYMON_INDEX_PAGE_L page_l;
 	ETYMON_INDEX_PAGE_NL page_nl;
-	uint1 leaf_flag;
+	Uint1 leaf_flag;
 	ETYMON_INDEX_UPOST upost;
 	ETYMON_INDEX_LPOST lpost;
 	ETYMON_INDEX_UFIELD ufield;
@@ -150,8 +150,8 @@ int etymon_index_optimize_old_stdio(ETYMON_INDEX_OPTIONS* opt) {
 		}
 		return -1;
 	}
-	nbytes = read(dbinfo_fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = read(dbinfo_fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		/* ERROR */
 		printf("unable to read %s\n", fn);
 		exit(1);
@@ -460,8 +460,8 @@ int etymon_index_optimize_old_stdio(ETYMON_INDEX_OPTIONS* opt) {
 		perror("index_optimize():fseeko()");
 	}
 	magic = ETYMON_INDEX_MAGIC;
-	nbytes = fwrite(&magic, 1, sizeof(uint4), dbinfo_f);
-	if (nbytes != sizeof(uint4)) {
+	nbytes = fwrite(&magic, 1, sizeof(Uint4), dbinfo_f);
+	if (nbytes != sizeof(Uint4)) {
 		/* ERROR */
 		printf("unable to write MN\n");
 		exit(1);
@@ -522,17 +522,17 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 	int dbinfo_fd, udict_fd, upost_fd, ufield_fd, uword_fd, lpost_fd, lfield_fd, lword_fd;
 	int x;
 	etymon_af_off_t udict_size, upost_isize, ufield_isize, uword_isize, lpost_isize, lfield_isize, lword_isize;
-	uint4 magic;
+	Uint4 magic;
 	ETYMON_DB_INFO dbinfo;
 	char fn[ETYMON_MAX_PATH_SIZE];
 	ETYMON_AF_STAT st;
 	ssize_t nbytes;
-	uint4 udict_p, upost_p, lpost_p_save;
-	uint4 ufield_p, lfield_p_save, field_count;
-	uint4 uword_p, lword_p_save, word_count;
+	Uint4 udict_p, upost_p, lpost_p_save;
+	Uint4 ufield_p, lfield_p_save, field_count;
+	Uint4 uword_p, lword_p_save, word_count;
 	ETYMON_INDEX_PAGE_L page_l;
 	ETYMON_INDEX_PAGE_NL page_nl;
-	uint1 leaf_flag;
+	Uint1 leaf_flag;
 	ETYMON_INDEX_UPOST upost;
 	ETYMON_INDEX_LPOST lpost;
 	ETYMON_INDEX_UFIELD ufield;
@@ -569,8 +569,8 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 		}
 		return -1;
 	}
-	nbytes = read(dbinfo_fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = read(dbinfo_fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		/* ERROR */
 		printf("unable to read %s\n", fn);
 		exit(1);
@@ -865,8 +865,8 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 		perror("index_optimize():lseek()");
 	}
 	magic = ETYMON_INDEX_MAGIC;
-	nbytes = write(dbinfo_fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = write(dbinfo_fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		/* ERROR */
 		printf("unable to write MN\n");
 		exit(1);
@@ -911,7 +911,7 @@ int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt) {
 #endif
 
 void etymon_index_write_nl(int filedes, etymon_af_off_t offset, ETYMON_INDEX_PAGE_NL* page) {
-	static uint1 leaf_flag = 0;
+	static Uint1 leaf_flag = 0;
 	if (etymon_af_lseek(filedes, (etymon_af_off_t)offset, SEEK_SET) == -1) {
 		perror("index_write_nl():lseek()");
 	}
@@ -925,7 +925,7 @@ void etymon_index_write_nl(int filedes, etymon_af_off_t offset, ETYMON_INDEX_PAG
 
 
 void etymon_index_write_l(int filedes, etymon_af_off_t offset, ETYMON_INDEX_PAGE_L* page) {
-	static uint1 leaf_flag = 1;
+	static Uint1 leaf_flag = 1;
 	if (etymon_af_lseek(filedes, (etymon_af_off_t)offset, SEEK_SET) == -1) {
 		perror("index_write_l():lseek()");
 	}
@@ -1015,8 +1015,8 @@ int etymon_index_search_keys_l(unsigned char* word, size_t word_len, ETYMON_INDE
 
 void etymon_index_write_upost(ETYMON_INDEX_INDEXING_STATE* state, int wcache_p, ETYMON_INDEX_PAGE_L* page_l, int ins) {
 	int p;
-	uint4 ufield_p;
-	uint4 uword_p;
+	Uint4 ufield_p;
+	Uint4 uword_p;
 	state->upost.doc_id = state->wcache[wcache_p].doc_id;
 	state->upost.freq = state->wcache[wcache_p].freq;
 	state->upost.next = page_l->post[ins];
@@ -1088,8 +1088,8 @@ void etymon_index_insert_key_l(ETYMON_INDEX_PAGE_L* page, int ins, unsigned char
 	}
 	memcpy(page->keys + page->offset[ins], word, word_len);
 	/* move post data over */
-	memmove(page->post + ins + 1, page->post + ins, (page->n - ins) * sizeof(uint4));
-	memmove(page->post_n + ins + 1, page->post_n + ins, (page->n - ins) * sizeof(uint4));
+	memmove(page->post + ins + 1, page->post + ins, (page->n - ins) * sizeof(Uint4));
+	memmove(page->post_n + ins + 1, page->post_n + ins, (page->n - ins) * sizeof(Uint4));
 	/* next scoot the offsets directory over (add word_len to offsets) */
 	page->n++;
 	for (x = page->n; x > ins; x--) {
@@ -1108,7 +1108,7 @@ void etymon_index_insert_key_nl(ETYMON_INDEX_PAGE_NL* page, int ins, unsigned ch
 	}
 	memcpy(page->keys + page->offset[ins], word, word_len);
 	/* move the page pointers */
-	memmove(page->p + ins + 2, page->p + ins + 1, (page->n - ins) * sizeof(uint4));
+	memmove(page->p + ins + 2, page->p + ins + 1, (page->n - ins) * sizeof(Uint4));
 	/* next scoot the offsets directory over (add word_len to offsets) */
 	page->n++;
 	for (x = page->n; x > ins; x--) {
@@ -1156,11 +1156,11 @@ int etymon_index_shortest_sep_nl(ETYMON_INDEX_PAGE_NL* left, ETYMON_INDEX_PAGE_N
 
 
 void etymon_index_parent_add_key(ETYMON_INDEX_INDEXING_STATE* state, int level, unsigned char* word, size_t word_len,
-				 uint4 child) {
+				 Uint4 child) {
 	int x, y, ins;
 	unsigned char new_word[ETYMON_MAX_WORD_SIZE];
 	size_t new_word_len;
-	uint4 overflow_pos;
+	Uint4 overflow_pos;
 
 	/* first check if we have ascended above the root of the tree */
 	if (level < 0) {
@@ -1177,7 +1177,7 @@ void etymon_index_parent_add_key(ETYMON_INDEX_INDEXING_STATE* state, int level, 
 		state->pcache_count = 1;
 		/* now write out the new root page */
 		etymon_index_write_nl(state->udict_fd, state->pcache_nl[0].pos, &(state->pcache_nl[0].nl));
-		state->udict_size += sizeof(uint1) + sizeof(ETYMON_INDEX_PAGE_NL);
+		state->udict_size += sizeof(Uint1) + sizeof(ETYMON_INDEX_PAGE_NL);
 		/* set new root pointer */
 		state->udict_root = state->pcache_nl[0].pos;
 		return;
@@ -1212,7 +1212,7 @@ void etymon_index_parent_add_key(ETYMON_INDEX_INDEXING_STATE* state, int level, 
 		memcpy(state->overflow_nl.p,
 		       state->pcache_nl[level].nl.p +
 		       state->pcache_nl[level].nl.n - state->overflow_nl.n,
-		       (state->overflow_nl.n + 1) * sizeof(uint4));
+		       (state->overflow_nl.n + 1) * sizeof(Uint4));
 
 		state->pcache_nl[level].nl.n -= state->overflow_nl.n;
 
@@ -1248,7 +1248,7 @@ void etymon_index_parent_add_key(ETYMON_INDEX_INDEXING_STATE* state, int level, 
 		overflow_pos = state->udict_size;
 		etymon_index_write_nl(state->udict_fd, overflow_pos, &(state->overflow_nl));
 		/* update size of dictionary file */
-		state->udict_size += sizeof(uint1) + sizeof(ETYMON_INDEX_PAGE_NL);
+		state->udict_size += sizeof(Uint1) + sizeof(ETYMON_INDEX_PAGE_NL);
 
 		/* recursively update parent page, splitting if necessary */
 		etymon_index_parent_add_key(state, level - 1, new_word, new_word_len, overflow_pos);
@@ -1268,9 +1268,9 @@ void etymon_index_parent_add_key(ETYMON_INDEX_INDEXING_STATE* state, int level, 
 /* returns 0 if everything was OK */
 int etymon_index_index_word(ETYMON_INDEX_INDEXING_STATE* state, int wcache_p) {
 	static int x, y, match, ins;
-	static uint4 p;
+	static Uint4 p;
 	static ssize_t nbytes;
-	static uint1 leaf_flag;
+	static Uint1 leaf_flag;
 	static unsigned char* word;
 	static unsigned char new_word[ETYMON_MAX_WORD_SIZE];
 	static size_t word_len, new_word_len;
@@ -1304,8 +1304,8 @@ int etymon_index_index_word(ETYMON_INDEX_INDEXING_STATE* state, int wcache_p) {
 				perror("index_index_word():lseek()");
 			}
 			/* check whether it is a leaf page */
-			nbytes = read(state->udict_fd, &(leaf_flag), sizeof(uint1));
-			if (nbytes != sizeof(uint1)) {
+			nbytes = read(state->udict_fd, &(leaf_flag), sizeof(Uint1));
+			if (nbytes != sizeof(Uint1)) {
 				/* ERROR */
 				printf("error reading from index (LP)\n");
 				exit(1);
@@ -1390,11 +1390,11 @@ int etymon_index_index_word(ETYMON_INDEX_INDEXING_STATE* state, int wcache_p) {
 			memcpy(state->overflow_l.post,
 			       state->pcache_l.post +
 			       state->pcache_l.n - state->overflow_l.n,
-			       state->overflow_l.n * sizeof(uint4));
+			       state->overflow_l.n * sizeof(Uint4));
 			memcpy(state->overflow_l.post_n,
 			       state->pcache_l.post_n +
 			       state->pcache_l.n - state->overflow_l.n,
-			       state->overflow_l.n * sizeof(uint4));
+			       state->overflow_l.n * sizeof(Uint4));
 			/* move the offsets - by hand */
 			y = state->pcache_l.offset[state->pcache_l.n - state->overflow_l.n];
 			for (x = 0; x <= state->overflow_l.n; x++) {
@@ -1437,7 +1437,7 @@ int etymon_index_index_word(ETYMON_INDEX_INDEXING_STATE* state, int wcache_p) {
 			etymon_index_write_l(state->udict_fd, state->udict_size, &(state->overflow_l));
 			y = state->udict_size; /**/
 			/* update size of dictionary file */
-			state->udict_size += sizeof(uint1) + sizeof(ETYMON_INDEX_PAGE_L);
+			state->udict_size += sizeof(Uint1) + sizeof(ETYMON_INDEX_PAGE_L);
 
 			/* update prev pointer in far-right leaf to point to overflow_l */
 			if (state->overflow_l.next != 0) {
@@ -1517,7 +1517,7 @@ int etymon_index_traverse_wcache(ETYMON_INDEX_INDEXING_STATE* state, int p) {
 
 /* returns 0 if everything was OK */
 int etymon_index_dclass_index(ETYMON_INDEX_INDEXING_STATE* state) {
-	static uint1 leaf_flag;
+	static Uint1 leaf_flag;
 	static ssize_t nbytes;
 
 	if (!state->flushmsg) {
@@ -1541,8 +1541,8 @@ int etymon_index_dclass_index(ETYMON_INDEX_INDEXING_STATE* state) {
 		state->pcache_l.next = 0;
 		state->pcache_l.offset[0] = 0;
 		leaf_flag = 1;
-		nbytes = write(state->udict_fd, &(leaf_flag), sizeof(uint1));
-		if (nbytes != sizeof(uint1)) {
+		nbytes = write(state->udict_fd, &(leaf_flag), sizeof(Uint1));
+		if (nbytes != sizeof(Uint1)) {
 			/* ERROR */
 			printf("error writing to index\n");
 			exit(1);
@@ -1594,7 +1594,7 @@ ETYMON_AF_DC_SPLIT* etymon_af_index_get_split_list(ETYMON_AF_DC_INDEX*
 	int split_match = 0;  /* number of characters matched with
 				 delimiter string */
 	unsigned char ch;
-	uint4 offset = 0;
+	Uint4 offset = 0;
 
 	/* initialize split list */
 	split_list =
@@ -1654,7 +1654,7 @@ int etymon_index_add_files(Afindex *opt) {
 	size_t maxmem, memleft;
 /*	int dbinfo_fd; */
 	int x_file;
-	uint4 magic;
+	Uint4 magic;
 	ETYMON_DB_INFO *dbinfo;
 	int dclass_id;
 	int result;
@@ -1689,8 +1689,8 @@ int etymon_index_add_files(Afindex *opt) {
 		etymon_db_unlock(dbname);
 		return aferr(AFEDBIO);
 	}
-	nbytes = read(dbinfo_fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = read(dbinfo_fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		printf("unable to read %s\n", fn);
 		exit(1);
 	}
@@ -2204,8 +2204,8 @@ int etymon_index_add_files(Afindex *opt) {
 		perror("index_add_files():lseek()");
 	}
 	magic = ETYMON_INDEX_MAGIC;
-	nbytes = write(dbinfo_fd, &magic, sizeof(uint4));
-	if (nbytes != sizeof(uint4)) {
+	nbytes = write(dbinfo_fd, &magic, sizeof(Uint4));
+	if (nbytes != sizeof(Uint4)) {
 		printf("unable to write MN\n");
 		exit(1);
 	}
@@ -2426,7 +2426,7 @@ int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 }
 
 
-uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt) {
+Uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt) {
 	ETYMON_INDEX_INDEXING_STATE* state = opt->state;
 	ssize_t nbytes;
 
@@ -2448,6 +2448,7 @@ uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt) {
 	state->doctable.end = opt->end;
 	state->doctable.parent = opt->parent;
 	state->doctable.dclass_id = opt->dclass_id;
+	state->doctable.deleted = 0;
 	/* write out doctable entry */
 	nbytes = write(state->doctable_fd, &(state->doctable), sizeof(ETYMON_DOCTABLE));
 	if (nbytes != sizeof(ETYMON_DOCTABLE)) {
@@ -2464,6 +2465,6 @@ uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt) {
 
 /* need to change this function prototype to conform to other document
    class call-backs */
-uint4 etymon_index_dclass_get_next_doc_id(ETYMON_INDEX_INDEXING_STATE* state) {
+Uint4 etymon_index_dclass_get_next_doc_id(ETYMON_INDEX_INDEXING_STATE* state) {
 	return state->doctable_next_id;
 }

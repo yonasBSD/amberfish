@@ -36,12 +36,14 @@ typedef unsigned char Uint1;
 #	endif
 #endif
 
+/*
 typedef Int1 int1;
 typedef Uint1 uint1;
 typedef Int2 int2;
 typedef Uint2 uint2;
 typedef Int4 int4;
 typedef Uint4 uint4;
+*/
 
 typedef unsigned char Afchar;
 

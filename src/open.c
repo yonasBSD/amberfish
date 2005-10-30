@@ -30,7 +30,7 @@ void etymon_af_init() {
 
 
 /* assumes that db_id is valid */
-int etymon_af_open_files(char* where, Uint2 db_id, int flags) {
+int etymon_af_open_files(Uint2 db_id, int flags) {
 	int x_fn, x;
 	
 	/* open all database files */
@@ -49,7 +49,7 @@ int etymon_af_open_files(char* where, Uint2 db_id, int flags) {
 
 
 /* assumes that db_id is valid */
-int etymon_af_close_files(char* where, Uint2 db_id) {
+int etymon_af_close_files(Uint2 db_id) {
 	int x_fn;
 	
 	/* close all the database files */
@@ -65,7 +65,7 @@ int etymon_af_close_files(char* where, Uint2 db_id) {
 /* returns a database identifier in the range 1..255 */
 int etymon_af_open(ETYMON_AF_OPEN* opt) {
 	int db_id;
-	uint4 magic;
+	Uint4 magic;
 	ssize_t nbytes;
 	int x_fn;
 	int flags;
@@ -108,7 +108,7 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 	if (opt->create) {
 
 		/* open/create all database files */
-		if (etymon_af_open_files("etymon_af_open()", db_id, O_WRONLY | O_CREAT | O_TRUNC) == -1) {
+		if (etymon_af_open_files(db_id, O_WRONLY | O_CREAT | O_TRUNC) == -1) {
 			free(etymon_af_state[db_id]);
 			return -1;
 		}		
@@ -119,8 +119,8 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 		
 		/* initialize dbinfo */
 		magic = ETYMON_INDEX_MAGIC;
-		nbytes = write(etymon_af_state[db_id]->fd[ETYMON_DBF_INFO], &magic, sizeof(uint4));
-		if (nbytes != sizeof(uint4)) {
+		nbytes = write(etymon_af_state[db_id]->fd[ETYMON_DBF_INFO], &magic, sizeof(Uint4));
+		if (nbytes != sizeof(Uint4)) {
 			free(etymon_af_state[db_id]);
 			return aferr(AFEDBIO);
 		}
@@ -139,7 +139,7 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 		}
 	    
 		/* close all the database files */
-		if (etymon_af_close_files("etymon_af_open()", db_id) == -1)
+		if (etymon_af_close_files(db_id) == -1)
 			return -1;
 
 		/* unlock the database */
@@ -160,14 +160,14 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 	} else {
 		flags = O_RDWR;
 	}
-	if (etymon_af_open_files("etymon_af_open()", db_id, flags) == -1) {
+	if (etymon_af_open_files(db_id, flags) == -1) {
 		free(etymon_af_state[db_id]);
 		return -1;
 	}		
 	
 	/* cache database information */
-        nbytes = read(etymon_af_state[db_id]->fd[ETYMON_DBF_INFO], &magic, sizeof(uint4));
-        if (nbytes != sizeof(uint4)) {
+        nbytes = read(etymon_af_state[db_id]->fd[ETYMON_DBF_INFO], &magic, sizeof(Uint4));
+        if (nbytes != sizeof(Uint4)) {
 		/* before we leave, make an attempt to close all files and free table */
 		for (x = 0; x < x_fn; x++) {
 			close(etymon_af_state[db_id]->fd[x]);
@@ -219,7 +219,7 @@ int etymon_af_open(ETYMON_AF_OPEN* opt) {
 	/* close files */
 	if (opt->keep_open == 0) {
 		/* close all the database files */
-		if (etymon_af_close_files("etymon_af_open()", db_id) == -1) {
+		if (etymon_af_close_files(db_id) == -1) {
 			return -1;
 		}
 	}
@@ -259,7 +259,7 @@ int etymon_af_close(ETYMON_AF_CLOSE* opt) {
 	
 	/* close database files if they are open */
 	if (etymon_af_state[opt->db_id]->keep_open) {
-		if (etymon_af_close_files("etymon_af_close()", opt->db_id) == -1) {
+		if (etymon_af_close_files(opt->db_id) == -1) {
 			return -1;
 		}
 	}

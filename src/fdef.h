@@ -8,14 +8,14 @@ typedef struct {
 	ETYMON_INDEX_INDEXING_STATE* state;
 } ETYMON_AF_FDEF_RESOLVE_FIELD;
 
-uint2 etymon_af_fdef_read_mem(int fdef_fd, ETYMON_AF_FDEF_MEM** root, ETYMON_AF_FDEF_MEM** tail);
+Uint2 etymon_af_fdef_read_mem(int fdef_fd, ETYMON_AF_FDEF_MEM** root, ETYMON_AF_FDEF_MEM** tail);
 
 void etymon_af_fdef_write_mem(int fdef_fd, ETYMON_AF_FDEF_MEM* root);
 
 void etymon_af_fdef_free_mem(ETYMON_AF_FDEF_MEM* root);
 
-uint2 etymon_af_fdef_resolve_field(ETYMON_AF_FDEF_RESOLVE_FIELD* opt);
+Uint2 etymon_af_fdef_resolve_field(ETYMON_AF_FDEF_RESOLVE_FIELD* opt);
 
-uint2 etymon_af_fdef_get_field(ETYMON_AF_FDEF_DISK* fdef_disk, unsigned char* field_name);
+Uint2 etymon_af_fdef_get_field(ETYMON_AF_FDEF_DISK* fdef_disk, unsigned char* field_name);
 
 #endif

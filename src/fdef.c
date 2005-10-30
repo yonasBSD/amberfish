@@ -13,11 +13,11 @@
 #include "fdef.h"
 
 /* assumes we are positioned at the beginning of the file */
-uint2 etymon_af_fdef_read_mem(int fdef_fd, ETYMON_AF_FDEF_MEM** root, ETYMON_AF_FDEF_MEM** tail) {
+Uint2 etymon_af_fdef_read_mem(int fdef_fd, ETYMON_AF_FDEF_MEM** root, ETYMON_AF_FDEF_MEM** tail) {
 	ETYMON_AF_STAT st;
 	etymon_af_off_t fdef_count;
 	ETYMON_AF_FDEF_MEM** fdef_array;
-	uint2 x;
+	Uint2 x;
 	ETYMON_AF_FDEF_DISK fdef_disk_buf;
 	
 	/* stat fdef file to get size */
@@ -120,7 +120,7 @@ void etymon_af_fdef_free_mem(ETYMON_AF_FDEF_MEM* root) {
 }
 
 
-uint2 etymon_af_fdef_resolve_field(ETYMON_AF_FDEF_RESOLVE_FIELD* opt) {
+Uint2 etymon_af_fdef_resolve_field(ETYMON_AF_FDEF_RESOLVE_FIELD* opt) {
 	ETYMON_INDEX_INDEXING_STATE* state = opt->state;
 	unsigned char* word = opt->word;
 	ETYMON_AF_FDEF_MEM* p;
@@ -161,7 +161,7 @@ uint2 etymon_af_fdef_resolve_field(ETYMON_AF_FDEF_RESOLVE_FIELD* opt) {
 }
 
 
-uint2 etymon_af_fdef_get_field(ETYMON_AF_FDEF_DISK* fdef_disk, unsigned char* field_name) {
+Uint2 etymon_af_fdef_get_field(ETYMON_AF_FDEF_DISK* fdef_disk, unsigned char* field_name) {
 	int fdef_p;
 	int comp;
 

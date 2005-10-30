@@ -28,7 +28,7 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 	ETYMON_AF_INDEX_ADD_DOC add_doc;
 	ETYMON_AF_INDEX_ADD_WORD add_word;
 	unsigned char word[ETYMON_MAX_WORD_SIZE];
-	uint2 fields[ETYMON_MAX_FIELD_NEST];
+	Uint2 fields[ETYMON_MAX_FIELD_NEST];
 	ETYMON_AF_DC_SPLIT* split_list = dc_index->split_list;
 	ETYMON_AF_DC_SPLIT* split_p = split_list;
 	unsigned char ch;

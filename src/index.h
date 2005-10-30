@@ -53,16 +53,16 @@ typedef struct {
 	char* filename; /* document source file name */
 	etymon_af_off_t begin; /* starting offset of document within the file */
 	etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
-	uint4 parent;  /* doc_id of parent document */
-	uint1 dclass_id; /* unique id associated with dclass */
+	Uint4 parent;  /* doc_id of parent document */
+	Uint1 dclass_id; /* unique id associated with dclass */
 	ETYMON_INDEX_INDEXING_STATE* state;
 } ETYMON_AF_INDEX_ADD_DOC;
 
 typedef struct {
-	uint4 doc_id; /* unique id associated with dclass */
+	Uint4 doc_id; /* unique id associated with dclass */
 	unsigned char* word; /* word to add to the index, must be unsigned char[ETYMON_MAX_WORD_SIZE] */
-	uint2* fields; /* array representing field location, must be uint2[ETYMON_MAX_FIELD_NEST] */
-	uint4 word_number; /* word position, starting with 1 */
+	Uint2* fields; /* array representing field location, must be Uint2[ETYMON_MAX_FIELD_NEST] */
+	Uint4 word_number; /* word position, starting with 1 */
 	ETYMON_INDEX_INDEXING_STATE* state;
 } ETYMON_AF_INDEX_ADD_WORD;
 
@@ -85,7 +85,7 @@ typedef struct {
 	ETYMON_AF_DC_SPLIT* split_list;
 	int dlevel;  /* maximum number of levels to descend (nested
 			documents) */
-	uint1 dclass_id;
+	Uint1 dclass_id;
 	ETYMON_INDEX_INDEXING_STATE* state;
 	void* dc_state;
 } ETYMON_AF_DC_INDEX;
@@ -102,11 +102,11 @@ int etymon_index_add_files(Afindex *opt);
 int etymon_index_optimize_old(ETYMON_INDEX_OPTIONS* opt);
 #endif
 
-uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt);
+Uint4 etymon_af_index_add_doc(ETYMON_AF_INDEX_ADD_DOC* opt);
 
 int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt);
 
-uint4 etymon_index_dclass_get_next_doc_id(ETYMON_INDEX_INDEXING_STATE* state);
+Uint4 etymon_index_dclass_get_next_doc_id(ETYMON_INDEX_INDEXING_STATE* state);
 
 int etymon_index_valid_word(unsigned char* word);
 

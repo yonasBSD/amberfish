@@ -68,8 +68,8 @@ int etymon_af_open(ETYMON_AF_OPEN* opt);
 
 int etymon_af_close(ETYMON_AF_CLOSE* opt);
 
-int etymon_af_open_files(char* where, Uint2 db_id, int flags);
+int etymon_af_open_files(Uint2 db_id, int flags);
 
-int etymon_af_close_files(char* where, Uint2 db_id);
+int etymon_af_close_files(Uint2 db_id);
 
 #endif

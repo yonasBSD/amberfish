@@ -15,4 +15,6 @@ int etymon_db_create(ETYMON_DB_OPTIONS* opt);
 
 void etymon_db_list(ETYMON_DB_OPTIONS* opt);
 
+int afsetdeleted(Uint2 dbid, Uint4 docid, Uint1 deleted);
+
 #endif

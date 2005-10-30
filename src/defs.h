@@ -80,15 +80,17 @@ typedef struct {
 #define ETYMON_AF_COPYRIGHT "Copyright (C) 1999-2004 Etymon Systems, Inc.  All Rights Reserved."
 #define ETYMON_AF_BANNER_STAMP ETYMON_AF_BANNER ".  " ETYMON_AF_COPYRIGHT
 
-/* uint4 at beginning of db info file to indicate index version; used to determine compatibility */
-#define ETYMON_INDEX_MAGIC (4)
+/* Uint4 at beginning of db info file to indicate index version, used
+ * to determine compatibility; increment it here if the index format
+ * changes */
+#define ETYMON_INDEX_MAGIC (5)
 
 /* maximum char[] size for an absolute path */
 #define AFPATHSIZE (1024)
 #define ETYMON_MAX_PATH_SIZE AFPATHSIZE
 
 /* maximum char[] key size */
-/* 11 is big enough to hold the default uint4 keys */
+/* 11 is big enough to hold the default Uint4 keys */
 #define ETYMON_MAX_KEY_SIZE (11)
 
 /* maximum char[] size for a field name (not an entire field path) */
@@ -127,14 +129,15 @@ typedef struct {
         char filename[ETYMON_MAX_PATH_SIZE]; /* document source file name */
 	etymon_af_off_t begin; /* starting offset of document within the file */
         etymon_af_off_t end; /* ending offset of document within the file (one byte past end) */
-	uint4 parent;  /* doc_id of parent document */
-        uint1 dclass_id; /* unique id associated with dclass */
+	Uint4 parent;  /* doc_id of parent document */
+        Uint1 dclass_id; /* unique id associated with dclass */
+	Uint1 deleted; /* 1 = marked as deleted; 0 = not deleted */
 } ETYMON_DOCTABLE;
 
 typedef struct {
 	unsigned char name[ETYMON_AF_MAX_FIELDNAME_SIZE];
-	uint2 left;
-	uint2 right;
+	Uint2 left;
+	Uint2 right;
 } ETYMON_AF_FDEF_DISK;
 
 typedef struct {
@@ -178,35 +181,35 @@ typedef struct {
 #define ETYMON_AF_OP_GROUP_CLOSE (4)
 
 typedef struct {
-	uint2 n; /* number of keys */
-	uint4 p[ETYMON_MAX_KEYS_NL + 1]; /* pointers to other pages (offset) */
-	uint2 offset[ETYMON_MAX_KEYS_NL + 1]; /* offsets to keys */
+	Uint2 n; /* number of keys */
+	Uint4 p[ETYMON_MAX_KEYS_NL + 1]; /* pointers to other pages (offset) */
+	Uint2 offset[ETYMON_MAX_KEYS_NL + 1]; /* offsets to keys */
 	unsigned char keys[ETYMON_MAX_KEY_AREA_NL]; /* key buffer */
 } ETYMON_INDEX_PAGE_NL;
 
 typedef struct {
-	uint2 n; /* number of keys */
-	uint4 prev; /* previous leaf node (offset) */
-	uint4 next; /* next left node (offset) */
-	uint4 post[ETYMON_MAX_KEYS_L]; /* postings for each key */
-	uint4 post_n[ETYMON_MAX_KEYS_L]; /* number of postings for each key */
-	uint2 offset[ETYMON_MAX_KEYS_L + 1]; /* offsets to keys */
+	Uint2 n; /* number of keys */
+	Uint4 prev; /* previous leaf node (offset) */
+	Uint4 next; /* next left node (offset) */
+	Uint4 post[ETYMON_MAX_KEYS_L]; /* postings for each key */
+	Uint4 post_n[ETYMON_MAX_KEYS_L]; /* number of postings for each key */
+	Uint2 offset[ETYMON_MAX_KEYS_L + 1]; /* offsets to keys */
 	unsigned char keys[ETYMON_MAX_KEY_AREA_L]; /* key buffer */
 } ETYMON_INDEX_PAGE_L;
 
 typedef struct {
-	uint4 pos; /* position of page on disk or 0 if empty slot */
-	uint1 is_nl; /* is it a non-leaf (here) or leaf (in the leaf cache) */
+	Uint4 pos; /* position of page on disk or 0 if empty slot */
+	Uint1 is_nl; /* is it a non-leaf (here) or leaf (in the leaf cache) */
 	ETYMON_INDEX_PAGE_NL nl;
 } ETYMON_INDEX_PCACHE_NODE;
 
 typedef struct {
-	uint2 f[ETYMON_MAX_FIELD_NEST];
+	Uint2 f[ETYMON_MAX_FIELD_NEST];
 	int next;
 } ETYMON_INDEX_FCACHE_NODE;
 
 typedef struct {
-	uint4 wn;
+	Uint4 wn;
 	int next;
 } ETYMON_INDEX_WNCACHE_NODE;
 
@@ -215,52 +218,52 @@ typedef struct {
 	int left;
 	int right;
 	int next; /* circular linked list */
-	uint2 freq;
-	uint4 doc_id;
+	Uint2 freq;
+	Uint4 doc_id;
 	int fields;
 	int word_numbers_head;
 	int word_numbers_tail;
 } ETYMON_INDEX_WCACHE_NODE;
 
 typedef struct {
-	uint4 doc_id; /* document id */
-	uint2 freq; /* frequency */
-	uint4 fields; /* field pointer */
-	uint4 fields_n; /* number of fields */
-	uint4 word_numbers; /* word numbers pointer */
-	uint4 word_numbers_n; /* number of word numbers */
-	uint4 next; /* next posting (index) or 0 */
+	Uint4 doc_id; /* document id */
+	Uint2 freq; /* frequency */
+	Uint4 fields; /* field pointer */
+	Uint4 fields_n; /* number of fields */
+	Uint4 word_numbers; /* word numbers pointer */
+	Uint4 word_numbers_n; /* number of word numbers */
+	Uint4 next; /* next posting (index) or 0 */
 } ETYMON_INDEX_UPOST;
 
 typedef struct {
-	uint4 doc_id; /* document id */
-	uint2 freq; /* frequency */
-	uint4 fields; /* field pointer */
-	uint4 fields_n; /* number of fields */
-	uint4 word_numbers; /* word numbers pointer */
-	uint4 word_numbers_n; /* number of word numbers */
+	Uint4 doc_id; /* document id */
+	Uint2 freq; /* frequency */
+	Uint4 fields; /* field pointer */
+	Uint4 fields_n; /* number of fields */
+	Uint4 word_numbers; /* word numbers pointer */
+	Uint4 word_numbers_n; /* number of word numbers */
 } ETYMON_INDEX_LPOST;
 
 typedef struct {
-	uint2 fields[ETYMON_MAX_FIELD_NEST];
-	uint4 next; /* next field (index) or 0 */
+	Uint2 fields[ETYMON_MAX_FIELD_NEST];
+	Uint4 next; /* next field (index) or 0 */
 } ETYMON_INDEX_UFIELD;
 
 typedef struct {
-	uint4 wn;
-	uint4 next; /* next word number (index) or 0 */
+	Uint4 wn;
+	Uint4 next; /* next word number (index) or 0 */
 } ETYMON_INDEX_UWORD;
 
 typedef struct {
-	uint2 fields[ETYMON_MAX_FIELD_NEST];
+	Uint2 fields[ETYMON_MAX_FIELD_NEST];
 } ETYMON_INDEX_LFIELD;
 
 typedef struct {
-	uint4 wn;
+	Uint4 wn;
 } ETYMON_INDEX_LWORD;
 
 typedef struct ETYMON_AF_FDEF_MEM_STRUCT {
-	uint2 n;
+	Uint2 n;
 	unsigned char name[ETYMON_AF_MAX_FIELDNAME_SIZE];
 	struct ETYMON_AF_FDEF_MEM_STRUCT* left;
 	struct ETYMON_AF_FDEF_MEM_STRUCT* right;
@@ -290,10 +293,10 @@ typedef struct {
 	etymon_af_off_t ufield_isize; /* current size of ufield */
 	int uword_fd; /* uword file descriptor */
 	etymon_af_off_t uword_isize; /* current size of uword */
-	uint4 udict_root; /* root of the udict tree (offset) */
+	Uint4 udict_root; /* root of the udict tree (offset) */
 	ETYMON_INDEX_PCACHE_NODE* pcache_nl; /* non-leaf page cache */
 	ETYMON_INDEX_PAGE_L pcache_l; /* leaf page cache */
-	uint4 pcache_l_write; /* offset position for write caching, or 0 if pcache_l has been flushed */
+	Uint4 pcache_l_write; /* offset position for write caching, or 0 if pcache_l has been flushed */
 	int pcache_nl_size;
 	int pcache_count;
 	ETYMON_INDEX_PAGE_NL overflow_nl; /* overflow non-leaf page */
@@ -304,7 +307,7 @@ typedef struct {
 	ETYMON_INDEX_UWORD uword;
 	ETYMON_AF_FDEF_MEM* fdef_root; /* pointer to root node of fdef binary tree */
 	ETYMON_AF_FDEF_MEM* fdef_tail; /* pointer to tail node of fdef threaded list */
-	uint2 fdef_count;
+	Uint2 fdef_count;
 	int phrase; /* enable phrase searching */
 	int word_proximity; /* enable word proximity operator */
 	int stemming; /* enable stemming */

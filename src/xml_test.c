@@ -28,8 +28,8 @@ int dc_xml_test_index(ETYMON_AF_DC_INDEX* dc_index) {
 	unsigned char word_upper[ETYMON_MAX_TOKEN_SIZE];
 	unsigned char word_last[ETYMON_MAX_TOKEN_SIZE];
 	unsigned char element[ETYMON_MAX_TOKEN_SIZE];
-	uint2 fields_zero[ETYMON_MAX_FIELD_NEST];
-	uint2 fields[ETYMON_MAX_FIELD_NEST];
+	Uint2 fields_zero[ETYMON_MAX_FIELD_NEST];
+	Uint2 fields[ETYMON_MAX_FIELD_NEST];
 	int field_len;
 	unsigned char ch;
 	int token_alnum;
