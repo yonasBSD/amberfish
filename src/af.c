@@ -17,6 +17,7 @@
 #include "explain.h"
 #include "util.h"
 #include "linear.h"
+#include "scan.h"
 /* #include "search_new.h" */
 
 #ifdef ETYMON_AF_GSOAP
@@ -68,6 +69,8 @@ static int cmd_fetch = 0;
 static int cmd_version = 0;
 
 static int cmd_delete = 0;
+
+static int cmd_scan = 0;
 
 static char *dbname[MAX_DBS];
 static int dbname_n = 0;
@@ -139,6 +142,10 @@ static int process_opt_long(char *opt, char *arg)
 		cmd_delete = 1;
 		return 0;
 	}
+	if (!strcmp(opt, "scan")) {
+		cmd_scan = 1;
+		return 0;
+	}
 	if (!strcmp(opt, "prune")) {
 		search_prune = 1;
 		return 0;
@@ -179,6 +186,7 @@ static int process_opt(int argc, char *argv[])
 		{ "port", 1, 0, 'P' },
 		{ "prune", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
+		{ "scan", 0, 0, 0 },
 		{ "search", 0, 0, 's' },
 		{ "skiphits", 1, 0, 0 },
 		{ "split", 1, 0, 0 },
@@ -848,6 +856,31 @@ static int exec_delete()
 	return 0;
 }
 
+static int exec_scan()
+{
+	int x;
+
+	Afopen op;
+	Afopen_r opr;
+	Afclose cl;
+	Afclose_r clr;
+	Afscan sc;
+
+	op.dbpath = *dbname;
+	op.mode = "r";
+	if (afopen(&op, &opr) < 0)
+		return searcherr();
+
+	sc.dbid = opr.dbid;
+	sc.verbose = verbose;
+	afscan(&sc);
+	
+	cl.dbid = opr.dbid;
+	afclose(&cl, &clr);
+
+	return 0;
+}
+
 #ifdef ETYMON_AF_GSOAP
 static int exec_client()
 {
@@ -916,6 +949,7 @@ static int validate_opt_cmd()
 	     (!cmd_list) &&
 	     (!cmd_fetch) &&
 	     (!cmd_delete) &&
+	     (!cmd_scan) &&
 	     (!cmd_version) )
 		return aferror("No command option specified");
 	if ((cmd_index +
@@ -924,6 +958,7 @@ static int validate_opt_cmd()
 	     cmd_list +
 	     cmd_fetch +
 	     cmd_delete +
+	     cmd_scan +
 	     cmd_version) > 1)
 		return aferror("Too many command options specified");
 	return 0;
@@ -1029,6 +1064,8 @@ int afmain(int argc, char *argv[])
 		return exec_version();
 	if (cmd_delete)
 		return exec_delete();
+	if (cmd_scan)
+		return exec_scan();
 		
 	return -1;
 }

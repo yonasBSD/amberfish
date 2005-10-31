@@ -1,8 +1,6 @@
 #ifndef _AF_LINEAR_H
 #define _AF_LINEAR_H
 
-#include "index.h"
-
 typedef struct {
 	char *db;
 	int verbose;

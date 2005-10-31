@@ -31,7 +31,7 @@ LIBAF =		libaf.a
 LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 		docbuf.o admin.o explain.o stem.o \
 		text.o xml.o xml_test.o erc.o \
-		err.o info.o linear.o linbuf.o
+		err.o info.o linear.o linbuf.o scan.o
 BINOBJ =	afmain.o af.o
 GSOAPO =	soapC.o soapClient.o soapClientLib.o soapServer.o soapServerLib.o \
 		afdmain.o afd.o
