@@ -327,7 +327,6 @@ static int linpost(Aflinst *t)
 				return -1;
 			t->upostp = t->upost.next;
 		}
-// flush lpost if it contains something //
 		if (t->lpost.doc_id) {
 			if (writelpost(t) < 0)
 				return -1;
@@ -345,7 +344,7 @@ static int linpost(Aflinst *t)
 
 */
 
-static void debugpagel(Afscanst *t)
+static int debugpagel(Afscanst *t)
 {
 	int x, y;
 	ETYMON_INDEX_PAGE_L *page = &(t->pagel);
@@ -357,8 +356,21 @@ static void debugpagel(Afscanst *t)
 	for (x = 0; x < page->n; x++) {
 		for (y = page->offset[x]; y < page->offset[x + 1]; y++)
 			printf("%c", page->keys[y]);
+		printf(":");
+		if (t->linear) {
+			/* needs to be written */
+		} else {
+			t->upostp = page->post[x];
+			while (t->upostp) {
+				if (readupost(t) < 0)
+					return -1;
+				printf(" %i", t->upost.doc_id);
+				t->upostp = t->upost.next;
+			}
+		}
 		printf("\n");
 	}
+	return 0;
 }
 
 static int runscan(Afscanst *t)
@@ -370,12 +382,8 @@ static int runscan(Afscanst *t)
 		afprintv(t->rq->verbose, 5, "Read leaf node");
 		if (readpagel(t) < 0)
 			return -1;
-		debugpagel(t);
-		/*
-		afprintv(t->rq->verbose, 5, "Linearize postings");
-		if (linpost(t) < 0)
+		if (debugpagel(t) < 0)
 			return -1;
-		*/
 		t->udictp = t->pagel.next;
 	} while (t->udictp);
 
