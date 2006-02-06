@@ -4,6 +4,7 @@
  *  Authors:  Nassib Nassar
  */
 
+#define _POSIX_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include "scan.h"
@@ -46,27 +47,44 @@ typedef struct {
 
 static int openfiles(Uint2 dbid, Affile *f)
 {
-	f->info = etymon_af_state[dbid]->fd[AFFTINFO];
 
-	/*
 	memset(f, 0, sizeof f);
-	if (!(f->info = afopendbf(db, AFFTINFO, "rb")))
-		return -1;
-	if (!(f->udict = afopendbf(db, AFFTUDICT, "rb")))
-		return -1;
-	if (!(f->upost = afopendbf(db, AFFTUPOST, "rb")))
-		return -1;
-	if (!(f->ufield = afopendbf(db, AFFTUFIELD, "rb")))
-		return -1;
-	if (!(f->uword = afopendbf(db, AFFTUWORD, "rb")))
-		return -1;
-	if (!(f->lpost = afopendbf(db, AFFTLPOST, "rb")))
-		return -1;
-	if (!(f->lfield = afopendbf(db, AFFTLFIELD, "rb")))
-		return -1;
-	if (!(f->lword = afopendbf(db, AFFTLWORD, "rb")))
-		return -1;
-	*/
+
+	if (etymon_af_state[dbid]->keep_open == 0) {
+	        if (!(f->info = afopendbf(etymon_af_state[dbid]->dbname, AFFTINFO, "rb")))
+			return -1;
+		if (!(f->udict = afopendbf(etymon_af_state[dbid]->dbname, AFFTUDICT, "rb")))
+			return -1;
+		if (!(f->upost = afopendbf(etymon_af_state[dbid]->dbname, AFFTUPOST, "rb")))
+			return -1;
+		if (!(f->ufield = afopendbf(etymon_af_state[dbid]->dbname, AFFTUFIELD, "rb")))
+			return -1;
+		if (!(f->uword = afopendbf(etymon_af_state[dbid]->dbname, AFFTUWORD, "rb")))
+			return -1;
+		if (!(f->lpost = afopendbf(etymon_af_state[dbid]->dbname, AFFTLPOST, "rb")))
+			return -1;
+		if (!(f->lfield = afopendbf(etymon_af_state[dbid]->dbname, AFFTLFIELD, "rb")))
+			return -1;
+		if (!(f->lword = afopendbf(etymon_af_state[dbid]->dbname, AFFTLWORD, "rb")))
+			return -1;
+	} else {
+		if (!(f->info = fdopen(etymon_af_state[dbid]->fd[AFFTINFO], "rb")))
+			return -1;
+		if (!(f->udict = fdopen(etymon_af_state[dbid]->fd[AFFTUDICT], "rb")))
+			return -1;
+		if (!(f->upost = fdopen(etymon_af_state[dbid]->fd[AFFTUPOST], "rb")))
+			return -1;
+		if (!(f->ufield = fdopen(etymon_af_state[dbid]->fd[AFFTUFIELD], "rb")))
+			return -1;
+		if (!(f->uword = fdopen(etymon_af_state[dbid]->fd[AFFTUWORD], "rb")))
+			return -1;
+		if (!(f->lpost = fdopen(etymon_af_state[dbid]->fd[AFFTLPOST], "rb")))
+			return -1;
+		if (!(f->lfield = fdopen(etymon_af_state[dbid]->fd[AFFTLFIELD], "rb")))
+			return -1;
+		if (!(f->lword = fdopen(etymon_af_state[dbid]->fd[AFFTLWORD], "rb")))
+			return -1;
+	}
 	return 0;
 }
 
@@ -329,10 +347,17 @@ static int linpost(Aflinst *t)
 
 static void debugpagel(Afscanst *t)
 {
-	if (t->rq->verbose >= 6) {
-		afprintvp(t->rq->verbose, 6);
-		printf("Leaf node: keys=\"%s\"\n",
-		       (char *) t->pagel.keys);
+	int x, y;
+	ETYMON_INDEX_PAGE_L *page = &(t->pagel);
+
+	/*
+	printf("Leaf node: keys=\"%s\"\n",
+	       (char *) page->keys);
+	*/
+	for (x = 0; x < page->n; x++) {
+		for (y = page->offset[x]; y < page->offset[x + 1]; y++)
+			printf("%c", page->keys[y]);
+		printf("\n");
 	}
 }
 
@@ -351,6 +376,7 @@ static int runscan(Afscanst *t)
 		if (linpost(t) < 0)
 			return -1;
 		*/
+		t->udictp = t->pagel.next;
 	} while (t->udictp);
 
 	return 0;
@@ -358,9 +384,7 @@ static int runscan(Afscanst *t)
 
 static int scanopen(Afscanst *t)
 {
-	/*
 	afprintv(t->rq->verbose, 4, "Opening database files");
-	*/
 	if (openfiles(t->rq->dbid, &(t->f)) < 0)
 		return -1;
 	
@@ -394,9 +418,7 @@ int afscan(const Afscan *rq)
 	t.rq = rq;
 	afprintv(rq->verbose, 2, "Scanning");
 
-	/*
 	afprintv(rq->verbose, 3, "Opening database");
-	*/
 	if (scanopen(&t) < 0)
 		return -1;
 	

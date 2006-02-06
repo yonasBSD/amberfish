@@ -20,6 +20,9 @@
 #include "scan.h"
 /* #include "search_new.h" */
 
+#include <unistd.h>
+extern ETYMON_AF_STATE *etymon_af_state[];
+
 #ifdef ETYMON_AF_GSOAP
 #include "soapH.h"
 struct Namespace namespaces[] = {
@@ -858,8 +861,6 @@ static int exec_delete()
 
 static int exec_scan()
 {
-	int x;
-
 	Afopen op;
 	Afopen_r opr;
 	Afclose cl;
