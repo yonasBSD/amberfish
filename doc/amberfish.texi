@@ -1,5 +1,5 @@
 %
-%  Copyright (C) 1999-2004 Etymon Systems, Inc.  All Rights Reserved.
+%  Copyright (C) 1998-2006 Etymon Systems, Inc.  All Rights Reserved.
 %
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@
 @include version.texi
 
 @macro afcopyright{year}
-@emph{Copyright} @copyright{} @emph{1999--2004 by Etymon Systems, Inc.}
+@emph{Copyright} @copyright{} @emph{1998--2006 by Etymon Systems, Inc.}
 @end macro
 
 @macro spsection{}
@@ -302,7 +302,7 @@ The command returns a list of matching document references, each one
 taking the form:
 
 @example
-score dbname docid parent filename begin end
++ score dbname docid parent filename begin end
 @end example
 
 @noindent
@@ -698,7 +698,7 @@ $ af -l -d mydb
 Each line of output takes the form:
 
 @example
-docid parent filename begin end doctype
++ docid parent filename begin end doctype
 @end example
 
 @noindent

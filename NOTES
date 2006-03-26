@@ -5,6 +5,11 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+* Some of the experimental code that came in via 1.5.10 has been
+removed.
+
+1.5.10 / 1.6.0
+
 * The new command option --delete marks documents as deleted.  The
 format of search results has been modified to report deletion status.
 A --prune option is planned to remove deleted documents from search

@@ -17,7 +17,6 @@
 #include "explain.h"
 #include "util.h"
 #include "linear.h"
-#include "scan.h"
 /* #include "search_new.h" */
 
 #include <unistd.h>
@@ -859,29 +858,6 @@ static int exec_delete()
 	return 0;
 }
 
-static int exec_scan()
-{
-	Afopen op;
-	Afopen_r opr;
-	Afclose cl;
-	Afclose_r clr;
-	Afscan sc;
-
-	op.dbpath = *dbname;
-	op.mode = "r";
-	if (afopen(&op, &opr) < 0)
-		return searcherr();
-
-	sc.dbid = opr.dbid;
-	sc.verbose = verbose;
-	afscan(&sc);
-	
-	cl.dbid = opr.dbid;
-	afclose(&cl, &clr);
-
-	return 0;
-}
-
 #ifdef ETYMON_AF_GSOAP
 static int exec_client()
 {
@@ -1065,8 +1041,6 @@ int afmain(int argc, char *argv[])
 		return exec_version();
 	if (cmd_delete)
 		return exec_delete();
-	if (cmd_scan)
-		return exec_scan();
 		
 	return -1;
 }
