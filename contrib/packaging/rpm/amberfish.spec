@@ -1,9 +1,12 @@
 
-%define version 1.5.9
+%define version 1.6.2
 
 #
 #   Amberfish RPM Spec
 #   Dimitri Tarassenko <mitka@mitka.us>
+#
+#   Updates contributed by
+#   Antoine Brenner
 #
 %define xerces_ver 2.5.0
 %define release 1
@@ -85,6 +88,8 @@ cp %{_sourcedir}/pdftex.map ./doc/pdftex.map
 %build 
 %configure 
 make
+make html
+make pdf
 
 %install 
 rm -fr %{buildroot}
@@ -104,6 +109,8 @@ rm -fr %{buildroot}
 %doc doc/html/* doc/amberfish.pdf doc/amberfish.texi doc/version.texi NOTES README COPYING INSTALL CREDITS
 	
 %changelog 
+* Mon Mar 27 1006 Nassib Nassar <nassar@etymon.com> 1.6.2-1
+- added "make html" and "make pdf" as suggested by Antoine Brenner
 * Mon Jun 21 2004 Dimitri Tarassenko <mitka@mitka.us> 1.5.9-1
 - pdftex.map added to resolve font mapping when pdf is built
 - tetex is added as build requirement
