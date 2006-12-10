@@ -32,6 +32,7 @@ typedef struct {
 	Afchar *query;
 	int qtype;  /* AFQUERYBOOLEAN */
 	int score;  /* AFNOSCORE | AFSCOREDEFAULT */
+	int score_normalize;  /* if scoring, scale scores from 0 to 10000 */
 } Afsearch;
 
 typedef struct {

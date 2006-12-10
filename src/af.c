@@ -64,6 +64,7 @@ static int search_totalhits = 0;
 static int search_prune = 0;
 static char *trec_topic = "<topic_number>";
 static char *trec_tag = "<run_tag>";
+static int search_score_normalize = 1;
 
 static int cmd_list = 0;
 
@@ -129,6 +130,10 @@ static int process_opt_long(char *opt, char *arg)
 		index_phrase = 1;
 		return 0;
 	}
+	if (!strcmp(opt, "no-normalize-scores")) {
+		search_score_normalize = 0;
+		return 0;
+	}
 	if (!strcmp(opt, "no-stem")) {
 		index_stem = 0;
 		return 0;
@@ -183,6 +188,7 @@ static int process_opt(int argc, char *argv[])
 /*		{ "long-words", 0, 0, 0 },*/
 		{ "memory", 1, 0, 'm' },
 		{ "no-linear-buffer", 0, 0, 0 },
+		{ "no-normalize-scores", 0, 0, 0 },
 		{ "no-stem", 0, 0, 0 },
 		{ "numhits", 1, 0, 'n' },
 		{ "phrase", 0, 0, 0 },
@@ -380,7 +386,7 @@ void ses_presult(AFSEARCH_RESULT *res)
 	else
 		printf("+");
 	printf(" %i %s %i %i %s %ld %ld\n",
-	       res->score / 100,
+	       res->score,
 	       res->dbname,
 	       res->doc_id,
 	       res->parent,
@@ -456,6 +462,7 @@ static int exec_search()
 	sea.sort_results = ses_options->sort_results;
 	*/
 	se.score = AFSCOREDEFAULT;
+	se.score_normalize = search_score_normalize;
 	
 	r = afsearch(&se, &ser);
 	afsortscore(ser.result, ser.resultn);

@@ -185,7 +185,7 @@ int etymon_af_score_default(ETYMON_AF_SEARCH_STATE* state,
 	}
 	
 	for (x = 0; x < iresults_n; x++) {
-		iresults[x].score = (int)((idf[x] / sumsq) * 100);
+		iresults[x].score = (int)((idf[x] / sumsq) * 10000);
 	}
 
 	free(idf);
@@ -1487,7 +1487,7 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 	}
 
 	/* scale results from 0 to 10000 */
-	if (r->score) {
+	if (r->score && r->score_normalize) {
 		int x;
 		int high = 0;
 		int low = 0;
@@ -1499,11 +1499,8 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 				low = rr->result[x].score;
 			}
 		}
-		for (x = 0; x < rr->resultn; x++) {
-			rr->result[x].score = (
-				(rr->result[x].score - low) * 10000 )
-				/ (high - low);
-		}
+		for (x = 0; x < rr->resultn; x++)
+			rr->result[x].score = ( (rr->result[x].score - low) * 100 ) / (high - low);
 	}
 	
 	/* sort results */
