@@ -70,8 +70,6 @@ additional outstanding problems.
 
 VERSION BRANCHING HISTORY
 
-CVS tags are written as "v1-1-0" etc.
-
 Trunk  -- Branch
 1.1.0
 1.1.1
@@ -111,3 +109,19 @@ Trunk  -- Branch
           1.6.1
           1.6.2
           1.6.3
+          1.6.4
+
+
+CVS/SOURCEFORGE NOTES
+
+cvs import -m "First import into SourceForge CVS repository." amberfish etymon start
+cvs tag v0-0-0
+cvs tag -b v1-2-1
+
+cvs export -r v0-0-0 amberfish
+
+Bug fixes to latest stable branch:
+cvs update -d -r v1-4-0
+
+scp index.html nnassar@shell.sourceforge.net:/home/groups/p/pj/pjx/htdocs/.
+
