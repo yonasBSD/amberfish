@@ -605,7 +605,7 @@ static int exec_search()
 					while (rtree_head) {
 						for (z = 0; z < y;
 						     z++) printf(" ");
-						printf("+ ");
+/*						printf("+ "); */
 						ses_presult(&(rtree_head->r));
 						rtree_p = rtree_head;
 						rtree_head =
