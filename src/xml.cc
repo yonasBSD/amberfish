@@ -99,10 +99,10 @@ class DcXmlHandlers : public HandlerBase {
 			      purposes of defining document boundaries */
 	int _doc_res_overflow;  /* how many levels over maximum we
 				   have descended */
-	uint4 _next_doc_id;
+	Uint4 _next_doc_id;
 	ETYMON_AF_INDEX_ADD_WORD _add_word;
 	ETYMON_AF_FDEF_RESOLVE_FIELD _resolve_field;
-	uint2 _fields[ETYMON_MAX_FIELD_NEST];
+	Uint2 _fields[ETYMON_MAX_FIELD_NEST];
 	int _field_len;
 };
 
@@ -504,7 +504,7 @@ void DcXmlHandlers::finish() {
 	add_doc.dclass_id = _dc_index->dclass_id;
 	add_doc.state = _dc_index->state;
 	for (int x = 0; x < _elem_n; x++) {
-		add_doc.parent = (uint4)(be[x].parent);
+		add_doc.parent = (Uint4)(be[x].parent);
 		add_doc.begin = (etymon_af_off_t)(be[x].begin);
 		add_doc.end = (etymon_af_off_t)(be[x].end);
 		etymon_af_index_add_doc(&add_doc);
