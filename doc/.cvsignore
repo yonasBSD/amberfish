@@ -1,0 +1,3 @@
+*.gz
+Makefile
+version.texi

@@ -1,0 +1,6 @@
+*.d
+af
+config.h
+libaf.a
+Makefile
+version.h

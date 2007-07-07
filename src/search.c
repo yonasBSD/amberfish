@@ -183,7 +183,8 @@ int etymon_af_score_default(ETYMON_AF_SEARCH_STATE* state,
 	if (sumsq == 0.0) {
 		sumsq = 1.0;
 	}
-	
+
+	printf("%d %d\n", idf[x], sumsq);
 	for (x = 0; x < iresults_n; x++) {
 		iresults[x].score = (int)((idf[x] / sumsq) * 10000);
 	}
