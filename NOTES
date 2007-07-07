@@ -5,6 +5,8 @@ RELEASE NOTES
 
 RECENT CHANGES
 
+* Current work on improving relevance ranking scores.
+
 * There is a new experimental --no-normalize-scores search option (not
 yet documented).  With this option, af returns unnormalized scores
 rather than scaling them from 0 to 100.  To get the raw calculated
