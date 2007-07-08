@@ -188,7 +188,7 @@ int etymon_af_score_default(ETYMON_AF_SEARCH_STATE* state,
 /*		printf(">> %f %f\n", idf[x], sumsq); */
 		iresults[x].score = (int)((idf[x] / sumsq) * 10000);
 	}
-
+	
 	free(idf);
 	return 0;
 }
@@ -1110,6 +1110,338 @@ int etymon_af_boolean_and(ETYMON_AF_SEARCH_STATE* state, ETYMON_AF_IRESULT** r_s
 	}
 
 	/* product of "and" shouldn't need to be sorted */
+	
+	return 0;
+}
+
+
+char *strcpy_hash(char *dst, const char *src)
+{
+	int sum;
+	const char *p;
+	char *q;
+	char ch;
+	
+	sum = 0;
+	p = src;
+	q = dst + 1;
+	do {
+		*(q++) = ch = *(p++);
+		sum += (int) ch;
+	} while (ch != '\0');
+	*dst = (char) (sum % 256);
+	return dst;
+}
+
+
+/* possible errors:
+   EX_IO
+*/
+int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
+	ETYMON_AF_STAT st;
+	int term_start, term_len, term_done, quote_on;
+	int query_len;
+	unsigned char* query;
+	char ch;
+	unsigned char term[ETYMON_MAX_QUERY_TERM_SIZE];
+	int op_stack[ETYMON_AF_MAX_OP_STACK_DEPTH];
+	int op_stack_p;
+	ETYMON_AF_IRESULT* r_stack[ETYMON_AF_MAX_R_STACK_DEPTH];
+	int rn_stack[ETYMON_AF_MAX_R_STACK_DEPTH];
+	int r_stack_p;
+	int op_type;
+	int try_op;
+
+	/* open database files */
+	if (etymon_af_state[state->dbid]->keep_open == 0) {
+		if (etymon_af_open_files(state->dbid, O_RDONLY) == -1) {
+			return -1;
+		}
+	}
+
+	/* only perform the search if there is something in the index */
+	if (etymon_af_fstat(etymon_af_state[state->dbid]->fd[ETYMON_DBF_UDICT], &st) == -1) {
+		perror("etymon_af_search_db():fstat()");
+	}
+	if (st.st_size > ((etymon_af_off_t)0)) {
+
+		query = state->opt->query;
+		query_len = strlen((char*)query);
+		term_start = 0;
+		op_stack_p = 0;
+		r_stack_p = 0;
+
+		while (term_start < query_len) {
+
+			/* skip past spaces */
+			while ( (term_start < query_len) && (query[term_start] == ' ') ) {
+				term_start++;
+			}
+
+			/* parse out term */
+			term_len = 0;
+			quote_on = 0;
+			term_done = 0;
+			while ( ((term_start + term_len) < query_len) && (!term_done) ) {
+				ch = query[term_start + term_len];
+				if (quote_on) {
+					switch (ch) {
+					case '\"':
+						quote_on = 0;
+						break;
+					default:
+						break;
+					}
+				} else {
+					switch (ch) {
+					case '\"':
+						quote_on = 1;
+						break;
+					case ' ':
+						term_done = 1;
+						term_len--;
+						break;
+					case '(':
+					case ')':
+						term_done = 1;
+						if (term_len > 0) {
+							term_len--;
+						}
+						break;
+					default:
+						break;
+					}
+				}
+				term_len++;
+			}
+
+			/* make sure the query term is not too long */
+			if (term_len >= ETYMON_MAX_QUERY_TERM_SIZE) {
+				/* make a temporary buffer to hold the term */
+				char* term_tmp = (char*)(malloc(term_len + 1));
+				if (term_tmp) {
+					memcpy(term_tmp, query + term_start, term_len);
+					term_tmp[term_len] = '\0';
+				}
+				if (term_tmp) {
+					free(term_tmp);
+				}
+				/* close database files */
+				if (etymon_af_state[state->dbid]->keep_open == 0) {
+					etymon_af_close_files(state->dbid);
+				}
+				/* free result sets */
+				while (--r_stack_p >= 0) {
+					free(r_stack[r_stack_p]);
+				}
+				return aferr(AFETERMLEN);
+			}
+
+			memcpy(term, query + term_start, term_len);
+			term[term_len] = '\0';
+			
+			/* process token */
+
+			if (strcmp((char*)term, "|") == 0) {
+				op_type = ETYMON_AF_OP_OR;
+			}
+			else if (strcmp((char*)term, "&") == 0) {
+				op_type = ETYMON_AF_OP_AND;
+			}
+			else if (strcmp((char*)term, "(") == 0) {
+				op_type = ETYMON_AF_OP_GROUP_OPEN;
+			}
+			else if (strcmp((char*)term, ")") == 0) {
+				op_type = ETYMON_AF_OP_GROUP_CLOSE;
+			}
+			else {
+				op_type = 0;
+			}
+
+			try_op = 0;
+			
+			switch (op_type) {
+
+			case 0: /* search term */
+
+				/* make sure there is space left on the r_stack */
+				if (r_stack_p >= ETYMON_AF_MAX_R_STACK_DEPTH) {
+					/* close database files */
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files(state->dbid);
+					}
+					/* free result sets */
+					while (--r_stack_p >= 0) {
+						free(r_stack[r_stack_p]);
+					}
+					return aferr(AFEQUERYNEST);
+				}
+				
+				/* perform the search */
+				if (etymon_af_search_term(state, term, &(r_stack[r_stack_p]), &(rn_stack[r_stack_p])) == -1) {
+					/* close database files */
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files(state->dbid);
+					}
+					/* free result sets */
+					while (--r_stack_p >= 0) {
+						free(r_stack[r_stack_p]);
+					}
+					return -1;
+				}
+
+				r_stack_p++;
+				try_op = 1;
+					
+				break;
+
+			case ETYMON_AF_OP_OR:
+			case ETYMON_AF_OP_AND:
+			case ETYMON_AF_OP_GROUP_OPEN:
+				
+				/* make sure there is space left on the op_stack */
+				if (op_stack_p >= ETYMON_AF_MAX_OP_STACK_DEPTH) {
+					/* close database files */
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files(state->dbid);
+					}
+					/* free result sets */
+					while (--r_stack_p >= 0) {
+						free(r_stack[r_stack_p]);
+					}
+					return aferr(AFEQUERYNEST);
+				}
+
+				/* push the operator onto the op_stack */
+				op_stack[op_stack_p] = op_type;
+				op_stack_p++;
+
+				break;
+
+			case ETYMON_AF_OP_GROUP_CLOSE:
+				/* top element on op_stack should be ETYMON_AF_OP_GROUP_OPEN */
+				if ( (op_stack_p <= 0) || (op_stack[op_stack_p - 1] != ETYMON_AF_OP_GROUP_OPEN) ) {
+					/* close database files */
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files(state->dbid);
+					}
+					/* free result sets */
+					while (--r_stack_p >= 0) {
+						free(r_stack[r_stack_p]);
+					}
+					return aferr(AFEQUERYSYN);
+				}
+				
+				/* pop ETYMON_AF_OP_GROUP_OPEN from op_stack */
+				op_stack_p--;
+				
+				try_op = 1;
+				
+				break;
+
+			default:
+				break;
+
+			}
+
+			/* if try_op is set, we need to look for an
+                           operator on the top of op_stack, and if we
+                           find one, and there are enough operands for
+                           it on r_stack, then execute the operation */
+			if ( (try_op) && (op_stack_p > 0) ) {
+				switch (op_stack[op_stack_p - 1]) {
+				case ETYMON_AF_OP_OR:
+					if (r_stack_p > 1) {
+						if (etymon_af_boolean_or(state, r_stack, rn_stack, r_stack_p - 2, r_stack_p - 1)
+						    == -1) {
+							/* close database files */
+							if (etymon_af_state[state->dbid]->keep_open == 0) {
+								etymon_af_close_files(state->dbid);
+							}
+							/* free result sets */
+							while (--r_stack_p >= 0) {
+								free(r_stack[r_stack_p]);
+							}
+							return -1;
+						}
+						r_stack_p--;
+						op_stack_p--;
+					}
+					break;
+				case ETYMON_AF_OP_AND:
+					if (r_stack_p > 1) {
+						if (etymon_af_boolean_and(state, r_stack, rn_stack, r_stack_p - 2, r_stack_p - 1)
+						    == -1) {
+							/* close database files */
+							if (etymon_af_state[state->dbid]->keep_open == 0) {
+								etymon_af_close_files(state->dbid);
+							}
+							/* free result sets */
+							while (--r_stack_p >= 0) {
+								free(r_stack[r_stack_p]);
+							}
+							return -1;
+						}
+						r_stack_p--;
+						op_stack_p--;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+
+			term_start += term_len;
+			
+		} /* while: term_start < query_len */
+
+		/* there should be a single result set remaining on the r_stack */
+		if (r_stack_p != 1) {
+			/* close database files */
+			if (etymon_af_state[state->dbid]->keep_open == 0) {
+				etymon_af_close_files(state->dbid);
+			}
+			/* free result sets */
+			while (--r_stack_p >= 0) {
+				free(r_stack[r_stack_p]);
+			}
+			return aferr(AFEQUERYSYN);
+		}
+
+		/* add results to the main result set */
+		if (rn_stack[0] > 0) {
+			int x_r, x;
+			x_r = state->optr->resultn;
+			if (state->optr->result == NULL) {
+				state->optr->result = (Afresult *) malloc((x_r + rn_stack[0]) * sizeof(Afresult));
+			} else {
+				state->optr->result = (Afresult *) realloc(state->optr->result, (x_r + rn_stack[0]) * sizeof(Afresult));
+			}
+			if (state->optr->result == NULL) {
+				/* ERROR */
+				return -1;
+			}
+			for (x = 0; x < rn_stack[0]; x++) {
+				state->optr->result[x_r].dbid = state->dbid;
+				state->optr->result[x_r].docid = (r_stack[0])[x].doc_id;
+				state->optr->result[x_r].score = (r_stack[0])[x].score;
+				x_r++;
+			}
+			state->optr->resultn += rn_stack[0];
+		}
+
+		if (r_stack[0]) {
+			free(r_stack[0]);
+		}
+		
+	}
+	
+	/* close database files */
+	if (etymon_af_state[state->dbid]->keep_open == 0) {
+		if (etymon_af_close_files(state->dbid) == -1) {
+			return -1;
+		}
+	}
 	
 	return 0;
 }
