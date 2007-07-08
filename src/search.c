@@ -1171,6 +1171,10 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 		op_stack_p = 0;
 		r_stack_p = 0;
 
+		/* set up query term table, to track tf_qj */
+		
+		
+		
 		while (term_start < query_len) {
 
 			/* skip past spaces */
@@ -1258,8 +1262,13 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 				op_type = 0;
 			}
 
-			try_op = 0;
+			if (op_type == 0) {
+				printf("found term: [%s]\n", term);
+			}
 			
+#ifdef DISABLE
+			try_op = 0;
+
 			switch (op_type) {
 
 			case 0: /* search term */
@@ -1390,7 +1399,8 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 					break;
 				}
 			}
-
+#endif
+			
 			term_start += term_len;
 			
 		} /* while: term_start < query_len */
@@ -1814,7 +1824,8 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 		state.dbid = dbid;
 		state.opt = (Afsearch *) r;
 		state.optr = rr;
-		if (etymon_af_search_db(&state) == -1) {
+/*		if (etymon_af_search_db(&state) == -1) { */
+		if (search_db_new(&state) == -1) {
 			return -1;
 		}
 	}
