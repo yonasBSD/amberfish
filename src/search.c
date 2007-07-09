@@ -160,9 +160,9 @@ int etymon_af_search_fields(Uint2* field_mask, int field_mask_len, int rooted, U
 }
 
 
-int etymon_af_score_default(ETYMON_AF_SEARCH_STATE* state,
+int etymon_af_score_vector(ETYMON_AF_SEARCH_STATE* state,
 			    ETYMON_AF_IRESULT* iresults,
-			    int iresults_n, Uint4 corpus_doc_n) {
+			    int iresults_n, Uint4 corpus_doc_n, int tf_qj) {
 	int x;
 	double* idf;
 	double sc;
@@ -194,7 +194,41 @@ int etymon_af_score_default(ETYMON_AF_SEARCH_STATE* state,
 }
 
 
-int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ETYMON_AF_IRESULT** iresults, int* iresults_n) {
+int etymon_af_score_boolean(ETYMON_AF_SEARCH_STATE* state,
+			    ETYMON_AF_IRESULT* iresults,
+			    int iresults_n, Uint4 corpus_doc_n, int tf_qj) {
+	int x;
+	double* idf;
+	double sc;
+	double sumsq = 0;
+
+	idf = (double*)(malloc(iresults_n * sizeof(double)));
+	if (idf == NULL)
+		return aferr(AFEMEM);
+		
+	for (x = 0; x < iresults_n; x++) {
+		sc = (corpus_doc_n / iresults_n)
+			* iresults[x].score;
+		idf[x] = sc;
+		sumsq += (sc * sc);
+	}
+
+	sumsq = sqrt(sumsq);
+	if (sumsq == 0.0) {
+		sumsq = 1.0;
+	}
+
+	for (x = 0; x < iresults_n; x++) {
+/*		printf(">> %f %f\n", idf[x], sumsq); */
+		iresults[x].score = (int)((idf[x] / sumsq) * 10000);
+	}
+	
+	free(idf);
+	return 0;
+}
+
+
+int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, int tf_qj, ETYMON_AF_IRESULT** iresults, int* iresults_n) {
 	Uint2 field_mask[ETYMON_MAX_FIELD_NEST * 2];
 	int field_mask_len;
 	int sx, yy, x, x_r0, r0_count, r0_size, r0_n, wn_found, t;
@@ -1004,9 +1038,13 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, ET
 	etymon_af_search_free_r0(r0, r0_size, r0_wn_size);
 	
 	/* add relevance scores */
-	if (state->opt->score == AFSCOREDEFAULT) {
-		etymon_af_score_default(state, *iresults, *iresults_n,
-					state->corpus_doc_n);
+	if (state->opt->score == AFSCOREBOOLEAN) {
+		etymon_af_score_boolean(state, *iresults, *iresults_n,
+					state->corpus_doc_n, tf_qj);
+	}
+	if (state->opt->score == AFSCOREVECTOR) {
+		etymon_af_score_vector(state, *iresults, *iresults_n,
+					state->corpus_doc_n, tf_qj);
 	}
 	
 	if (*iresults_n > 1) {
@@ -1134,6 +1172,12 @@ char *strcpy_hash(char *dst, const char *src)
 }
 
 
+typedef struct {
+	unsigned char hterm[ETYMON_MAX_QUERY_TERM_SIZE + 1];  /* hash and query term */
+	int tf_qj;  /* number of occurrences of term in query */
+} QUERY_TABLE;
+
+
 /* possible errors:
    EX_IO
 */
@@ -1152,6 +1196,12 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 	int op_type;
 	int try_op;
 
+	int x;
+	QUERY_TABLE *query_table;
+	int query_table_size, query_table_n;
+	unsigned char hterm[ETYMON_MAX_QUERY_TERM_SIZE + 1];  /* hash and query term */
+	int hterm_found;
+	
 	/* open database files */
 	if (etymon_af_state[state->dbid]->keep_open == 0) {
 		if (etymon_af_open_files(state->dbid, O_RDONLY) == -1) {
@@ -1172,9 +1222,10 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 		r_stack_p = 0;
 
 		/* set up query term table, to track tf_qj */
-		
-		
-		
+		query_table_size = query_len / 2 + 1;  /* conservative upper bound on number of terms */
+		query_table = (QUERY_TABLE *) malloc( (sizeof (QUERY_TABLE)) * query_table_size );
+		query_table_n = 0;
+				
 		while (term_start < query_len) {
 
 			/* skip past spaces */
@@ -1264,6 +1315,30 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 
 			if (op_type == 0) {
 				printf("found term: [%s]\n", term);
+				strcpy_hash((char *) hterm, (char *) term);
+				hterm_found = 0;
+				/* search for term in query table */
+				for (x = 0; x < query_table_n; x++) {
+					if (strcmp((char *) hterm, (char *) query_table[x].hterm) == 0) {
+						query_table[x].tf_qj++;
+						hterm_found = 1;
+						break;
+					}
+				}
+				/* if not found, add it */
+				if (!hterm_found) {
+					x = query_table_n;
+					if (++query_table_n > query_table_size) {
+						printf("FATAL ERROR: query table overflow\n");
+						exit(-1);
+					}
+					strcpy((char *) query_table[x].hterm, (char *) hterm);
+					query_table[x].tf_qj = 1;
+				}
+				/* dump query table */
+				printf("***** query table ***** (size = %d)\n", query_table_size);
+				for (x = 0; x < query_table_n; x++)
+					printf("%d [%s]\n", query_table[x].tf_qj, (char *) query_table[x].hterm + 1);
 			}
 			
 #ifdef DISABLE
@@ -1405,6 +1480,44 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 			
 		} /* while: term_start < query_len */
 
+		/* loop over query table and perform term searches */
+		for (x = 0; x < query_table_n; x++) {
+	
+			/* perform the search */
+			if (etymon_af_search_term(state, query_table[x].hterm + 1, query_table[x].tf_qj, &(r_stack[r_stack_p]),
+			        &(rn_stack[r_stack_p])) == -1) {
+
+				/* close database files */
+				if (etymon_af_state[state->dbid]->keep_open == 0) {
+					etymon_af_close_files(state->dbid);
+				}
+				/* free result sets */
+				while (--r_stack_p >= 0) {
+					free(r_stack[r_stack_p]);
+				}
+				return -1;
+			}
+			r_stack_p++;
+
+			if (r_stack_p > 1) {
+				if (etymon_af_boolean_or(state, r_stack, rn_stack, r_stack_p - 2, r_stack_p - 1)
+				    == -1) {
+					/* close database files */
+					if (etymon_af_state[state->dbid]->keep_open == 0) {
+						etymon_af_close_files(state->dbid);
+					}
+					/* free result sets */
+					while (--r_stack_p >= 0) {
+						free(r_stack[r_stack_p]);
+					}
+					return -1;
+				}
+				r_stack_p--;
+				op_stack_p--;
+			}
+		
+		}  /* query_table loop */
+		
 		/* there should be a single result set remaining on the r_stack */
 		if (r_stack_p != 1) {
 			/* close database files */
@@ -1601,7 +1714,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 				}
 				
 				/* perform the search */
-				if (etymon_af_search_term(state, term, &(r_stack[r_stack_p]), &(rn_stack[r_stack_p])) == -1) {
+				if (etymon_af_search_term(state, term, 1, &(r_stack[r_stack_p]), &(rn_stack[r_stack_p])) == -1) {
 					/* close database files */
 					if (etymon_af_state[state->dbid]->keep_open == 0) {
 						etymon_af_close_files(state->dbid);
@@ -1824,9 +1937,14 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 		state.dbid = dbid;
 		state.opt = (Afsearch *) r;
 		state.optr = rr;
-/*		if (etymon_af_search_db(&state) == -1) { */
-		if (search_db_new(&state) == -1) {
-			return -1;
+		if (r->qtype == AFQUERYBOOLEAN) {
+			if (etymon_af_search_db(&state) == -1) {
+				return -1;
+			}
+		} else {
+			if (search_db_new(&state) == -1) {
+				return -1;
+			}
 		}
 	}
 

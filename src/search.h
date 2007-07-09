@@ -8,9 +8,11 @@
 #include "defs.h"
 
 #define AFQUERYBOOLEAN (1)
+#define AFQUERYVECTOR  (2)
 
 #define AFNOSCORE      (0)
-#define AFSCOREDEFAULT (1)
+#define AFSCOREBOOLEAN (1)
+#define AFSCOREVECTOR  (2)
 
 typedef struct {
         Uint4 docid;
@@ -30,8 +32,8 @@ typedef struct {
 	Uint2 *dbid;  /* databases to search */
 	int dbidn;
 	Afchar *query;
-	int qtype;  /* AFQUERYBOOLEAN */
-	int score;  /* AFNOSCORE | AFSCOREDEFAULT */
+	int qtype;  /* AFQUERYBOOLEAN | AFQUERYVECTOR */
+	int score;  /* AFNOSCORE | AFSCOREBOOLEAN | AFSCOREVECTOR */
 	int score_normalize;  /* if scoring, scale scores from 0 to 10000 */
 } Afsearch;
 

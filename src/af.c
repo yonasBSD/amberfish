@@ -57,6 +57,7 @@ static int cmd_linearize = 0;
 
 static int cmd_search = 0;
 static char *search_query_boolean = "";
+static char *search_query_vector = "";
 static int search_style = 0;
 static int search_skiphits = 0;
 static int search_numhits = -1;
@@ -195,6 +196,7 @@ static int process_opt(int argc, char *argv[])
 		{ "port", 1, 0, 'P' },
 		{ "prune", 0, 0, 0 },
 		{ "query-boolean", 1, 0, 'Q' },
+		{ "query-vector", 1, 0, 'q' },
 		{ "scan", 0, 0, 0 },
 		{ "search", 0, 0, 's' },
 		{ "skiphits", 1, 0, 0 },
@@ -212,7 +214,7 @@ static int process_opt(int argc, char *argv[])
 	while (1) {
 		int longindex = 0;
 		g = getopt_long(argc, argv,
-				"CDFLP:Q:d:h:ilm:n:st:v",
+				"CDFLP:Q:d:h:ilm:n:q:st:v",
 				longopts, &longindex);
 		if (g == -1)
 			break;
@@ -279,6 +281,9 @@ static int process_opt(int argc, char *argv[])
 			break;
 		case 'Q':
 			search_query_boolean = optarg;
+			break;
+		case 'q':
+			search_query_vector = optarg;
 			break;
 		case '?':
 			return -1;
@@ -455,13 +460,19 @@ static int exec_search()
 	
 	se.dbid = dbid;
 	se.dbidn = dbidn;
-	se.query = (Afchar *) search_query_boolean;
-	se.qtype = AFQUERYBOOLEAN;
+	if (*search_query_boolean != '\0') {
+		se.query = (Afchar *) search_query_boolean;
+		se.qtype = AFQUERYBOOLEAN;
+		se.score = AFSCOREBOOLEAN;
+	} else {
+		se.query = (Afchar *) search_query_vector;
+		se.qtype = AFQUERYVECTOR;
+		se.score = AFSCOREVECTOR;
+	}
 	/*
 	sea.score_results = ses_options->score_results;
 	sea.sort_results = ses_options->sort_results;
 	*/
-	se.score = AFSCOREDEFAULT;
 	se.score_normalize = search_score_normalize;
 	
 	r = afsearch(&se, &ser);
@@ -995,7 +1006,7 @@ static int validate_opt_search()
 {
 	if (!cmd_search)
 		return 0;
-	if (*search_query_boolean == '\0')
+	if (*search_query_boolean == '\0' && *search_query_vector == '\0')
 		return aferror("No query specified");
 	/* note: if relevance ranking becomes possible to disable in
 	   the future, we need to make sure it is enabled when using
