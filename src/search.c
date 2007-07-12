@@ -31,7 +31,8 @@ extern ETYMON_AF_STATE* etymon_af_state[];
 
 typedef struct {
 	int doc_id;
-	int score;
+	double w_d;  /* w{qj} d{ij} */
+	double d2;  /* (d{ij})^2 */
 } ETYMON_AF_IRESULT;
 
 typedef struct {
