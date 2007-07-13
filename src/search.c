@@ -168,29 +168,21 @@ int etymon_af_score_vector(ETYMON_AF_SEARCH_STATE* state,
 	double* idf;
 	double sc;
 	double sumsq = 0;
-
-	idf = (double*)(malloc(iresults_n * sizeof(double)));
-	if (idf == NULL)
-		return aferr(AFEMEM);
-		
+	
+	double w_qj, d_ij, tf_ij, idf_j, d, df_j;
+	
+	w_qj = 1 + log(tf_qj);
+	d = corpus_doc_n;
+	df_j = iresults_n;
+	idf_j = log(d / df_j);
 	for (x = 0; x < iresults_n; x++) {
-		sc = (corpus_doc_n / iresults_n)
-			* iresults[x].score;
-		idf[x] = sc;
-		sumsq += (sc * sc);
-	}
-
-	sumsq = sqrt(sumsq);
-	if (sumsq == 0.0) {
-		sumsq = 1.0;
-	}
-
-	for (x = 0; x < iresults_n; x++) {
-/*		printf(">> %f %f\n", idf[x], sumsq); */
-		iresults[x].score = (int)((idf[x] / sumsq) * 10000);
+		tf_ij = iresults[x].w_d;
+		d_ij = (1 + log(tf_ij)) * idf_j;
+		iresults[x].w_d = w_qj * d_ij;
+		iresults[x].d2 = d_ij * d_ij;
+/*		printf("w_d: %f\td2: %f\n", iresults[x].w_d, iresults[x].d2); */
 	}
 	
-	free(idf);
 	return 0;
 }
 
@@ -209,7 +201,7 @@ int etymon_af_score_boolean(ETYMON_AF_SEARCH_STATE* state,
 		
 	for (x = 0; x < iresults_n; x++) {
 		sc = (corpus_doc_n / iresults_n)
-			* iresults[x].score;
+			* iresults[x].w_d;
 		idf[x] = sc;
 		sumsq += (sc * sc);
 	}
@@ -221,7 +213,7 @@ int etymon_af_score_boolean(ETYMON_AF_SEARCH_STATE* state,
 
 	for (x = 0; x < iresults_n; x++) {
 /*		printf(">> %f %f\n", idf[x], sumsq); */
-		iresults[x].score = (int)((idf[x] / sumsq) * 10000);
+		iresults[x].w_d = (int)((idf[x] / sumsq) * 10000);
 	}
 	
 	free(idf);
@@ -1028,7 +1020,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 	for (x = 0; x < r0_n; x++) {
 		if (r0[x].doc_id != 0) {
 			(*iresults)[x_r].doc_id = r0[x].doc_id;
-			(*iresults)[x_r].score =
+			(*iresults)[x_r].w_d =
 				state->opt->score ?
 				r0[x].freq : 0;
 			x_r++;
@@ -1083,7 +1075,9 @@ int etymon_af_boolean_or(ETYMON_AF_SEARCH_STATE* state, ETYMON_AF_IRESULT** r_st
 		if ( (p1 >= rn_stack[r1]) || (rset1[p1].doc_id != rset2[p2].doc_id) ) {
 			rset1[rn_stack[r1]++] = rset2[p2];
 		} else {
-			rset1[p1].score += rset2[p2].score;
+/*			printf("OR-ing: %f/%f OR %f/%f\n", rset1[p1].w_d, rset1[p1].d2, rset2[p2].w_d, rset2[p2].d2); */
+			rset1[p1].w_d += rset2[p2].w_d;
+			rset1[p1].d2 += rset2[p2].d2;
 			p1++;
 		}
 	}
@@ -1126,10 +1120,13 @@ int etymon_af_boolean_and(ETYMON_AF_SEARCH_STATE* state, ETYMON_AF_IRESULT** r_s
 		if ( (p2 < rn_stack[r2]) && (rset1[p1].doc_id == rset2[p2].doc_id) ) {
 			if (insert != p1) {
 				rset1[insert] = rset2[p2];
-				rset1[insert].score = rset1[p1].score
-					+ rset2[p2].score;
+				rset1[insert].w_d = rset1[p1].w_d
+					+ rset2[p2].w_d;
+				rset1[insert].d2 = rset1[p1].d2
+					+ rset2[p2].d2;
 			} else {
-				rset1[insert].score += rset2[p2].score;
+				rset1[insert].w_d += rset2[p2].w_d;
+				rset1[insert].d2 += rset2[p2].d2;
 			}
 			insert++;
 			p2++;
@@ -1315,7 +1312,7 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 			}
 
 			if (op_type == 0) {
-				printf("found term: [%s]\n", term);
+/*				printf("found term: [%s]\n", term); */
 				strcpy_hash((char *) hterm, (char *) term);
 				hterm_found = 0;
 				/* search for term in query table */
@@ -1337,9 +1334,11 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 					query_table[x].tf_qj = 1;
 				}
 				/* dump query table */
-				printf("***** query table ***** (size = %d)\n", query_table_size);
+				/*				
+ 				printf("***** query table ***** (size = %d)\n", query_table_size);
 				for (x = 0; x < query_table_n; x++)
 					printf("%d [%s]\n", query_table[x].tf_qj, (char *) query_table[x].hterm + 1);
+				*/
 			}
 			
 #ifdef DISABLE
@@ -1548,7 +1547,9 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 			for (x = 0; x < rn_stack[0]; x++) {
 				state->optr->result[x_r].dbid = state->dbid;
 				state->optr->result[x_r].docid = (r_stack[0])[x].doc_id;
-				state->optr->result[x_r].score = (r_stack[0])[x].score;
+/*				printf("w_d / sqrt(d2): %f / %f\n", (r_stack[0])[x].w_d, sqrt( (r_stack[0])[x].d2 ) );
+				printf("Raw score: %f\n", (r_stack[0])[x].w_d / sqrt( (r_stack[0])[x].d2 ) ); */
+				state->optr->result[x_r].score = (int) ( ((r_stack[0])[x].w_d / sqrt((r_stack[0])[x].d2)) *  100000000 );
 				x_r++;
 			}
 			state->optr->resultn += rn_stack[0];
@@ -1861,7 +1862,7 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 			for (x = 0; x < rn_stack[0]; x++) {
 				state->optr->result[x_r].dbid = state->dbid;
 				state->optr->result[x_r].docid = (r_stack[0])[x].doc_id;
-				state->optr->result[x_r].score = (r_stack[0])[x].score;
+				state->optr->result[x_r].score = (r_stack[0])[x].w_d;
 				x_r++;
 			}
 			state->optr->resultn += rn_stack[0];
@@ -1952,8 +1953,8 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 	/* scale results from 0 to 10000 */
 	if (r->score && r->score_normalize) {
 		int x;
-		int high = 0;
-		int low = 0;
+		double high = 0;
+		double low = 0;
 		for (x = 0; x < rr->resultn; x++) {
 			if (rr->result[x].score > high) {
 				high = rr->result[x].score;
@@ -1963,7 +1964,7 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 			}
 		}
 		for (x = 0; x < rr->resultn; x++)
-			rr->result[x].score = ( (rr->result[x].score - low) * 100 ) / (high - low);
+			rr->result[x].score = (Uint4) ( ( ( ( (double) rr->result[x].score ) - low) * 10000 ) / (high - low) );
 	}
 	
 	/* sort results */

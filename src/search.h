@@ -16,7 +16,7 @@
 
 typedef struct {
         Uint4 docid;
-        Uint2 score;
+        Uint4 score;
         Uint2 dbid;
 } Afresult;
 
