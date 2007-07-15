@@ -148,12 +148,19 @@ typedef struct {
 #define ETYMON_MAX_KEYS_L (5000)
 #define ETYMON_MAX_KEYS_NL (8000)
 
+#ifdef UMLS
+#define ETYMON_MAX_TOKEN_SIZE (256)
+#define ETYMON_MAX_WORD_SIZE (256)
+#else
+
 /* maximum char[] size for a parsed token */
 /* this must be set to the larger of ETYMON_MAX_WORD_SIZE and ETYMON_MAX_FIELDNAME_SIZE */
 #define ETYMON_MAX_TOKEN_SIZE (32)
 
 /* maximum char[] size for an indexable word */
 #define ETYMON_MAX_WORD_SIZE (32)
+
+#endif  /* UMLS */
 
 /* maximum char[] size for a single term within a query */
 #define ETYMON_MAX_QUERY_TERM_SIZE (1024)

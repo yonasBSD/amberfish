@@ -73,9 +73,14 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 			good = 0;
 			
 			/* loop past non alphanumeric chars */
-			while ( (docbuf->eof == 0) && (offset < add_doc.end) && (isalnum(ch =
-							       dc_text_next_char(docbuf, &offset)) == 0) ) {
-			}
+			while ( (docbuf->eof == 0) && (offset < add_doc.end) &&
+#ifdef UMLS
+					(isspace(ch = dc_text_next_char(docbuf, &offset))) 
+#else
+					(isalnum(ch = dc_text_next_char(docbuf, &offset)) == 0) 
+#endif
+			) {
+				}
 			
 			if ( (docbuf->eof == 0) && (offset < add_doc.end) ) {
 				
@@ -89,6 +94,9 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 					(offset < add_doc.end) &&
 					( ((good = isalnum(ch =
 							   dc_text_next_char(docbuf, &offset))) != 0) ||
+#ifdef UMLS
+					  (good = (!isspace(ch))) ||
+#endif
 					  (good = (ch == '.')) ||
 					  (good = (ch == '-')) )
 					) {
@@ -127,6 +135,8 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 /*				if (good)
 					continue;
 */
+
+/*				printf("\"%s\"\n", word); */
 				
 				if (etymon_af_index_add_word(&add_word) == -1) {
 					return -1;

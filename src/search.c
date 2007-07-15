@@ -31,8 +31,8 @@ extern ETYMON_AF_STATE* etymon_af_state[];
 
 typedef struct {
 	int doc_id;
-	double w_d;  /* w{qj} d{ij} */
-	double d2;  /* (d{ij})^2 */
+	float w_d;  /* w{qj} d{ij} */
+	float d2;  /* (d{ij})^2 */
 } ETYMON_AF_IRESULT;
 
 typedef struct {
@@ -165,11 +165,11 @@ int etymon_af_score_vector(ETYMON_AF_SEARCH_STATE* state,
 			    ETYMON_AF_IRESULT* iresults,
 			    int iresults_n, Uint4 corpus_doc_n, int tf_qj) {
 	int x;
-	double* idf;
-	double sc;
-	double sumsq = 0;
+	float* idf;
+	float sc;
+	float sumsq = 0;
 	
-	double w_qj, d_ij, tf_ij, idf_j, d, df_j;
+	float w_qj, d_ij, tf_ij, idf_j, d, df_j;
 	
 	w_qj = 1 + log(tf_qj);
 	d = corpus_doc_n;
@@ -191,11 +191,11 @@ int etymon_af_score_boolean(ETYMON_AF_SEARCH_STATE* state,
 			    ETYMON_AF_IRESULT* iresults,
 			    int iresults_n, Uint4 corpus_doc_n, int tf_qj) {
 	int x;
-	double* idf;
-	double sc;
-	double sumsq = 0;
+	float* idf;
+	float sc;
+	float sumsq = 0;
 
-	idf = (double*)(malloc(iresults_n * sizeof(double)));
+	idf = (float*)(malloc(iresults_n * sizeof(float)));
 	if (idf == NULL)
 		return aferr(AFEMEM);
 		
@@ -359,7 +359,11 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 	while (*phrase_p != '\0') {
 		
 		/* move past any whitespace */
-		while ( (*phrase_p == ' ') || (*phrase_p == '"') ) {
+		while ( (*phrase_p == ' ') ||
+#ifdef UMLS
+/*				(*phrase_p == ',') || (*phrase_p == '(') || (*phrase_p == ')') || */
+#endif
+				(*phrase_p == '"') ) {
 			phrase_p++;
 		}
 
@@ -372,12 +376,16 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 		
 		/* isolate word to search on, and convert to lowercase */
 		word_len = 0;
-		while ( (word_len < (ETYMON_MAX_WORD_SIZE - 1)) && (phrase_p[word_len] != ' ') &&
-			(phrase_p[word_len] != '"') && (phrase_p[word_len] != '\0') ) {
+		while ( (word_len < (ETYMON_MAX_WORD_SIZE - 1)) && (phrase_p[word_len] != ' ') && 
+#ifdef UMLS
+/*				(phrase_p[word_len] != ',') && (phrase_p[word_len] != '(') && (phrase_p[word_len] != ')') && */
+#endif
+				(phrase_p[word_len] != '"') && (phrase_p[word_len] != '\0') ) {
 			word[word_len] = tolower(phrase_p[word_len]);
 			word_len++;
 		}
 		word[word_len] = '\0';
+		printf("term: [%s]\n", word);
 		
 		/* search for word */
 
@@ -1953,8 +1961,8 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 	/* scale results from 0 to 10000 */
 	if (r->score && r->score_normalize) {
 		int x;
-		double high = 0;
-		double low = 0;
+		float high = 0;
+		float low = 0;
 		for (x = 0; x < rr->resultn; x++) {
 			if (rr->result[x].score > high) {
 				high = rr->result[x].score;
@@ -1964,7 +1972,7 @@ int afsearch(const Afsearch *r, Afsearch_r *rr)
 			}
 		}
 		for (x = 0; x < rr->resultn; x++)
-			rr->result[x].score = (Uint4) ( ( ( ( (double) rr->result[x].score ) - low) * 10000 ) / (high - low) );
+			rr->result[x].score = (Uint4) ( ( ( ( (float) rr->result[x].score ) - low) * 10000 ) / (high - low) );
 	}
 	
 	/* sort results */

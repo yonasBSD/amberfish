@@ -991,6 +991,7 @@ int etymon_index_search_keys_l(unsigned char* word, size_t word_len, ETYMON_INDE
 	while (j <= k) {
 		m = (j + k) / 2;
 		len = page->offset[m + 1] - page->offset[m];
+/*		printf("COMPARING:\n[%s]\n[%s]\nfor %i\n\n", (char*)word, (char*)(page->keys + page->offset[m]), len); */
 		comp = strncmp( (char*)word,
 				(char*)(page->keys + page->offset[m]),
 				len );
