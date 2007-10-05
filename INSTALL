@@ -81,8 +81,8 @@ Amberfish can be uninstalled by typing 'gmake uninstall'.
 PORTER STEMMER
 
 Amberfish will try to use a Porter stemmer if it is available.  To
-make this work, download the 'ANSI C version' of the Porter stemmer
-from:
+make this work, download the 'ANSI C' version (not the 'thread safe'
+version) of the Porter stemmer from:
 
   http://www.tartarus.org/~martin/PorterStemmer/
 
