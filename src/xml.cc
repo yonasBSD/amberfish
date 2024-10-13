@@ -63,7 +63,7 @@ class DcXmlHandlers : public HandlerBase {
 
 	void startElement(const XMLCh* const name, AttributeList& attributes);
 	void endElement(const XMLCh* const name);
-	void characters(const XMLCh* const chars, const unsigned int length);
+	void characters(const XMLCh* const chars, const XMLSize_t length);
 
 	void warning(const SAXParseException& exception);
 	void error(const SAXParseException& exception);
@@ -409,8 +409,7 @@ void DcXmlHandlers::endElement(const XMLCh* const name) {
 
 }
 
-void DcXmlHandlers::characters(const XMLCh* const chars, const
-				unsigned int length) {
+void DcXmlHandlers::characters(const XMLCh* const chars, const XMLSize_t length) {
 
 	// add words from element content
 	char* s = (char*)(malloc(length + 1));
