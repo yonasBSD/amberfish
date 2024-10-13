@@ -2008,16 +2008,8 @@ int etymon_index_add_files(Afindex *opt) {
 			docbuf->fn = fn;
 			docbuf->filedes = open(docbuf->fn, O_RDONLY | ETYMON_AF_O_LARGEFILE);
 			if (docbuf->filedes == -1) {
-				/*
-				int e;
-				char s[ETYMON_MAX_MSG_SIZE];
-				sprintf(s, "%s: No such file or directory", docbuf->fn);
-				file_good = 0;
-				e = opt->log.error(s, 0);
-				if (e != 0) {
-					exit(e);
-				}
-				*/
+                            fprintf(stderr, "af: %s: No such file or directory\n", source_file);
+                            file_good = 0;
 			} else {
 
 				/* stat the file */
@@ -2026,21 +2018,17 @@ int etymon_index_add_files(Afindex *opt) {
 					perror("index_add_files():fstat()");
 				}
 				/* make sure it is a regular file */
-				if (S_ISREG(docbuf->st.st_mode) == 0) {
-					int e;
-					char s[ETYMON_MAX_MSG_SIZE];
-					sprintf(s,
-						"%s: file not recognized: File format not recognized",
-						docbuf->fn);
+				if (S_ISDIR(docbuf->st.st_mode)) {
+                                    fprintf(stderr, "af: %s: Is a directory\n", source_file);
+                                    file_good = 0;
+                                    close(docbuf->filedes);
+				} else {
+                                    if (!S_ISREG(docbuf->st.st_mode)) {
+					fprintf(stderr, "af: %s: Is not a regular file\n", source_file);
 					file_good = 0;
 					close(docbuf->filedes);
-					/*
-					e = opt->log.error(s, 0);
-					if (e != 0) {
-						exit(e);
-					}
-					*/
-				}
+                                    }
+                                }
 				
 			}
 		}
