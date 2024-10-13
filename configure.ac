@@ -1,4 +1,4 @@
-AC_INIT()
+AC_INIT
 
 USER_CPPFLAGS=$CPPFLAGS
 USER_LDFLAGS=$LDFLAGS
@@ -64,13 +64,13 @@ echo "#define AF_VERSION \"$af_version\"" > src/version.h
 AC_MSG_NOTICE(creating doc/version.texi)
 echo "@set VERSION $af_version" > doc/version.texi
 
-AC_CONFIG_HEADER(src/config.h)
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES(src/Makefile)
 AC_CONFIG_FILES(doc/Makefile)
 
 AC_SUBST(BIN, $bin)
 
-AC_OUTPUT()
+AC_OUTPUT
 
 echo ""
 echo "User options"
