@@ -1,0 +1,165 @@
+== User guide
+
+This user guide introduces how to search text with Amberfish.  The
+`af` tool creates indexes of text documents and then allows efficient
+searching of the documents using the indexes.
+
+=== Creating an index
+
+A typical command for creating a new index looks something like:
+
+----
+af -i -d mydb -C -v *.txt
+----
+
+The `-i` option is used for building indexes.  The files to be added
+to an index are listed at the end of the command line, in this case
+`*.txt`.
+
+The `-d` option specifies a database name.  The index will be written
+to a set of files that begin with this name.  In this example, files
+are created with names such as `mydb.db`, `mydb.dt`, `mydb.fd`, etc.
+
+The `-C` option creates a new database, overwriting any existing
+database with the same name.  This option should not be used when
+adding to an existing index.
+
+The `-v` option prints names of the files as they are processed.
+
+Another option, `-m` (not shown above), can be used to specify how
+much memory in megabytes will be used.  Increasing memory usage should
+reduce indexing time.
+
+=== Searching
+
+Once the index has been created, we can use it to run queries:
+
+----
+af -s -d mydb -q 'cat dog mouse'
+----
+
+The `-s` option is used for searching.
+
+The `-q` option specifies a free-text search query, which in the
+simplest case is a list of words to search for.
+
+The search command above is roughly equivalent to this Boolean search:
+
+----
+af -s -d mydb -Q 'cat | dog | mouse'
+----
+
+The `-Q` option specifies a Boolean search query.  The `|` character
+represents a Boolean "or" operator.  The queries above search for all
+documents that contain "cat" or "dog" or "mouse".
+
+A more interesting Boolean query might be:
+
+----
+af -s -d mydb -Q 'cat & (dog | mouse)'
+----
+
+The `&` character represents a Boolean "and" operator.  This query
+searches for all documents that contain "cat" and also contain "dog"
+or "mouse".
+
+Both free-text and Boolean search queries are case-insensitive,
+meaning that uppercase and lowercase characters are interchangeable.
+
+The output of these searches is a list of documents taking the form:
+
+----
+<score> <dbname> <docid> <parent> <filename> <begin> <end>
+----
+
+where <score> is a relevance score, <dbname> is the database name,
+<docid> is an unique number identifying the document within the
+database, <parent> is the docid of a document that contains this
+document (or 0 if no such relationship exists), <filename> is the name
+of the file where the document is located, and <begin> and <end> are
+byte offsets of the beginning and ending of the document within the
+file.
+
+=== Wildcard search
+
+The words in a query can end with an asterisk (`*`):
+
+----
+af -s -d mydb -q 'car*'
+----
+
+In this example, `car*` finds all documents containing the word `car`,
+`cars`, `carpet`, or any other word that begins with the prefix `car`.
+
+=== Phrases
+
+Phrase searching finds a sequence of words:
+
+----
+af -s -d mydb -q '"John Quincy Adams"'
+----
+
+The phrase is surrounded by quotation marks (`"`).  Individual words
+in a phrase can end with an asterisk for wildcard searching.
+
+Phrase searching must be enabled when the database is created by using
+the `--phrase` option.
+
+=== Multiple documents in a file
+
+A document can consist of an entire file or a portion of a file.
+Documents are identified in an index by their file name and beginning
+and ending byte offsets.  By default a file is considered to be a
+single document.
+
+The `--split` index option is a basic way of dividing files into
+multiple documents, for example:
+
+----
+af -i -d mydb -C --split '#####' -v *.txt
+----
+
+In the above example, any occurrences of `#####` are interpreted as
+the beginning of a new document.
+
+The list of documents in an index can be viewed with, for example:
+
+----
+af -l -d mydb
+----
+
+A document can be extracted using the `--fetch` option:
+
+----
+af --fetch <filename> <begin> <end>
+----
+
+where <filename>, <begin>, and <end> are taken from the output of `af
+-s` or `af -l`.
+
+The `--split` option does not work with the `xml` document type
+(described below), which uses a different method of dividing files
+into documents.
+
+=== Field search
+
+Many documents contain fields, such as Title, Author, Subject, etc.,
+which add structure to the text.  For XML files (and potentially other
+file types in the future), Amberfish queries can be restricted to
+specific fields as needed.  This is enabled when creating an index by
+specifying `-t xml`, for example:
+
+----
+af -i -d mydb -C -t xml -v *.xml
+----
+
+where `xml` is the "document type."  The default document type is
+`text` which does not support field search.
+
+An example of querying within a "Title" field:
+
+----
+af -s -d mydb -q 'Title/cat'
+----
+
+

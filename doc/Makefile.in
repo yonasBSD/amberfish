@@ -10,12 +10,12 @@ all: man
 
 man: ${MAN1} ${MAN3}
 
-html: html/index.html
+html: amberfish.html
 
 pdf: amberfish.pdf
 
-html/index.html: amberfish.texi version.texi
-	makeinfo --force --html -I. amberfish.texi -o html
+amberfish.html: amberfish.adoc userguide.adoc docinfo.html
+	asciidoctor -a docinfo=shared *.adoc
 
 amberfish.pdf: amberfish.texi version.texi
 	texi2dvi --pdf amberfish.texi
@@ -47,7 +47,7 @@ uninstall:
 	fi
 
 clean:
-	rm -f ${MAN1} ${MAN3} html/*.html \
+	rm -f ${MAN1} ${MAN3} amberfish.html userguide.html \
 		amberfish.aux amberfish.cp amberfish.cps amberfish.fn \
 		amberfish.fns amberfish.ky amberfish.log amberfish.pg \
 		amberfish.tmp amberfish.toc amberfish.tp amberfish.vr \
@@ -55,5 +55,4 @@ clean:
 
 distclean:
 	${MAKE} clean
-	rm -fr html
 	rm -f *~ *#
