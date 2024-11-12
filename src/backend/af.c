@@ -271,8 +271,9 @@ static int process_opt(int argc, char *argv[])
 			search_query_boolean = optarg;
 			break;
 		case 'q':
-			search_query_vector = optarg;
-			break;
+			fprintf(stderr, "%s: \"-q\" option is not yet supported\n", argv[0]);
+			/*search_query_vector = optarg;*/
+			/*break;*/
 		case '?':
 			return -1;
 		default:

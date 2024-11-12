@@ -287,7 +287,7 @@ $ af -s -d mydb -Q 'cat & (dog | mouse)'
 @pindex or
 @noindent
 The @option{-s} option tells @command{af} that this is a search
-operation.  The @option{-q} option specifies a Boolean search
+operation.  The @option{-Q} option specifies a Boolean search
 @dfn{query}, which represents what you are searching for.  The entire
 query is enclosed between two apostrophes so that the UNIX shell will
 not modify its contents.  The special characters, @samp{&} and
@@ -318,38 +318,10 @@ correspondence between files and documents, in which case the
 value is only useful if one is searching multiple databases at once (for
 example, see @ref{Multiple databases}).
 
-In the above example the words, @samp{cat}, @samp{dog}, and
-@samp{mouse}, are each an individual query @dfn{term}.  When the
-@option{-Q} option is used, Amberfish searches for each query term
-separately and then combines the results according to the Boolean
-operators.  Amberfish also supports a non-Boolean @dfn{free-text}
-query type, which is invoked by using @option{-q} instead of
-@option{-Q}.  It consists of a list of terms separated by spaces and
-no Boolean operators, for example:
-
-@example
-$ af -s -d mydb -q 'cat dog mouse'
-@end example
-
-@noindent
-This is roughly similar to a Boolean query with all the terms joined
-by @samp{or}, such as:
-
-@example
-$ af -s -d mydb -Q 'cat | dog | mouse'
-@end example
-
-@cartouche
-@noindent
-@emph{Note:} The free-text search option (@option{-q}) is not yet
-fully implemented but is planned for an upcoming release.  For now
-please use @option{-Q} when trying the examples in this tutorial.
-@end cartouche
-
 @noindent
 In the next several examples we concentrate on the structure of a
 single query term, with the understanding that terms can be combined
-arbitrarily into Boolean expressions or free-text queries.
+arbitrarily into Boolean expressions.
 
 
 @spsection{}
@@ -361,7 +333,7 @@ Amberfish supports @dfn{right truncated} queries such as the
 following:
 
 @example
-$ af -s -d mydb -q 'car*'
+$ af -s -d mydb -Q 'car*'
 @end example
 
 @noindent
@@ -385,7 +357,7 @@ time of indexing.
 Here is an example of a phrase search:
 
 @example
-$ af -s -d mydb -q '"Dinu Lipatti"'
+$ af -s -d mydb -Q '"Dinu Lipatti"'
 @end example
 
 @noindent
@@ -477,9 +449,9 @@ Here is an example of searching on a field:
 
 @pindex af
 @pindex af, -d
-@pindex af, -q
+@pindex af, -Q
 @example
-$ af -s -d mydb -q 'Title/cat'
+$ af -s -d mydb -Q 'Title/cat'
 @end example
 
 @noindent
@@ -544,7 +516,7 @@ attribute.)  The @samp{_c} is a special field defined by @code{xml} that
 means, ``element content.''  Thus the following search:
 
 @example
-$ af -s -d mydb -q '/Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
 @end example
 
 @noindent
@@ -552,16 +524,16 @@ will return @file{jones.xml} as a matching result.  These queries also
 will return a positive match:
 
 @example
-$ af -s -d mydb -q '/.../Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
-$ af -s -d mydb -q '/.../_c/Author/_c/Name/_c/LastName/_c/Jones'
-$ af -s -d mydb -q '/.../Author/_c/Name/_c/LastName/_c/Jones'
-$ af -s -d mydb -q '/.../_c/Name/_c/LastName/_c/Jones'
-$ af -s -d mydb -q '/.../Name/_c/LastName/_c/Jones'
-$ af -s -d mydb -q '/.../_c/LastName/_c/Jones'
-$ af -s -d mydb -q '/.../LastName/_c/Jones'
-$ af -s -d mydb -q '/.../_c/Jones'
-$ af -s -d mydb -q '/.../Jones'
-$ af -s -d mydb -q 'Jones'
+$ af -s -d mydb -Q '/.../Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../_c/Author/_c/Name/_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../Author/_c/Name/_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../_c/Name/_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../Name/_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../_c/LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../_c/Jones'
+$ af -s -d mydb -Q '/.../Jones'
+$ af -s -d mydb -Q 'Jones'
 @end example
 
 @noindent
@@ -571,8 +543,8 @@ left out completely.  For example, these two queries yield the same
 results:
 
 @example
-$ af -s -d mydb -q '/.../LastName/_c/Jones'
-$ af -s -d mydb -q 'LastName/_c/Jones'
+$ af -s -d mydb -Q '/.../LastName/_c/Jones'
+$ af -s -d mydb -Q 'LastName/_c/Jones'
 @end example
 
 @noindent
@@ -580,8 +552,8 @@ The @samp{...} can be used anywhere within a field path.  For example,
 the following queries match @file{jones.xml}:
 
 @example
-$ af -s -d mydb -q '/Document/_c/Author/_c/Name/.../Jones'
-$ af -s -d mydb -q 'Name/.../LastName/.../Jones'
+$ af -s -d mydb -Q '/Document/_c/Author/_c/Name/.../Jones'
+$ af -s -d mydb -Q 'Name/.../LastName/.../Jones'
 @end example
 
 @noindent
@@ -607,9 +579,9 @@ fragment:
 Other queries that would match the above fragment:
 
 @example
-$ af -s -d mydb -q 'Reference/_a/Type/book'
-$ af -s -d mydb -q 'Reference/_a/.../book'
-$ af -s -d mydb -q 'Reference/.../book'
+$ af -s -d mydb -Q 'Reference/_a/Type/book'
+$ af -s -d mydb -Q 'Reference/_a/.../book'
+$ af -s -d mydb -Q 'Reference/.../book'
 @end example
 
 @noindent
@@ -623,7 +595,7 @@ and before the next field name or the search word.
 Phrase searching with fields is done this way:
 
 @example
-$ af -s -d mydb -q 'Title/.../"text searching"'
+$ af -s -d mydb -Q 'Title/.../"text searching"'
 @end example
 
 @noindent
@@ -652,8 +624,8 @@ the vector model).  The @option{-score} option instructs
 @option{-os} may be used to sort the documents by score:
 
 @example
-$ afsearch -d mydb -q '"Ludwig van Beethoven"' -score
-$ afsearch -d mydb -q '"Ludwig van Beethoven"' -os
+$ afsearch -d mydb -Q '"Ludwig van Beethoven"' -score
+$ afsearch -d mydb -Q '"Ludwig van Beethoven"' -os
 @end example
 
 @noindent
@@ -671,7 +643,7 @@ is included in the output.
 The @command{af} tool can search multiple databases, for example:
 
 @example
-$ af -s -d patents1978 -d patents1979 -d patents1980 -q 'mousetrap'
+$ af -s -d patents1978 -d patents1979 -d patents1980 -Q 'mousetrap'
 @end example
 
 @noindent
@@ -789,7 +761,7 @@ that match the query.  The @option{--style} option can be used with
 example:
 
 @example
-$ af -s -d mydb -q 'ArticleTitle/.../"adipose tissue"' --style=lineage
+$ af -s -d mydb -Q 'ArticleTitle/.../"adipose tissue"' --style=lineage
 @end example
 
 @noindent
