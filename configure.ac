@@ -51,21 +51,22 @@ if test "$xmllib" = "yes"; then
 fi
 
 stemmer=no
-rm -f src/stem.d
+rm -f src/backend/stem.d
 AC_MSG_CHECKING(for stemmer)
-if test -f src/porter.cc; then
+if test -f src/backend/porter.cc; then
 	stemmer=yes
 	AC_DEFINE(HAVE_STEMMER)
 fi
 AC_MSG_RESULT($stemmer)
 
-AC_MSG_NOTICE(creating src/version.h)
-echo "#define AF_VERSION \"$af_version\"" > src/version.h
+AC_MSG_NOTICE(creating src/backend/version.h)
+echo "#define AF_VERSION \"$af_version\"" > src/backend/version.h
 AC_MSG_NOTICE(creating doc/version.texi)
 echo "@set VERSION $af_version" > doc/version.texi
 
-AC_CONFIG_HEADERS([src/config.h])
-AC_CONFIG_FILES(src/Makefile)
+AC_CONFIG_HEADERS([src/backend/config.h])
+AC_CONFIG_FILES(src/backend/Makefile)
+AC_CONFIG_FILES(src/thump/Makefile)
 AC_CONFIG_FILES(doc/Makefile)
 
 AC_SUBST(BIN, $bin)

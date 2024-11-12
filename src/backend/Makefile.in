@@ -8,7 +8,7 @@ LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 UMLS = -DUMLS
 
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable \
-		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS} -I${GIRS}/src
+		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}
 CFLAGS =	-std=c89 ${FLAGS}
 CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@
 # Not sure if we still use @CPPFLAGS@?
@@ -28,8 +28,9 @@ LIBOBJ =	log.o open.o util.o lock.o search.o fdef.o index.o \
 		err.o info.o linear.o linbuf.o scan.o
 BINOBJ =	afmain.o af.o
 
+AF =		../../bin/af
 # Be careful about changing BIN; see the uninstall target below first.
-BIN =		af @BIN@
+BIN =		${AF} @BIN@
 
 SHELL =		/bin/sh
 
@@ -50,14 +51,15 @@ all: ${BIN}
 -include $(LIBOBJ:.o=.d)
 -include $(BINOBJ:.o=.d)
 
-af: ${LIBAF} afmain.o af.o
-	${CXX} -o af afmain.o af.o ${LIBS}
+${AF}: ${LIBAF} afmain.o af.o
+	mkdir -p ../../bin
+	${CXX} -o ${AF} afmain.o af.o ${LIBS}
 
 ${LIBAF}: ${LIBOBJ}
 	ar rs ${LIBAF} ${LIBOBJ}
 
 strip:
-	strip af
+	strip ${AF}
 
 install: all
 	make strip
@@ -73,9 +75,9 @@ uninstall:
 clean:
 	rm -f ${BIN} \
 		afmain.o af.o \
-		${BINOBJ} ${LIBOBJ} ${LIBAF}
+		${BINOBJ} ${LIBOBJ} ${LIBAF} \
+		*.d
 
 distclean:
 	${MAKE} clean
-	rm -f *.d
 	rm -f *~ *#

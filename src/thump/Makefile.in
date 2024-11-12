@@ -1,0 +1,87 @@
+# Changes should be made in Makefile.in instead of Makefile,
+# or else they will be overwritten by configure.
+
+#DEBUG =		-g
+OPT =		-O3 -funroll-loops
+
+LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+UMLS = -DUMLS
+
+FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable \
+		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}  -DDEBUG
+CFLAGS =	-std=c89 ${FLAGS}
+CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@
+# Not sure if we still use @CPPFLAGS@?
+
+CC =		@CC@
+CXX =		@CXX@
+
+LIBS =		@LDFLAGS@ @LIBS@ -L. -L/usr/local/lib -lboost_iostreams
+prefix =	@prefix@
+exec_prefix =	@exec_prefix@
+PREFIXBIN =	${DESTDIR}@bindir@
+
+LIBOBJ =	err.o opt.o strtol.o symtable.o syntree.o isearch.o rdbms.o
+BINOBJ =	main.o
+
+# Be careful about changing BIN; see the uninstall target below first.
+BIN =		thumpd @BIN@
+
+SHELL =		/bin/sh
+
+all: ${BIN}
+
+%.d: %.cpp
+	@set -e; rm -f $@; \
+		${CXX} -MM ${CXXFLAGS} $< > $@.$$$$; \
+		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+		rm -f $@.$$$$
+
+%.d: %.c
+	@set -e; rm -f $@; \
+		${CC} -MM ${CFLAGS} $< > $@.$$$$; \
+		sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+		rm -f $@.$$$$
+
+-include $(LIBOBJ:.o=.d)
+-include $(BINOBJ:.o=.d)
+
+thumpd: ${LIBOBJ} thump.tab.o lex.yy.o main.o
+	${CXX} -o thumpd main.o ${LIBOBJ} thump.tab.o lex.yy.o ${LIBS}
+
+thump.tab.o: thump.tab.cpp
+	${CXX} ${CXXFLAGS} -Wno-writable-strings -I/usr/local/include -c thump.tab.cpp
+
+thump.tab.cpp: thump.ypp
+	bison -d thump.ypp
+
+lex.yy.o: lex.yy.cpp
+	${CXX} ${CXXFLAGS} -c lex.yy.cpp
+
+lex.yy.cpp: thump.l
+	flex -o lex.yy.cpp thump.l
+
+strip:
+	strip thumpd
+
+install: all
+	make strip
+	mkdir -p ${PREFIXBIN}
+	cp ${BIN} ${PREFIXBIN}/.
+
+uninstall:
+	if [ -d ${PREFIXBIN} ] ; then \
+		cd ${PREFIXBIN} ; \
+		rm -f ${BIN} ; \
+	fi
+
+clean:
+	rm -f ${BIN} \
+		main.o \
+		${BINOBJ} ${LIBOBJ} ${LIBAF} \
+		lex.yy.cpp lex.yy.o thump.tab.cpp thump.tab.hpp thump.tab.o thump.output \
+		*.d
+
+distclean:
+	${MAKE} clean
+	rm -f *~ *#

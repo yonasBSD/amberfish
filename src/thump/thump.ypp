@@ -1,0 +1,1198 @@
+%{
+#include <string>
+#include <iostream>
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <ctype.h>
+#include "syntree.h"
+#include "symtable.h"
+#include "err.h"
+#include "strtol.h"
+#include "thump.h"
+
+using namespace std;
+namespace io = boost::iostreams;
+
+/* extern "C" { */
+
+Thumprq thrq;
+
+void docomp(Syntree *p);
+int yyparse();
+int yylex();
+
+extern char yytext[];
+extern int column;
+extern int line;
+extern int yyleng;
+extern char ayytext[];
+extern void count();
+
+extern "C" {
+extern void comp_error();
+}
+
+int labelcount = 0; 
+
+int errorstate;
+string errorline[2];
+
+extern FILE *yyin;
+extern FILE *yyout;
+
+#define NOS   0; yyerror("unsupported construction")
+ 
+int yyerror(char *s);
+
+/* } */
+%}
+
+%union {
+	int value;
+	int sym;
+	Syntree *node;
+};
+
+%token <sym> IDENTIFIER STRING_LITERAL
+%token <value> CONSTANT
+
+%token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP
+%token FUNCTION
+
+%token HTTP END
+
+%token DCOLON
+%token DESCENDING
+%token APPEND AS FIND HELP IN LIST REPLACE SHOW SORT UNIQUE USER
+%token ISNULL
+%token GIS_ASTEXT GIS_ASKML GIS_GEOMFROMLONGLAT GIS_DISTANCE GIS_DWITHIN
+%token GIS_WITHIN GIS_UNION
+%token GIS_LONGLAT
+%token MEDIAN
+
+%type <node> primary_expression postfix_expression
+%type <node> argument_expression_list
+%type <node> unary_expression
+%type <node> multiplicative_expression additive_expression
+%type <node> relational_expression
+%type <node> equality_expression logical_and_expression logical_or_expression
+%type <node> expression assignment_expression
+%type <node> table_identifier
+/*%type <node> attribute attribute_list*/
+%type <node> help_statement
+%type <node> append_statement
+%type <node> as_statement
+%type <node> in_expression in_statement
+%type <node> find_statement
+%type <node> list_statement
+%type <node> replace_statement
+%type <node> show_statement
+%type <node> sort_attribute sort_attribute_list sort_statement
+%type <node> unique_statement
+%type <node> user_statement
+%type <node> thump_statement thump_statement_list thump_end thump_request
+%type <node> thump_statement_semicolon
+
+%type <value> unary_operator
+
+%start thump_request
+%%
+
+
+primary_expression
+: IDENTIFIER            { $$ = makeid($1); }
+| CONSTANT              { $$ = makecon($1); }
+| STRING_LITERAL        { $$ = makeid($1); }
+| '(' expression ')'    { $$ = makeop('(', 1, $2, NULL, NULL); }
+;
+
+postfix_expression:
+primary_expression {
+	$$ = $1;
+} |
+postfix_expression '(' ')' {
+	$$ = makeop(FUNCTION, 1, $1, NULL, NULL);
+} |
+postfix_expression '(' argument_expression_list ')' {
+	$$ = makeop(FUNCTION, 2, $1, $3, NULL);
+} |
+ISNULL '(' argument_expression_list ')' {
+	$$ = makeop(ISNULL, 1, $3, NULL, NULL);
+} |
+GIS_DISTANCE '(' logical_or_expression ',' logical_or_expression ')' {
+	$$ = makeop(GIS_DISTANCE, 2, $3, $5, NULL);
+} |
+GIS_DWITHIN '(' argument_expression_list ')' {
+	$$ = makeop(GIS_DWITHIN, 1, $3, NULL, NULL);
+} |
+GIS_WITHIN '(' argument_expression_list ')' {
+	$$ = makeop(GIS_WITHIN, 1, $3, NULL, NULL);
+} |
+GIS_UNION '(' argument_expression_list ')' {
+	$$ = makeop(GIS_UNION, 1, $3, NULL, NULL);
+} |
+GIS_ASKML '(' argument_expression_list ')' {
+	$$ = makeop(GIS_ASKML, 1, $3, NULL, NULL);
+} |
+GIS_LONGLAT '(' argument_expression_list ')' {
+	$$ = makeop(GIS_LONGLAT, 1, $3, NULL, NULL);
+} |
+GIS_GEOMFROMLONGLAT '(' logical_or_expression ',' logical_or_expression ')' {
+	$$ = makeop(GIS_GEOMFROMLONGLAT, 2, $3, $5, NULL);
+} |
+MEDIAN '(' argument_expression_list ')' {
+	$$ = makeop(MEDIAN, 1, $3, NULL, NULL);
+} |
+postfix_expression '.' IDENTIFIER {
+	$$ = makeop('.', 2, $1, makeid($3), NULL);
+};
+
+argument_expression_list:
+assignment_expression {
+	$$ = $1;
+} |
+argument_expression_list ',' assignment_expression {
+	$$ = makeop(',', 2, $1, $3, NULL);
+};
+
+unary_expression:
+postfix_expression {
+	$$ = $1;
+} |
+unary_operator unary_expression {
+	$$ = makeop($1, 1, $2, NULL, NULL);
+} |
+GIS_ASTEXT '(' primary_expression ')' {
+	$$ = makeop(GIS_ASTEXT, 1, $3, NULL, NULL);
+};
+
+unary_operator:
+/*
+'+'             { $$ = '+'; } |
+*/
+'-'             { $$ = '-'; } |
+'!'             { $$ = '!'; }
+;
+
+multiplicative_expression:
+unary_expression { $$ = $1; } | 
+multiplicative_expression '*' unary_expression {
+	$$ = makeop('*', 2, $1, $3, NULL);
+} | 
+'*' {
+	$$ = makeop('*', 0, NULL, NULL, NULL);
+} | 
+multiplicative_expression '/' postfix_expression {
+	$$ = makeop('/', 2, $1, $3, NULL);
+} |
+multiplicative_expression '%' postfix_expression {
+	$$ = makeop('%', 2, $1, $3, NULL);
+};
+
+additive_expression:
+multiplicative_expression {
+	$$ = $1;
+} |
+additive_expression '+' multiplicative_expression {
+	$$ = makeop('+', 2, $1, $3, NULL);
+} |
+additive_expression '-' multiplicative_expression {
+	$$ = makeop('-', 2, $1, $3, NULL);
+};
+
+relational_expression
+: additive_expression
+| relational_expression '<' additive_expression { $$ = makeop('<', 2, $1, $3, NULL); }
+| relational_expression '>' additive_expression { $$ = makeop('>', 2, $1, $3, NULL); }
+| relational_expression LE_OP additive_expression { $$ = makeop(LE_OP, 2, $1, $3, NULL); }
+| relational_expression GE_OP additive_expression { $$ = makeop(GE_OP, 2, $1, $3, NULL); }
+;
+
+equality_expression
+: relational_expression { $$ = $1; }
+| equality_expression EQ_OP relational_expression { $$ = makeop(EQ_OP, 2, $1, $3, NULL); }
+| equality_expression NE_OP relational_expression { $$ = makeop(NE_OP, 2, $1, $3, NULL); }
+;
+
+logical_and_expression
+: equality_expression { $$ = $1; }
+| logical_and_expression AND_OP equality_expression { $$ = makeop(AND_OP, 2, $1, $3, NULL); }
+;
+
+logical_or_expression
+: logical_and_expression { $$ = $1; }
+| logical_or_expression OR_OP logical_and_expression { $$ = makeop(OR_OP, 2, $1, $3, NULL); }
+;
+
+assignment_expression
+: logical_or_expression { $$ = $1; }
+| IDENTIFIER '=' logical_or_expression { $$ = makeop('=', 2, makeid($1), $3, NULL); }
+;
+
+expression
+: assignment_expression { $$ = $1; }
+;
+
+table_identifier:
+IDENTIFIER '.' IDENTIFIER {
+	$$ = makeop('.', 2, makeid($1), makeid($3), NULL);
+} |
+IDENTIFIER {
+	$$ = makeid($1);
+};
+
+/*
+attribute:
+IDENTIFIER {
+	$$ = makeid($1);
+};
+
+attribute_list:
+attribute {
+	$$ = $1;
+} |
+attribute_list ',' attribute {
+	$$ = makeop(',', 2, $1, $3, NULL);
+};
+*/
+
+help_statement:
+HELP '(' ')' {
+	$$ = makeop(HELP, 1, NULL, NULL, NULL);
+};
+
+append_statement:
+APPEND '(' argument_expression_list ')' {
+	$$ = makeop(APPEND, 1, $3, NULL, NULL);
+};
+
+as_statement:
+AS '(' IDENTIFIER ')' {
+	$$ = makeop(AS, 1, makeid($3), NULL, NULL);
+};
+
+in_expression:
+IDENTIFIER DCOLON table_identifier {
+	$$ = makeop(DCOLON, 2, makeid($1), $3, NULL);
+};
+
+in_statement:
+IN '(' in_expression ')' {
+	$$ = makeop(IN, 1, $3, NULL, NULL);
+};
+
+find_statement:
+FIND '(' logical_or_expression ')' {
+	$$ = makeop(FIND, 1, $3, NULL, NULL);
+};
+
+list_statement:
+LIST '(' CONSTANT ')' {
+	$$ = makeop(LIST, 1, makecon($3), NULL, NULL);
+};
+
+replace_statement:
+REPLACE '(' argument_expression_list ')' {
+	$$ = makeop(REPLACE, 1, $3, NULL, NULL);
+};
+
+show_statement:
+SHOW '(' argument_expression_list ')' {
+	$$ = makeop(SHOW, 1, $3, NULL, NULL);
+};
+
+sort_attribute:
+IDENTIFIER {
+	$$ = makeid($1);
+} |
+IDENTIFIER DESCENDING {
+	$$ = makeop(DESCENDING, 1, makeid($1), NULL, NULL);
+};
+
+sort_attribute_list:
+sort_attribute {
+	$$ = $1;
+} |
+sort_attribute_list ',' sort_attribute {
+	$$ = makeop(',', 2, $1, $3, NULL);
+};
+
+sort_statement:
+SORT '(' sort_attribute_list ')' {
+	$$ = makeop(SORT, 1, $3, NULL, NULL);
+};
+
+unique_statement:
+UNIQUE '(' ')' {
+	$$ = makeop(UNIQUE, 0, NULL, NULL, NULL);
+};
+
+user_statement:
+USER '(' IDENTIFIER ',' STRING_LITERAL ')' {
+	$$ = makeop(USER, 2, makeid($3), makeid($5), NULL);
+};
+
+thump_statement:
+help_statement {
+	$$ = $1;
+} |
+append_statement {
+	$$ = $1;
+} |
+as_statement {
+	$$ = $1;
+} |
+in_statement {
+	$$ = $1;
+} |
+find_statement {
+	$$ = $1;
+} |
+list_statement {
+	$$ = $1;
+} |
+replace_statement {
+	$$ = $1;
+} |
+show_statement {
+	$$ = $1;
+} |
+sort_statement {
+	$$ = $1;
+} |
+unique_statement {
+	$$ = $1;
+} |
+user_statement {
+	$$ = $1;
+} |
+error {
+};
+
+thump_statement_semicolon:
+thump_statement {
+	$$ = $1;
+} |
+thump_statement ';' {
+	$$ = $1;
+};
+
+thump_statement_list:
+thump_statement_semicolon {
+	$$ = $1;
+} |
+thump_statement_list thump_statement_semicolon {
+	$$ = makeop(';', 2, $1, $2, NULL);
+};
+
+thump_end:
+HTTP END {
+	$$ = makeop(END, 0, NULL, NULL, NULL);
+} |
+END {
+	$$ = makeop(END, 0, NULL, NULL, NULL);
+};
+
+thump_request:
+'?' thump_statement_list thump_end {
+	docomp($2);
+	syntree_free($2);
+	syntree_free($3);
+	YYACCEPT;
+} |
+thump_end {
+	docomp($1);
+	syntree_free($1);
+	YYACCEPT;
+};
+
+%%
+
+/*
+void iddef(Syntree *p)
+{
+	char s[1024];
+	switch (p->type) {
+	case 0:
+		return;
+	case 1:
+		if (symt[p->u.id.id].isnew) {
+			sprintf(s, "undefined reference to `%s'", symt[p->u.id.id].name);
+			yyerror(s);
+		}
+		break;
+		}
+}
+*/	
+
+void csvcat(string* list)
+{
+	if (*list != "")
+		*list += ", ";
+}
+
+void comp_error()
+{
+#ifdef OLD_BOOST
+	io::file_descriptor_sink fds(fileno(yyout));
+#else
+	io::file_descriptor_sink fds(fileno(yyout), io::never_close_handle);
+#endif
+	io::stream_buffer<io::file_descriptor_sink> outb(fds);
+	ostream outs(&outb);
+
+	write_header(outs);
+	outs << crlf;
+}
+
+void comp_val(Syntree *p, string* str)
+{
+	switch (p->type) {
+	case TYPECON:
+		*str += symt[p->u.con.id].name;
+		break;
+	case TYPEID:
+		*str += symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case '-':
+			*str += '-';
+			comp_val(p->u.op.opa[0], str);
+			break;
+		default:
+			/* error */
+			exit(-1);
+		}
+	}
+}
+
+void comp_append(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case '=':
+			if (p->u.op.opa[0]->type != TYPEID) {
+				comp_error();
+				fprintf(yyout,
+					"append(): invalid expression\r\n");
+				exit(-1);
+			}
+			csvcat(&thrq.append_attr);
+			thrq.append_attr +=
+				symt[p->u.op.opa[0]->u.id.id].name;
+			csvcat(&thrq.append_val);
+			comp_val(p->u.op.opa[1], &thrq.append_val);
+			break;
+		case ',':
+				comp_append(p->u.op.opa[0]);
+				comp_append(p->u.op.opa[1]);
+			break;
+		default:
+			comp_error();
+			fprintf(yyout,
+				"append(): error parsing expression '%c'\r\n",
+				p->u.op.op);
+			exit(-1);
+		}
+		break;
+	default:
+		comp_error();
+		fprintf(yyout, "append(): error parsing expression '%c'\r\n",
+			p->u.op.op);
+		exit(-1);
+	}
+}
+
+void comp_as(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEID:
+		if (strcmp(symt[p->u.id.id].name, "htab") == 0 ||
+		    strcmp(symt[p->u.id.id].name, "tab") == 0 ||
+		    strcmp(symt[p->u.id.id].name, "anvl") == 0 ||
+		    strcmp(symt[p->u.id.id].name, "xml") == 0) {
+			thrq.as = symt[p->u.id.id].name;
+		} else {
+			comp_error();
+			fprintf(yyout,
+				"as(): unknown record syntax: %s\r\n",
+				symt[p->u.id.id].name);
+			exit(-1);
+		}
+		break;
+	default:
+		comp_error();
+		fprintf(yyout,
+			"as(): error parsing expression '%c'\r\n",
+			p->u.op.op);
+		exit(-1);
+	}
+}
+
+void comp_table(Syntree *p, string* table)
+{
+	switch (p->type) {
+	case TYPEID:
+		*table += symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case '.':
+			comp_table(p->u.op.opa[0], table);
+			*table += '.';
+			*table += symt[p->u.op.opa[1]->u.id.id].name;
+		}
+	}
+}
+
+void comp_in(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEID:
+		thrq.in_db = symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case DCOLON:
+			if (p->u.op.opa[0]->type != TYPEID) {
+				comp_error();
+				fprintf(yyout, "in(): invalid identifier\r\n");
+				exit(-1);
+			}
+			if (thrq.in_db != "") {
+				comp_error();
+				fprintf(yyout,
+					"in(): redeclaration of command\r\n");
+				exit(-1);
+			}
+			thrq.in_db = symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.in_table = "";
+			comp_table(p->u.op.opa[1], &thrq.in_table);
+			break;
+		default:
+			comp_error();
+			fprintf(yyout,
+				"in(): error parsing expression '%c'\r\n",
+				p->u.op.op);
+			exit(-1);
+		}
+	}
+}
+
+void comp_list(Syntree *p)
+{
+	switch (p->type) {
+	case TYPECON:
+		thrq.list_len = symt[p->u.con.id].name;
+		break;
+	default:
+		comp_error();
+		fprintf(yyout,
+			"list(): error parsing expression '%c'\r\n",
+			p->u.op.op);
+		exit(-1);
+	}
+}
+
+void write_op(int op, string* str)
+{
+	switch (op) {
+	case LE_OP:
+		*str += " <= ";
+		break;
+	case GE_OP:
+		*str += " >= ";
+		break;
+	case EQ_OP:
+		*str += " = ";
+		break;
+	case NE_OP:
+		*str += " <> ";
+		break;
+	default:
+		*str += ' ';
+		*str += (char) op;
+		*str += ' ';
+	}
+}
+
+void comp_find(Syntree *p)
+{
+	switch (p->type) {
+	case TYPECON:
+		thrq.find += symt[p->u.con.id].name;
+		break;
+	case TYPEID:
+		thrq.find += symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case '>':
+		case '<':
+		case LE_OP:
+		case GE_OP:
+		case EQ_OP:
+		case NE_OP:
+			comp_val(p->u.op.opa[0], &thrq.find);
+			write_op(p->u.op.op, &thrq.find);
+			comp_val(p->u.op.opa[1], &thrq.find);
+			break;
+		case AND_OP:
+			comp_find(p->u.op.opa[0]);
+			thrq.find += " AND ";
+			comp_find(p->u.op.opa[1]);
+			break;
+		case OR_OP:
+			comp_find(p->u.op.opa[0]);
+			thrq.find += " OR ";
+			comp_find(p->u.op.opa[1]);
+			break;
+		case '(':
+			thrq.find += '(';
+			comp_find(p->u.op.opa[0]);
+			thrq.find += ')';
+			break;
+		case '!':
+			thrq.find += "NOT ";
+			comp_find(p->u.op.opa[0]);
+			break;
+		case ISNULL:
+			thrq.find += '(';
+			thrq.find += symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.find += " IS NULL)";
+			break;
+		case GIS_DWITHIN:
+			thrq.find += "ST_DWithin(";
+			comp_find(p->u.op.opa[0]);
+			thrq.find += ')';
+			break;
+		case GIS_WITHIN:
+			thrq.find += "ST_Within(";
+			comp_find(p->u.op.opa[0]);
+			thrq.find += ')';
+			break;
+		case GIS_GEOMFROMLONGLAT:
+			thrq.find += "ST_Transform(ST_GeomFromText(";
+			comp_find(p->u.op.opa[0]);
+			thrq.find += ",4326),";
+			comp_find(p->u.op.opa[1]);
+			thrq.find += ')';
+			break;
+		case ',':
+			comp_find(p->u.op.opa[0]);
+			thrq.find += ',';
+			comp_find(p->u.op.opa[1]);
+			break;
+/*
+		case WHERE:
+			comp_find(p->u.op.opa[0]);
+			break;
+*/
+		}
+	}
+}
+
+/*
+void comp_retrieve(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEID:
+		estcat(thrq.show, symt[p->u.id.id].name);
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case ',':
+			comp_retrieve(p->u.op.opa[0]);
+			estccat(thrq.show, ',');
+			comp_retrieve(p->u.op.opa[1]);
+			break;
+		case GIS_ASTEXT:
+			estscat(thrq.show, "ST_AsText(");
+			estcat(thrq.show, symt[p->u.op.opa[0]->u.id.id].name);
+			estscat(thrq.show, ")");
+			break;
+		case GIS_DISTANCE:
+			estscat(thrq.show, "ST_Distance(");
+			comp_retrieve(p->u.op.opa[0]);
+			estccat(thrq.show, ',');
+			comp_retrieve(p->u.op.opa[1]);
+			estscat(thrq.show, ")");
+			break;
+		case GIS_LONGLAT:
+			estscat(thrq.show, "ST_AsText(ST_Transform(");
+			estcat(thrq.show, symt[p->u.op.opa[0]->u.id.id].name);
+			estscat(thrq.show, ",4326))");
+			break;
+		case '=':
+			comp_retrieve(p->u.op.opa[1]);
+			estscat(thrq.show, " AS ");
+			estcat(thrq.show, symt[p->u.op.opa[0]->u.id.id].name);
+			break;
+		case '*':
+			estccat(thrq.show, '*');
+			break;
+		case ISNULL:
+			estccat(thrq.show, '(');
+			estcat(thrq.show, symt[p->u.op.opa[0]->u.id.id].name);
+			estscat(thrq.show, " IS NULL)");
+			break;
+		case MEDIAN:
+			estscat(thrq.show, "median(");
+			estcat(thrq.show, symt[p->u.op.opa[0]->u.id.id].name);
+			estccat(thrq.show, ')');
+			break;
+		default:
+			comp_error();
+			fprintf(yyout,
+				"show(): error parsing expression '%c'\r\n",
+				p->u.op.op);
+			exit(-1);
+		}
+	}
+}
+*/
+
+void comp_replace(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEID:
+		thrq.replace += symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case ',':
+			comp_replace(p->u.op.opa[0]);
+			thrq.replace += ',';
+			comp_replace(p->u.op.opa[1]);
+			break;
+		case '=':
+			thrq.replace += symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.replace += '=';
+			comp_replace(p->u.op.opa[1]);
+			break;
+		default:
+			comp_error();
+			fprintf(yyout,
+				"replace(): error parsing expression '%c'\r\n",
+				p->u.op.op);
+			exit(-1);
+		}
+	}
+}
+
+void comp_show(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEID:
+		thrq.show += symt[p->u.id.id].name;
+		break;
+	case TYPECON: // for now, for Isearch
+		thrq.show += symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case ',':
+			comp_show(p->u.op.opa[0]);
+			thrq.show += ", ";
+			comp_show(p->u.op.opa[1]);
+			break;
+		case GIS_ASTEXT:
+			thrq.show += "ST_AsText(";
+			comp_show(p->u.op.opa[0]);
+			thrq.show += ")";
+			break;
+		case GIS_ASKML:
+			thrq.show += "ST_AsKML(";
+			comp_show(p->u.op.opa[0]);
+			thrq.show += ")";
+			break;
+		case GIS_UNION:
+			thrq.show += "ST_Union(";
+			comp_show(p->u.op.opa[0]);
+			thrq.show += ")";
+			break;
+		case GIS_DISTANCE:
+			thrq.show += "ST_Distance(";
+			comp_show(p->u.op.opa[0]);
+			thrq.show += ", ";
+			comp_show(p->u.op.opa[1]);
+			thrq.show += ")";
+			break;
+		case GIS_LONGLAT:
+			thrq.show += "ST_AsText(ST_Transform(";
+			thrq.show += symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.show += ", 4326))";
+			break;
+		case '=':
+			comp_show(p->u.op.opa[1]);
+			thrq.show += " AS ";
+			thrq.show += symt[p->u.op.opa[0]->u.id.id].name;
+			break;
+		case '*':
+			thrq.show += '*';
+			break;
+		case ISNULL:
+			thrq.show += '(';
+			thrq.show += symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.show += " IS NULL)";
+			break;
+		case MEDIAN:
+			thrq.show += "median(";
+			thrq.show += symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.show += ')';
+			break;
+		case FUNCTION:
+#ifdef DB_FUNCTIONS
+			thrq.show += symt[p->u.op.opa[0]->u.id.id].name;
+			thrq.show += '(';
+			if (p->u.op.opa[1])
+				comp_show(p->u.op.opa[1]);
+			thrq.show += ')';
+			break;
+#else
+			comp_error();
+			fprintf(yyout, "%s(): server configuration does not "
+				"allow database functions\r\n",
+				symt[p->u.op.opa[0]->u.id.id].name);
+			exit(-1);
+#endif
+		default:
+			comp_error();
+			fprintf(yyout,
+				"show(): error parsing expression '%c'\r\n",
+				p->u.op.op);
+			exit(-1);
+		}
+	}
+}
+
+void comp_sort(Syntree *p)
+{
+	switch (p->type) {
+	case TYPEID:
+		csvcat(&thrq.sort);
+		thrq.sort += symt[p->u.id.id].name;
+		break;
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case DESCENDING:
+			if (p->u.op.opa[0]->type != TYPEID) {
+				comp_error();
+				fprintf(yyout,
+					"sort(): attribute must be specified\r\n");
+				exit(-1);
+			}
+			comp_sort(p->u.op.opa[0]);
+			thrq.sort += " DESC";
+			break;
+		case ',':
+				comp_sort(p->u.op.opa[0]);
+				comp_sort(p->u.op.opa[1]);
+			break;
+		default:
+			comp_error();
+			fprintf(yyout,
+				"show(): error parsing expression '%c'\r\n",
+				p->u.op.op);
+			exit(-1);
+		}
+	}
+}
+
+void comp_user(Syntree *p)
+{
+	if (p->u.op.opa[0]->type != TYPEID
+	    || p->u.op.opa[1]->type != TYPEID) {
+		comp_error();
+		fprintf(yyout,
+			"user(): invalid expression\r\n");
+		exit(-1);
+	}
+	if (thrq.user_name != "") {
+		comp_error();
+		fprintf(yyout,
+			"user(): redeclaration of "
+			"command\r\n");
+		exit(-1);
+	}
+	thrq.user_name = symt[p->u.op.opa[0]->u.id.id].name;
+	thrq.user_auth = symt[p->u.op.opa[1]->u.id.id].name + 2;
+	thrq.user_auth.erase(thrq.user_auth.length() - 1, 1);
+}
+
+void comp(Syntree *p)
+{
+	if (!p || errorstate)
+		return;
+
+	switch (p->type) {
+	case TYPEOP:
+		switch (p->u.op.op) {
+		case ';':
+			if (p->u.op.opa[0]) {
+				comp(p->u.op.opa[0]);
+			}
+			if (p->u.op.opn > 1 && p->u.op.opa[1]) {
+				comp(p->u.op.opa[1]);
+			}
+			break;
+		case APPEND:
+#ifdef DB_UPDATES
+			comp_append(p->u.op.opa[0]);
+			break;
+#else
+			comp_error();
+			fprintf(yyout, "append(): server configuration does "
+				"not allow database updates\r\n");
+			exit(-1);
+#endif
+		case AS:
+			comp_as(p->u.op.opa[0]);
+			break;
+		case FIND:
+			if (p->u.op.opn > 0) {
+				thrq.find = "";
+				comp_find(p->u.op.opa[0]);
+			}
+			break;
+		case HELP:
+			thrq.help = 1;
+			break;
+		case IN:
+			comp_in(p->u.op.opa[0]);
+			break;
+		case LIST:
+			comp_list(p->u.op.opa[0]);
+			break;
+		case REPLACE:
+			if (p->u.op.opn > 0) {
+				thrq.replace = "";
+				comp_replace(p->u.op.opa[0]);
+			}
+			break;
+		case SHOW:
+			if (p->u.op.opn > 0) {
+				thrq.show = "";
+				comp_show(p->u.op.opa[0]);
+			}
+			break;
+/*
+		case RETRIEVE:
+			if (p->u.op.opn > 0) {
+				thrq.show = alloc_est("", 1015);
+				comp_retrieve(p->u.op.opa[0]);
+				if (p->u.op.opa[1]) {
+					thrq.find = alloc_est("", 255);
+					comp_find(p->u.op.opa[1]);
+				}
+			}
+			break;
+*/
+		case SORT:
+			comp_sort(p->u.op.opa[0]);
+			break;
+		case UNIQUE:
+			thrq.unique = 1;
+			break;
+		case USER:
+			comp_user(p);
+			break;
+		}
+	}
+}
+
+void docomp(Syntree *p)
+{
+#ifdef DEBUG
+	if (errorstate == 0)
+		dumptree(p);
+#endif
+
+	comp(p);
+/*	tree = p;*/
+}
+
+/* prints error specified by ayytext and column/yyleng */
+void print_error()
+{
+	int x;
+	char *p;
+
+	/* remove HTTP token because it is confusing */
+	p = strstr(ayytext, "HTTP/1.");
+	if (p)
+		*p = '\0';
+
+	errorline[0] = ayytext;
+	errorline[1] = "";
+
+	for (x = 0; x < column - yyleng; x++)
+		errorline[1] += ' ';
+	for (x = 0; x < yyleng; x++)
+		errorline[1] += '^';
+
+	ayytext[0] = '\0';
+}
+
+int yyerror(char *s)
+{
+	/* ignore if there is a previous error */
+	if (!errorstate) {
+		errorstate = 1;
+		print_error();
+	}
+
+	return 0;
+}
+
+void thrq_init()
+{
+	thrq.help = 0;
+	thrq.unique = 0;
+}
+
+static char skip_whitespace()
+{
+	char c;
+	int e;
+
+	while (1) {
+		c = fgetc(yyin);
+		if (c == EOF)
+			break;
+		e = strlen(ayytext);
+		ayytext[e] = c;
+		ayytext[e + 1] = '\0';
+		if (!isspace(c))
+			break;
+	}
+
+	return c;
+}
+
+static void read_text(string* str, char firstc)
+{
+	char c;
+	int e;
+
+	*str += firstc;
+	while (1) {
+		c = fgetc(yyin);
+		if (c == EOF || isspace(c))
+			break;
+		e = strlen(ayytext);
+		ayytext[e] = c;
+		ayytext[e + 1] = '\0';
+		*str += c;
+	}
+	if (c != EOF)
+		ungetc(c, yyin);
+}
+
+static void parse_key(char firstc)
+{
+	thrq.key = "/";
+	if (isspace(firstc)) {
+		thrq.key += "index.html";
+		ungetc(firstc, yyin);
+	} else {
+		read_text(&thrq.key, firstc);
+	}
+}
+
+void preamble_error()
+{
+	errorstate = 1;
+	print_error();
+}
+
+static void parse_preamble()
+{
+	char c;
+	string method;
+
+	c = skip_whitespace();
+	if (c == EOF)
+		return;
+
+	read_text(&method, c);
+	if (method != "GET") {
+		column = strlen(ayytext);
+		yyleng = method.length();
+		preamble_error();
+		return;
+	}
+	column = strlen(ayytext);
+	if (c == EOF)
+		return;
+
+	c = skip_whitespace();
+	if (c == EOF)
+		return;
+	column = strlen(ayytext);
+
+	if (c != '/') {
+		column = strlen(ayytext);
+		yyleng = 1;
+		preamble_error();
+		return;
+	}
+	column = strlen(ayytext);
+
+	c = fgetc(yyin);
+
+	ayytext[0] = '\0';
+
+	column = 0;  /* reset counter */
+
+	switch (c) {
+	case '%':
+	case '?':
+		ungetc(c, yyin);
+		return;
+	case EOF:
+		return;
+	default:
+		parse_key(c);
+		return;
+	}
+}
+
+void yycompile(FILE *fin, FILE *fout)
+{
+	char *p;
+
+	thrq_init();
+
+	yyin = fin;
+	yyout = fout;
+	errorstate = 0;
+
+	parse_preamble();
+
+	yyparse();
+/*	fflush(stdout);*/
+	cleanup_symt();
+
+	if (errorstate) {
+		fwrite("HTTP/1.1 200 OK\r\n", 1, strlen("HTTP/1.1 200 OK\r\n"), yyout);
+		fwrite("Content-Type: text/plain\r\n\r\n\r\n", 1, strlen("Content-Type: text/html\r\n\r\n\r\n"), yyout);
+		fwrite("Parse error:\r\n\r\n", 1, strlen("Parse error:\r\n\r\n"), yyout);
+		fprintf(yyout, "%s", errorline[0].c_str());
+		p = ayytext;
+		while (!isspace(*p)) {
+			fprintf(yyout, "%c", *p);
+			p++;
+		}
+		fwrite("\r\n", 1, 2, yyout);
+		fprintf(yyout, "%s\r\n", errorline[1].c_str());
+		exit(0);
+	}
+}
