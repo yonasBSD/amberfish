@@ -13,4 +13,12 @@ autoconf
 ./configure
 
 gmake
+
+man doc/af.1
+
+./bin/af -i -C -d mydb --split '@spsection{}' doc/amberfish.texi
+
+./bin/af -s -d mydb -Q 'document | type'
+
+./bin/af --fetch doc/amberfish.texi 13236 14742
 ```
