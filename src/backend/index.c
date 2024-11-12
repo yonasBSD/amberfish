@@ -1966,7 +1966,11 @@ int etymon_index_add_files(Afindex *opt) {
 	dc_index.dc_state = dc_init.dc_state;
 
 	/* get cwd */
-	getcwd(cwd, ETYMON_MAX_PATH_SIZE);
+	if (!getcwd(cwd, ETYMON_MAX_PATH_SIZE)) {
+		/* ERROR */
+		printf("getcwd() too large for buffer\n");
+		exit(1);
+	}
 	
 	/* loop through and index each file */
 	x_file = 0;
