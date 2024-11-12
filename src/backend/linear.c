@@ -175,7 +175,7 @@ static int seekleftleaf(Aflinst *t)
 	while (1) {
 		if (fseeko(t->f.udict, (off_t) t->udictp, SEEK_SET) < 0)
 			return aferr(AFEDBIO);
-		if (fread(&leaf, 1, 1, t->f.udict) < 0)
+		if (fread(&leaf, 1, 1, t->f.udict) < 1)
 			return aferr(AFEDBIO);
 		if (leaf)
 			return 0;
