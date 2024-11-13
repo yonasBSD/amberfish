@@ -20,5 +20,5 @@ man doc/af.1
 
 ./bin/af -s -d mydb -Q 'document | type'
 
-./bin/af --fetch doc/amberfish.texi 13236 14742
+./bin/af --fetch doc/amberfish.texi 12266 13772
 ```
