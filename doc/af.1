@@ -38,14 +38,13 @@ like:
 af -iCv -d mydb *.txt
 
 This creates a new database, mydb, containing an index to the set of
-files, *.txt.  To enable faster searching, an optional "linearize"
-step can be done (this can take a long time to run):
+files, *.txt.
 
-af -L -d mydb
-
-Example search commands:
+Then to search:
 
 af -s -d mydb -q 'Beethoven piano sonatas'
+
+Or for a Boolean query:
 
 af -s -d mydb -Q '(Robert or Clara) and Schumann'
 
@@ -64,15 +63,6 @@ is used).
 .TP
 .B -s, --search
 Search an indexed database.
-
-.TP
-.B -L, --linearize
-Linearize an indexed database.  Linearizing is an optional step that
-can be done after indexing.  The advantages of linearizing are that it
-reduces searching time and slightly reduces the size of the index
-files.  The disadvantages are that the linearizing process is very
-slow, especially when used on large databases, and it prevents any
-additional documents from being added to the database.
 
 .TP
 .B -l, --list
