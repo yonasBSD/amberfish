@@ -4,6 +4,7 @@
  *  Authors:  Nassib Nassar
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -271,9 +272,8 @@ static int process_opt(int argc, char *argv[])
 			search_query_boolean = optarg;
 			break;
 		case 'q':
-			fprintf(stderr, "%s: \"-q\" option is not yet supported\n", argv[0]);
-			/*search_query_vector = optarg;*/
-			/*break;*/
+			search_query_vector = optarg;
+			break;
 		case '?':
 			return -1;
 		default:
@@ -971,11 +971,74 @@ static int validate_opt()
 	return 0;
 }
 
+void cleanup_free(void *ptr) {
+	void **p = (void**)ptr;
+	free(*p);
+}
+
+void convert_free_text_query_to_boolean(const char *free_text, char* boolean, size_t boolean_size) {
+	const char *f = free_text;
+	char *b = boolean;
+	char *end = boolean + boolean_size - 1;
+	bool quote = false;
+	char ch = '\0';
+	char oldch;
+	do {
+		oldch = ch;
+		ch = *(f++);
+		switch (ch) {
+		case '\0':
+			break;
+		case '\"':
+			if (quote) {
+				quote = false;
+			} else {
+				quote = true;
+			}
+			break;
+		case ' ':
+			break;
+		default:
+			if (!quote && oldch == ' ') {
+				if (b == end) {
+					*b = '\0';
+					return;
+				}
+				*(b++) = '|';
+				if (b == end) {
+					*b = '\0';
+					return;
+				}
+				*(b++) = ' ';
+			}
+			break;
+		}
+		if (b == end) {
+			*b = '\0';
+			return;
+		}
+		*(b++) = ch;
+	} while (ch != '\0');
+}
+
 int afmain(int argc, char *argv[])
 {
 	argv0 = argv[0];
 	if (process_opt(argc, argv) < 0)
 		exit(-1);
+
+	/* For now, rewrite free text queries as Boolean. */
+	size_t query_size = (strlen(search_query_vector) + 2) * 2;
+	__attribute__((cleanup(cleanup_free))) char *query = malloc(query_size);
+	if (*search_query_vector != '\0') {  /* Free text query was selected. */
+		convert_free_text_query_to_boolean(search_query_vector, query, query_size);
+		search_query_boolean = query;
+		search_query_vector = "";
+	}
+#ifdef DEBUG
+	fprintf(stderr, "debug: query: \"%s\"\n", search_query_boolean);
+#endif
+
 	/* dump_opt(); */
 
 	if (!split_override && !strcmp(index_doctype, "erc")) {

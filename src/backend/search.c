@@ -383,7 +383,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 		}
 		word[word_len] = '\0';
 		/*printf("term: [%s]\n", word);*/
-		
+
 		/* search for word */
 
 		udict_p = etymon_af_state[state->dbid]->info.udict_root;
@@ -1067,6 +1067,8 @@ int etymon_af_boolean_or(ETYMON_AF_SEARCH_STATE* state, ETYMON_AF_IRESULT** r_st
 	r_stack[r1] = (ETYMON_AF_IRESULT*)(realloc(r_stack[r1], new_size * sizeof(ETYMON_AF_IRESULT)));
 	if (r_stack[r1] == NULL) {
 		/* ERROR */
+		fprintf(stderr, "r_stack[r1] == NULL\n");
+		exit(1);
 	}
 	
 	p1 = 0;
@@ -1297,7 +1299,7 @@ int search_db_new(ETYMON_AF_SEARCH_STATE* state) {
 
 			memcpy(term, query + term_start, term_len);
 			term[term_len] = '\0';
-			
+
 			/* process token */
 
 			if (strcmp((char*)term, "|") == 0) {
@@ -1682,13 +1684,17 @@ int etymon_af_search_db(ETYMON_AF_SEARCH_STATE* state) {
 
 			memcpy(term, query + term_start, term_len);
 			term[term_len] = '\0';
+
+#ifdef DEBUG
+                        fprintf(stderr, "debug: parsed term: \"%s\"\n", term);
+#endif
 			
 			/* process token */
 
-			if (strcmp((char*)term, "|") == 0) {
+			if (strcasecmp((char*)term, "or") == 0 || strcmp((char*)term, "|") == 0) {
 				op_type = ETYMON_AF_OP_OR;
 			}
-			else if (strcmp((char*)term, "&") == 0) {
+			else if (strcasecmp((char*)term, "and") == 0 || strcmp((char*)term, "&") == 0) {
 				op_type = ETYMON_AF_OP_AND;
 			}
 			else if (strcmp((char*)term, "(") == 0) {

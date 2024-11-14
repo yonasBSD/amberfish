@@ -5,7 +5,7 @@
 OPT =		-O3 -funroll-loops
 
 LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-UMLS = -DUMLS
+#UMLS = -DUMLS
 
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable \
 		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}

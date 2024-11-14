@@ -100,9 +100,9 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 					  (good = (ch == '.')) ||
 					  (good = (ch == '-')) )
 					) {
-					/* add ch to the word */
-					word[x++] = tolower(ch);
-				}
+						/* add ch to the word */
+						word[x++] = tolower(ch);
+					}
 				
 				/* iterate past any remaining chars (if the word was truncated because it was too long to fit in word[] */
 				if (good != 0) {
@@ -136,7 +136,9 @@ int dc_text_index(ETYMON_AF_DC_INDEX* dc_index) {
 					continue;
 */
 
-/*				printf("\"%s\"\n", word); */
+#ifdef DEBUG
+				printf("debug: parsed word \"%s\"\n", word);
+#endif
 				
 				if (etymon_af_index_add_word(&add_word) == -1) {
 					return -1;

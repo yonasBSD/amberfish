@@ -43,9 +43,11 @@ step can be done (this can take a long time to run):
 
 af -L -d mydb
 
-Here is a typical search command:
+Example search commands:
 
-af -s -d mydb -Q 'cat & (dog | mouse)'
+af -s -d mydb -q 'Beethoven piano sonatas'
+
+af -s -d mydb -Q '(Robert or Clara) and Schumann'
 
 .SH COMMAND OPTIONS
 
@@ -192,6 +194,10 @@ from the end of the command line.
 The following options can only be used together with the searching
 .RB ( -s )
 command.
+
+.TP
+.BI "-q " query_string
+Search for the specified free text query string.
 
 .TP
 .BI "-Q, --query-boolean " query_string

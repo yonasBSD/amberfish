@@ -18,7 +18,7 @@ man doc/af.1
 
 ./bin/af -i -C -d mydb --split '@spsection{}' doc/amberfish.texi
 
-./bin/af -s -d mydb -Q 'document | type'
+./bin/af -s -d mydb -q 'document types'
 
 ./bin/af --fetch doc/amberfish.texi 12266 13772
 ```
