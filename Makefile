@@ -36,15 +36,15 @@ clean:
 	rm -fr autom4te.cache
 	rm -f config.log config.status
 	cd src/backend ; ${MAKE} clean
-#	cd src/thump ; ${MAKE} clean
+	cd src/thump ; ${MAKE} clean
 	cd doc ; ${MAKE} clean
 
 distclean:
 	${MAKE} clean
 	cd src/backend ; ${MAKE} distclean
-#	cd src/thump ; ${MAKE} distclean
+	cd src/thump ; ${MAKE} distclean
 	cd doc ; ${MAKE} distclean
 	cd src/backend ; rm -f Makefile config.h version.h
-#	cd src/thump ; rm -f Makefile config.h version.h
+	cd src/thump ; rm -f Makefile config.h version.h
 	cd doc ; rm -f doc/Makefile doc/version.texi
 	rm -f configure *~ *#
