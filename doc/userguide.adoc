@@ -27,8 +27,8 @@ adding to an existing index.
 The `-v` option prints names of the files as they are processed.
 
 Another option, `-m` (not shown above), can be used to specify how
-much memory in megabytes will be used.  Increasing memory usage should
-reduce indexing time.
+much memory in megabytes will be used.  Increasing memory usage can
+significantly reduce indexing time.
 
 === Searching
 
@@ -40,28 +40,27 @@ af -s -d mydb -q 'cat dog mouse'
 
 The `-s` option is used for searching.
 
-The `-q` option specifies a free-text search query, which in the
-simplest case is a list of words to search for.
+The `-q` option specifies a free-text search query, which is
+effectively a list of words to search for.
 
 The search command above is roughly equivalent to this Boolean search:
 
 ----
-af -s -d mydb -Q 'cat | dog | mouse'
+af -s -d mydb -Q 'cat or dog or mouse'
 ----
 
-The `-Q` option specifies a Boolean search query.  The `|` character
-represents a Boolean "or" operator.  The queries above search for all
-documents that contain "cat" or "dog" or "mouse".
+The `-Q` option specifies a Boolean search query, in which "or" acts
+as a Boolean operator.  This query searches for all documents that
+contain "cat" or "dog" or "mouse".
 
 A more interesting Boolean query might be:
 
 ----
-af -s -d mydb -Q 'cat & (dog | mouse)'
+af -s -d mydb -Q 'cat and (dog or mouse)'
 ----
 
-The `&` character represents a Boolean "and" operator.  This query
-searches for all documents that contain "cat" and also contain "dog"
-or "mouse".
+This searches for all documents that contain "cat" and also contain
+"dog" or "mouse".
 
 Both free-text and Boolean search queries are case-insensitive,
 meaning that uppercase and lowercase characters are interchangeable.
