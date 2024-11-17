@@ -25,7 +25,7 @@
 #define AFFTLWORD        (9)
 #define AFFTLOCK        (10)
 
-static char *affntab[] = {
+static const char *affntab[] = {
 	".db",   /* AFFTINFO */
 	".dt",   /* AFFTDOCTAB */
 	".x0",   /* AFFTUDICT */
@@ -39,7 +39,7 @@ static char *affntab[] = {
 	".lk",   /* AFFTLOCK */
 };
 #ifdef NOTHING
-static char *ftfn[] = {
+static const char *ftfn[] = {
 	ETYMON_DBF_INFO_EXT,       /* AFFTINFO */
 	ETYMON_DBF_DOCTAB_EXT,   /* AFFTINFO */
 	ETYMON_DBF_UDICT_EXT,      /* AFFTUDICT */

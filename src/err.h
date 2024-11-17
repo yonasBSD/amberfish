@@ -31,7 +31,7 @@ extern int aferrno;
 #define AFMAXCOREERR    (6)
 #define AFMAXERR       (14)
 
-static char* aferrmsg[] = {
+static const char* aferrmsg[] = {
 	"",
 	"Unknown error",
 	"Out of memory",
@@ -61,7 +61,7 @@ static inline void *aferrn(int err)
 	return NULL;
 }
 
-char *afstrerror(int errnum);
+const char *afstrerror(int errnum);
 int afperror(const char *string);
 
 #endif

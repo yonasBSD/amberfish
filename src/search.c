@@ -226,7 +226,6 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 	int field_mask_len;
 	int sx, yy, x, x_r0, r0_count, r0_size, r0_n, wn_found, t;
 	unsigned int ux, uz, x_r, x_wn;
-	int term_len;
 	int done;
 	unsigned char* phrase_start;
 	unsigned char* phrase_p;
@@ -286,8 +285,6 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 	*iresults_n = 0;
 	*iresults = NULL;
 
-	term_len = strlen((char*)term);
-	
 	/* parse term to isolate prepended field tag path (if any):
            basically search for the last '/' in the term that occurs
            before '\0' or '"' */
@@ -385,7 +382,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 			word_len++;
 		}
 		word[word_len] = '\0';
-		printf("term: [%s]\n", word);
+		/*printf("term: [%s]\n", word);*/
 		
 		/* search for word */
 

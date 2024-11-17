@@ -56,7 +56,7 @@ int afclosedbf(Affile *f)
 	return 0;
 }
 
-static inline char *getftfn(int type)
+static inline const char *getftfn(int type)
 {
 	if (type < sizeof affntab)
 		return affntab[type];
@@ -68,7 +68,7 @@ static inline char *getftfn(int type)
 int afmakefn(int type, const char *db, char *buf)
 {
 	int dblen, extlen;
-	char *ext;
+	const char *ext;
 
 	dblen = strlen(db);
 	memcpy(buf, db, dblen);

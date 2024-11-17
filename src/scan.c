@@ -48,7 +48,7 @@ typedef struct {
 static int openfiles(Uint2 dbid, Affile *f)
 {
 
-	memset(f, 0, sizeof f);
+	memset(f, 0, sizeof *f);
 
 	if (etymon_af_state[dbid]->keep_open == 0) {
 	        if (!(f->info = afopendbf(etymon_af_state[dbid]->dbname, AFFTINFO, "rb")))

@@ -9,7 +9,7 @@
 
 int aferrno = 0;
 
-char *afstrerror(int errnum)
+const char *afstrerror(int errnum)
 {
 	if (errnum > 0 && errnum <= AFMAXERR)
 		return aferrmsg[errnum];

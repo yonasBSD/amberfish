@@ -24,7 +24,7 @@
 #define EX_QUERY_SYNTAX_ERROR 20
 #define EX_DB_NOT_READY 21
 
-static char* etymon_af_ex[] = {
+static const char* etymon_af_ex[] = {
 	"",
 	"Out of memory", /* EX_MEMORY */
 	"File error", /* EX_IO */

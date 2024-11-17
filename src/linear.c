@@ -61,7 +61,7 @@ static int freelock(const char *db)
 
 static int openfiles(const char *db, Affile *f)
 {
-	memset(f, 0, sizeof f);
+	memset(f, 0, sizeof *f);
 	if (!(f->info = afopendbf(db, AFFTINFO, "r+b")))
 		return -1;
 	if (!(f->udict = afopendbf(db, AFFTUDICT, "r+b")))

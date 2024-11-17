@@ -11,10 +11,9 @@ UMLS = -DUMLS
 #GIRS =		/usr/local/girtools/girs
 
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function \
-		-Wno-strict-aliasing \
 		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS} -I${GIRS}/src
 CFLAGS =	-std=c89 ${FLAGS}
-CXXFLAGS =	-ansi ${FLAGS} @CPPFLAGS@
+CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@
 # Not sure if we still use @CPPFLAGS@?
 
 CC =		@CC@

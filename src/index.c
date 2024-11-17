@@ -1123,10 +1123,8 @@ int etymon_index_shortest_sep_l(ETYMON_INDEX_PAGE_L* left, ETYMON_INDEX_PAGE_L* 
 	static int p;
 	static int max;
 	static unsigned char* left_word;
-	static int left_word_len;
 	max = right->offset[1];
 	left_word = left->keys + left->offset[left->n - 1];
-	left_word_len = left->offset[left->n] - left->offset[left->n - 1];
 	p = 0;
 	do {
 		word[p] = right->keys[p];
@@ -1142,10 +1140,8 @@ int etymon_index_shortest_sep_nl(ETYMON_INDEX_PAGE_NL* left, ETYMON_INDEX_PAGE_N
 	static int p;
 	static int max;
 	static unsigned char* left_word;
-	static int left_word_len;
 	max = right->offset[1];
 	left_word = left->keys + left->offset[left->n - 1];
-	left_word_len = left->offset[left->n] - left->offset[left->n - 1];
 	p = 0;
 	do {
 		word[p] = right->keys[p];
@@ -2252,7 +2248,7 @@ int etymon_index_add_files(Afindex *opt) {
 
 int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 	ETYMON_INDEX_INDEXING_STATE* state = opt->state;
-	int tree_p, comp, field_p, word_number_p;
+	int tree_p, comp, field_p;
 	int* tree_link;
 	int done;
 	int full;
@@ -2377,8 +2373,6 @@ int etymon_af_index_add_word(ETYMON_AF_INDEX_ADD_WORD* opt) {
 			}
 			/* now add new node to word number cache at end of list */
 			if (state->number_words) {
-				/* search to the end of the list */
-				word_number_p = state->wcache[tree_p].word_numbers_tail;
 				/* add a new word number node */
 				state->wncache[state->wncache_count].wn = opt->word_number;
 				state->wncache[state->wcache[tree_p].word_numbers_tail].next = state->wncache_count;

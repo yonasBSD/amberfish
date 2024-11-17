@@ -122,8 +122,6 @@ unsigned char dc_xml_next_char(ETYMON_DOCBUF* docbuf,
 
 /* returns 0 if everything went OK */
 int dc_xml_index(ETYMON_AF_DC_INDEX* dc_index) {
-	int error = 0;
-
 	try {
 		XMLPlatformUtils::Initialize();
 	}
@@ -153,11 +151,9 @@ int dc_xml_index(ETYMON_AF_DC_INDEX* dc_index) {
         }
         catch (const XMLException& e) {
 		printf("Error: %s\n", XMLString::transcode(e.getMessage()));
-		error = 1;
         }
         catch (...) {
 		printf("Unexpected exception during parsing\n");
-		error = 1;
         }
 
         if (handler.getSawErrors()) {
