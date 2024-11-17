@@ -1,10 +1,11 @@
 Amberfish
 =========
 
-Amberfish is a command-line tool for indexing and searching text.
+Amberfish is a full-text search engine with a command-line interface.
 
-This software is distributed under the terms of the MIT License.  See the file
-[LICENSE](https://gitlab.com/amberfish/amberfish/-/blob/main/LICENSE?ref_type=heads)
+This software is distributed under the terms of the MIT License.  See
+the file
+[LICENSE](https://github.com/nassibnassar/amberfish/blob/main/LICENSE)
 for more information.
 
 Example:
@@ -26,6 +27,6 @@ man doc/af.1
 ```
 
 For more information, see the [recently updated
-documentation](https://gitlab.com/amberfish/amberfish/-/blob/main/doc/amberfish.adoc)
+documentation](https://github.com/nassibnassar/amberfish/blob/main/doc/userguide.adoc)
 (work in progress).
 
