@@ -7,6 +7,8 @@ This software is distributed under the terms of the MIT License.  See the file
 [LICENSE](https://gitlab.com/amberfish/amberfish/-/blob/main/LICENSE?ref_type=heads)
 for more information.
 
+Example:
+
 ```
 autoconf
 
@@ -22,3 +24,8 @@ man doc/af.1
 
 ./bin/af --fetch doc/amberfish.texi 12266 13772
 ```
+
+For more information, see the [recently updated
+documentation](https://gitlab.com/amberfish/amberfish/-/blob/main/doc/amberfish.adoc)
+(work in progress).
+
