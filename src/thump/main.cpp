@@ -21,6 +21,7 @@
 #include <sql.h>
 #include <sqlext.h>
 #endif
+#include "af.h"
 #include "isearch.h"
 #include "thump.h"
 
@@ -399,7 +400,7 @@ int process(ostream &out)
 		break;
 	case CONF_DB_TYPE_ISEARCH:
 		out << crlf;
-		isearch_query(out, &thrq);
+		af_query(out, &thrq);
 		break;
 	default:
 		out << crlf;
