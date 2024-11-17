@@ -71,13 +71,13 @@ The output of these searches is a list of documents taking the form:
 <score> <dbname> <docid> <parent> <filename> <begin> <end>
 ----
 
-where <score> is a relevance score, <dbname> is the database name,
-<docid> is an unique number identifying the document within the
-database, <parent> is the docid of a document that contains this
-document (or 0 if no such relationship exists), <filename> is the name
-of the file where the document is located, and <begin> and <end> are
-byte offsets of the beginning and ending of the document within the
-file.
+where <score> is an estimate of the document's relevance to the query,
+<dbname> is the database name, <docid> is an unique number identifying
+the document within the database, <parent> is the docid of a document
+that contains this document (or 0 if no such relationship exists),
+<filename> is the name of the file where the document is located, and
+<begin> and <end> are byte offsets of the beginning and ending of the
+document within the file.
 
 === Wildcard search
 
@@ -152,13 +152,130 @@ specifying `-t xml`, for example:
 af -i -d mydb -C -t xml -v *.xml
 ----
 
-where `xml` is the "document type."  The default document type is
-`text` which does not support field search.
+where `xml` is the "document type" for XML files.  The default
+document type is `text` which does not support field search.
 
 An example of querying within a "Title" field:
 
 ----
 af -s -d mydb -q 'Title/cat'
 ----
+
+This searches for documents that contain "cat" in the "Title" field.
+Note that field names may be case-sensitive, depending on the document
+type.
+
+=== More about searching XML
+
+Suppose we add a file called `jones.xml` to an index:
+
+----
+<Document>
+   <Author>
+      <Name>
+         <FirstName> Tom </FirstName>
+         <LastName> Jones </LastName>
+      </Name>
+   </Author>
+</Document>
+----
+
+This might be done using the command:
+
+----
+af -i -d mydb -t xml jones.xml
+----
+
+The index will store the words "Tom" and "Jones" as being located at a
+field path within the document:
+
+----
+/Document/_c/Author/_c/Name/_c/FirstName/_c/Tom
+/Document/_c/Author/_c/Name/_c/LastName/_c/Jones
+----
+
+The "`_c`" is a special field that means the "content" of the XML
+element, as opposed to the "attribute" which is written as "`_a`".  So
+the search:
+
+----
+af -s -d mydb -1 '/Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
+----
+
+will return `jones.xml` as matching the query.  Other queries that
+will also match:
+
+----
+af -s -d mydb -q '/.../Document/_c/Author/_c/Name/_c/LastName/_c/Jones'
+af -s -d mydb -q '/.../_c/Author/_c/Name/_c/LastName/_c/Jones'
+af -s -d mydb -q '/.../Author/_c/Name/_c/LastName/_c/Jones'
+af -s -d mydb -q '/.../_c/Name/_c/LastName/_c/Jones'
+af -s -d mydb -q '/.../Name/_c/LastName/_c/Jones'
+af -s -d mydb -q '/.../_c/LastName/_c/Jones'
+af -s -d mydb -q '/.../LastName/_c/Jones'
+af -s -d mydb -q '/.../_c/Jones'
+af -s -d mydb -q '/.../Jones'
+af -s -d mydb -q 'Jones'
+----
+
+The "`...`" means "a sequence of any 0 or more fields".  These queries
+are equivalent:
+
+----
+af -s -d mydb -q '/.../LastName/_c/Jones'
+af -s -d mydb -q 'LastName/_c/Jones'
+----
+
+These queries match `jones.xml`:
+
+----
+af -s -d mydb -q '/Document/_c/Author/_c/Name/.../Jones'
+af -s -d mydb -q 'Name/.../LastName/.../Jones'
+----
+
+The first of the two examples above will match @samp{Jones} anywhere
+within the author's name, not necessarily only his last name.  The
+second matches only a last name of Jones, but it need not be the
+author; for example, it would match a document containing the
+following fragment:
+
+----
+<Bibliography>
+   <Reference Type="book">
+      <Title> Text searching the old fashioned way. </Title>
+      <Name>
+         <FirstName> Indiana </FirstName>
+         <LastName> Jones </LastName>
+      </Name>
+   </Reference>
+</Bibliography>
+----
+
+Other queries that would match the above fragment:
+
+----
+af -s -d mydb -q 'Reference/_a/Type/book'
+af -s -d mydb -q 'Reference/_a/.../book'
+af -s -d mydb -q 'Reference/.../book'
+----
+
+Examples of phrase searching with fields:
+
+----
+af -s -d mydb -q 'Title/.../"text searching"'
+af -s -d mydb -Q 'Name/.../Indiana and Name/.../Jones'
+----
+
+=== Searching multiple indexes
+
+We can search across multiple indexes:
+
+----
+af -s -d patents1978 -d patents1979 -d patents1980 -q 'mousetrap'
+----
+
+Each database is queried and the results are merged into a single
+result set.
+
 
 
