@@ -14,12 +14,12 @@ autoconf
 
 ./configure
 
-gmake
+gmake    # or "make" on some systems
 ```
 
 Documentation
 -------------
 
 The [documentation](https://github.com/nassibnassar/amberfish/blob/main/doc/userguide.adoc)
-was recently updated.
+has recently been updated.
 
