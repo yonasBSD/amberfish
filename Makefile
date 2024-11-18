@@ -15,9 +15,6 @@ build:
 html:
 	cd doc ; ${MAKE} html
 
-pdf:
-	cd doc ; ${MAKE} pdf
-
 strip:
 	cd src/backend ; ${MAKE} ${MAKEFLAGS} strip
 #	cd src/thump ; ${MAKE} ${MAKEFLAGS} strip
@@ -46,5 +43,5 @@ distclean:
 	cd doc ; ${MAKE} distclean
 	cd src/backend ; rm -f Makefile config.h version.h
 	cd src/thump ; rm -f Makefile config.h version.h
-	cd doc ; rm -f doc/Makefile doc/version.texi
+	cd doc ; rm -f doc/Makefile doc/version.adoc
 	rm -f configure *~ *#

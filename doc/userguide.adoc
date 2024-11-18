@@ -115,11 +115,11 @@ The `--split` index option is a basic way of dividing files into
 multiple documents, for example:
 
 ----
-af -i -d mydb -C --split '#####' -v *.txt
+af -i -d mydb -C --split '====' -v *.txt
 ----
 
-In the above example, any occurrences of `#####` are interpreted as
-the beginning of a new document.
+In the above example, any occurrences of the string `====` are
+interpreted as the beginning of a new document.
 
 The list of documents in an index can be viewed with, for example:
 
@@ -165,7 +165,9 @@ This searches for documents that contain "cat" in the "Title" field.
 Note that field names may be case-sensitive, depending on the document
 type.
 
-=== More about searching XML
+=== More on searching XML
+
+==== Field paths
 
 Suppose we add a file called `jones.xml` to an index:
 
@@ -266,6 +268,34 @@ af -s -d mydb -q 'Title/.../"text searching"'
 af -s -d mydb -Q 'Name/.../Indiana and Name/.../Jones'
 ----
 
+==== Hierarchical documents
+
+XML tags can be parsed into nested documents, which allows more
+specific search results.  This is controlled using the `--dlevel`
+option, which limits the number of levels of nesting.
+
+For example:
+
+----
+af -i -d mydb -C -t xml --dlevel 2 medline.xml
+----
+
+The setting `--dlevel 1` is the default and results in one document
+per file, while `--dlevel 2` adds one level of nested documents within
+the outermost XML element.  Note that large values for `--dlevel` can
+lead to a significant increase in processing time and disk usage.
+
+With `--dlevel` defined larger than `1`, search results will show the
+most specific (innermost) documents.  To include the ancestors of
+these documents, use the option `--style=lineage`:
+
+----
+af -s -d mydb -q 'nutrition' --style=lineage
+----
+
+This causes the output to show inner documents indented under their
+parent (enclosing) documents.
+
 === Searching multiple indexes
 
 We can search across multiple indexes:
@@ -277,5 +307,25 @@ af -s -d patents1978 -d patents1979 -d patents1980 -q 'mousetrap'
 Each database is queried and the results are merged into a single
 result set.
 
+=== Listing documents
 
+To list documents that have been added to an index:
+
+----
+af -l -d mydb
+----
+
+The output looks like:
+
+----
+<docid> <parent> <filename> <begin> <end> <doctype>
+----
+
+where <docid> is an unique number identifying the document within the
+database, <parent> is the docid of a document that contains this
+document (or 0 if no such relationship exists), <filename> is the name
+of the file where the document is located, <begin> and <end> are byte
+offsets of the beginning and ending of the document within the file,
+and <doctype> is the name of the document type associated with the
+document.
 

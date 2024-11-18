@@ -5,14 +5,7 @@ USER_LDFLAGS=$LDFLAGS
 CPPFLAGS="-I/usr/local/include $CPPFLAGS"
 LDFLAGS="-L/usr/local/lib $LDFLAGS"
 
-AC_MSG_CHECKING(for VERSION)
-if test -f VERSION; then
-	af_version=`cat VERSION`
-	AC_MSG_RESULT($af_version)
-else
-	af_version=`date +%Y%m%d`
-	AC_MSG_RESULT(no; using $af_version)
-fi
+af_version=`git describe --tags --always`
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -61,8 +54,8 @@ AC_MSG_RESULT($stemmer)
 
 AC_MSG_NOTICE(creating src/backend/version.h)
 echo "#define AF_VERSION \"$af_version\"" > src/backend/version.h
-AC_MSG_NOTICE(creating doc/version.texi)
-echo "@set VERSION $af_version" > doc/version.texi
+AC_MSG_NOTICE(creating doc/version.adoc)
+echo "$af_version" > doc/version.adoc
 
 AC_CONFIG_HEADERS([src/backend/config.h])
 AC_CONFIG_FILES(src/backend/Makefile)

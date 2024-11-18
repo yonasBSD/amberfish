@@ -5,7 +5,7 @@ config.status
 configure
 doc/Makefile
 doc/*.gz
-doc/version.texi
+doc/version.adoc
 src/Makefile
 src/af
 src/config.h

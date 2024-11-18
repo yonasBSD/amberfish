@@ -1,6 +1,8 @@
 = Amberfish Documentation
+include::version.adoc[]
 :sectnums:
 :toc: left
+:toclevels: 4
 :toc-title: Contents
 
 include::userguide.adoc[]
