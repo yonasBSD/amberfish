@@ -59,7 +59,7 @@ echo "$af_version" > doc/version.adoc
 
 AC_CONFIG_HEADERS([src/backend/config.h])
 AC_CONFIG_FILES(src/backend/Makefile)
-AC_CONFIG_FILES(src/thump/Makefile)
+AC_CONFIG_FILES(src/interface/Makefile)
 AC_CONFIG_FILES(doc/Makefile)
 
 AC_SUBST(BIN, $bin)
