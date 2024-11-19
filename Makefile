@@ -44,4 +44,4 @@ distclean:
 	cd src/backend ; rm -f Makefile config.h version.h
 	cd src/interface ; rm -f Makefile config.h version.h
 	cd doc ; rm -f doc/Makefile doc/version.adoc
-	rm -f configure *~ *#
+	rm -f *~ *#
