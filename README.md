@@ -10,11 +10,9 @@ Building the software
 ---------------------
 
 ```
-autoconf
-
 ./configure
 
-gmake    # or "make" on some systems
+gmake        # or "make" on some systems
 ```
 
 Documentation
