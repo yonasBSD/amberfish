@@ -2,7 +2,6 @@ autom4te.cache/
 confdefs.h
 config.log
 config.status
-configure
 doc/Makefile
 doc/*.gz
 doc/version.adoc
