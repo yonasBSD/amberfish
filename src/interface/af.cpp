@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <string>
+#include <vector>
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <sstream>

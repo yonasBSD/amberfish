@@ -1,3 +1,4 @@
+#include <cstring>
 #include "str.h"
 
 void trim(string* s)
