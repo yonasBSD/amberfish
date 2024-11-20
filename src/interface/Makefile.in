@@ -10,13 +10,13 @@ UMLS = -DUMLS
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable \
 		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}
 CFLAGS =	-std=c89 ${FLAGS}
-CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@
+CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@ -I/opt/homebrew/Cellar/boost/1.86.0_2/include
 # Not sure if we still use @CPPFLAGS@?
 
 CC =		@CC@
 CXX =		@CXX@
 
-LIBS =		-L. -L/usr/local/lib -lboost_iostreams
+LIBS =		-L. -L/usr/local/lib -L/opt/homebrew/Cellar/boost/1.86.0_2/lib -lboost_iostreams
 prefix =	@prefix@
 exec_prefix =	@exec_prefix@
 PREFIXBIN =	${DESTDIR}@bindir@
