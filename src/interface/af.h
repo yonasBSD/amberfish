@@ -6,6 +6,6 @@
 
 using namespace std;
 
-int af_query(ostream& out, const Thumprq* thrq);
+int af_query(ostream& out, const Thumprq* thrq, const string& datadir);
 
 #endif

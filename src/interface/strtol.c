@@ -32,3 +32,4 @@ int str_to_int(const char *s, int *val, int base)
 	*val = (int) v;
 	return 0;
 }
+

@@ -313,33 +313,25 @@ void process_select(Rdbms_conn *rdbms_conn, ostream &out)
 	rdbms_close_result(&rdbms_result);
 }
 
-#define THUMP_CONF "/etc/thump"
-
-#define CONF_DB_TYPE_RELATIONAL 1
+#define CONF_DB_TYPE_UNKNOWN 0
+#define CONF_DB_TYPE_AMBERFISH 1
 #define CONF_DB_TYPE_ISEARCH 2
+#define CONF_DB_TYPE_RELATIONAL 3
 
 int file_exists(const string &fn)
 {
 	return access(fn.c_str(), F_OK) == 0;
 }
 
-int conf_db_type(const string &db)
+int conf_db_type(const string &datadir, const string &dbname)
 {
-	string dir;
-	int e;
-
-	// dir = THUMP_CONF;
-	// dir += "/db/";
-	// dir += db;
-	// dir += "/type/xdb";
-	// e = file_exists(dir);
-
-	// if (e)
-	// 	return CONF_DB_TYPE_ISEARCH;
-	// else
-	// 	return CONF_DB_TYPE_RELATIONAL;
-
-        return CONF_DB_TYPE_ISEARCH;
+	string aftest = datadir + "/" + dbname + "/" + dbname + ".db";
+	if (file_exists(aftest))
+		return CONF_DB_TYPE_AMBERFISH;
+	string istest = datadir + "/" + dbname + "/" + dbname + ".dbi";
+	if (file_exists(istest))
+		return CONF_DB_TYPE_ISEARCH;
+	return CONF_DB_TYPE_UNKNOWN;
 }
 
 int conf_db_rdbms_driver(const string &db)
@@ -347,7 +339,7 @@ int conf_db_rdbms_driver(const string &db)
 	string dir;
 	int e;
 
-	dir = THUMP_CONF;
+	dir = "/etc/thump";
 	dir += "/db/";
 	dir += db;
 	dir += "/rdbms/driver/odbc";
@@ -395,17 +387,22 @@ int process(ostream &out)
 
 	out << "Content-Type: text/plain" << charset << crlf;
 
-	switch (conf_db_type(thrq.in_db)) {
-	case CONF_DB_TYPE_RELATIONAL:
-		break;
+	string datadir = "../../../data";
+	switch (conf_db_type(datadir, thrq.in_db)) {
+        case CONF_DB_TYPE_AMBERFISH:
+		out << crlf;
+		af_query(out, &thrq, datadir);
+		return 0;
 	case CONF_DB_TYPE_ISEARCH:
 		out << crlf;
-		af_query(out, &thrq);
+		isearch_query(out, &thrq, datadir);
+		return 0;
+	case CONF_DB_TYPE_RELATIONAL:
 		break;
 	default:
 		out << crlf;
-		return err_status_code("Specified database is not present in "
-				       "server configuration", 500, out);
+		string e = "Unknown database \""+ thrq.in_db + "\"";
+		return err_status_code(e.c_str(), 500, out);
 	}
 
 //	if (conf_db_type(ests(thrq.in_db)) != CONF_DB_TYPE_RELATIONAL) {

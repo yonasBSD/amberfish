@@ -69,6 +69,9 @@ void acount()
 				return(END);
 			}
 
+":or"                    { acount(); return(OR_OP); }
+":and"                    { acount(); return(AND_OP); }
+
 "%7C%7C"                    { acount(); return(OR_OP); }
 "%26%26"                    { acount(); return(AND_OP); }
 "%26"                     { acount(); return('&'); }

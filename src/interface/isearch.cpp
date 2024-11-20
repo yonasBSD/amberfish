@@ -2,19 +2,21 @@
 #include <string>
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
+#include "str.h"
 #include "thump.h"
 #include "isearch.h"
 
 using namespace std;
 namespace io = boost::iostreams;
 
-int isearch_query(ostream& out, const Thumprq* thrq)
+int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 {
 	FILE *fpipe;
 	string command;
-	command = "cd ../../../data/" + thrq->in_db + " && ../../isearch2/bin/Isearch -d " + thrq->in_db + " -q " + thrq->find;
+	command = "cd " + datadir + "/" + thrq->in_db + " && ../../isearch2/bin/Isearch -d " + thrq->in_db + " -q -infix '" + thrq->find + "'";
 	
 #ifdef DEBUG
 	cout << command << endl;
@@ -33,10 +35,27 @@ int isearch_query(ostream& out, const Thumprq* thrq)
 	istream in(&inb);
 
 	string line;
+	for (int i = 0; i < 7; i++) {  // Skip first several lines.
+		if (in)
+			getline(in, line);
+	}
 	while (in)
 	{
 		getline(in, line);
-		out << line << endl;
+
+		vector<string> line_split;
+		stringstream line_stream(line);
+		string token;
+		while (getline(line_stream, token, ' ')) {
+			trim(&token);
+			if (token != "")
+				line_split.push_back(token);
+		}
+		if (line_split.size() != 3)
+			continue;
+		string filename = line_split[2];
+
+		out << "erc: (:unav) | (:unav) | (:unav) | " << filename << endl << endl;
 	}
 
 	pclose(fpipe);

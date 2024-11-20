@@ -8,7 +8,7 @@ LARGEFILE =	-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 UMLS = -DUMLS
 
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable \
-		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}  -DDEBUG
+		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}
 CFLAGS =	-std=c89 ${FLAGS}
 CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@
 # Not sure if we still use @CPPFLAGS@?
@@ -16,12 +16,12 @@ CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@
 CC =		@CC@
 CXX =		@CXX@
 
-LIBS =		@LDFLAGS@ @LIBS@ -L. -L/usr/local/lib -lboost_iostreams
+LIBS =		-L. -L/usr/local/lib -lboost_iostreams
 prefix =	@prefix@
 exec_prefix =	@exec_prefix@
 PREFIXBIN =	${DESTDIR}@bindir@
 
-LIBOBJ =	err.o opt.o strtol.o symtable.o syntree.o isearch.o rdbms.o
+LIBOBJ =	err.o opt.o strtol.o symtable.o syntree.o af.o isearch.o rdbms.o str.o
 BINOBJ =	main.o
 
 # Be careful about changing BIN; see the uninstall target below first.

@@ -6,6 +6,6 @@
 
 using namespace std;
 
-int isearch_query(ostream& out, const Thumprq* thrq);
+int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir);
 
 #endif
