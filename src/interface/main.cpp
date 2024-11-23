@@ -387,7 +387,7 @@ int process(ostream &out)
 
 	out << "Content-Type: text/plain" << charset << crlf;
 
-	string datadir = "../../../data";
+	string datadir = "../../../index";
 	switch (conf_db_type(datadir, thrq.in_db)) {
         case CONF_DB_TYPE_AMBERFISH:
 		out << crlf;
