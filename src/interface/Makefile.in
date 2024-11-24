@@ -9,8 +9,8 @@ UMLS = -DUMLS
 
 FLAGS =		-Wall -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable \
 		${DEBUG} ${OPT} ${LARGEFILE} ${UMLS}
-CFLAGS =	-std=c89 ${FLAGS}
-CXXFLAGS =	-std=c++11 ${FLAGS} @CPPFLAGS@ -I/opt/homebrew/Cellar/boost/1.86.0_2/include
+CFLAGS =	-std=c2x ${FLAGS}
+CXXFLAGS =	-std=c++23 ${FLAGS} @CPPFLAGS@ -I/opt/homebrew/Cellar/boost/1.86.0_2/include
 # Not sure if we still use @CPPFLAGS@?
 
 CC =		@CC@

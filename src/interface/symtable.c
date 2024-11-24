@@ -122,9 +122,9 @@ static int addsym(char *sym, int string)
 		}
 	}
 	symt[symtn].name = strdup(sym);
-	decode_url(&symt[symtn].name);
+	decode_url(&(symt[symtn].name));
 	if (string)
-		str_to_sql(&symt[symtn].name);
+		str_to_sql(&(symt[symtn].name));
 	symt[symtn].isnew = 1;
 	return symtn++;
 }

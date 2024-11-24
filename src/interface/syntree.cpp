@@ -104,6 +104,7 @@ void syntree_free(Syntree *p)
 {
 	int x;
 
+	/*
 	if (p) {
 		if (p->type == 2) {
 			for (x = 0; x < p->u.op.opn; x++)
@@ -111,4 +112,5 @@ void syntree_free(Syntree *p)
 		}
 		free(p);
 	}
+	*/
 }
