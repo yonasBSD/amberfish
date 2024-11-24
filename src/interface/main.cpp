@@ -401,7 +401,8 @@ int process(ostream &out)
 		break;
 	default:
 		out << crlf;
-		string e = "Unknown database \""+ thrq.in_db + "\"";
+		string e = "unknown database \""+ thrq.in_db + "\"";
+                printf("[%i] %s\n", getpid(), e.c_str());
 		return err_status_code(e.c_str(), 500, out);
 	}
 
@@ -512,9 +513,7 @@ static int server_start(int listen_port)
 	if ((main_socket = socket_init(listen_port)) < 0)
 		return -1;
 	install_signal_handlers();
-#ifdef DEBUG
-	printf("*** Server started ***\n");
-#endif
+	printf("started thumpd, listening on port %d\n", listen_port);
 	while (1) {
 		if ((child_socket = accept(main_socket,
 					   (struct sockaddr *) &addr,
@@ -529,6 +528,10 @@ static int server_start(int listen_port)
 		if (f == 0) {  /* child */
 			int e;
 			close(main_socket);
+                        /* Decode address to string */
+                        char addr_str[INET_ADDRSTRLEN];
+                        inet_ntop(AF_INET, &(addr.sin_addr), addr_str, INET_ADDRSTRLEN);
+                        printf("[%i] connection received from address \"%s\"\n", getpid(), addr_str);
 #ifdef DEBUG
 			printf("[%i] *** Connected ***\n",
 			       getpid());

@@ -1165,4 +1165,12 @@ void yycompile(FILE *fin, FILE *fout)
 		fprintf(yyout, "%s\r\n", errorline[1].c_str());
 		exit(0);
 	}
+
+	printf("[%i] request: \"", getpid());
+	p = ayytext;
+	while (!isspace(*p)) {
+		printf("%c", *p);
+		p++;
+	}
+	printf("\"\n");
 }

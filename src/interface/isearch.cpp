@@ -19,9 +19,7 @@ int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 	string command;
 	command = "cd " + datadir + "/" + thrq->in_db + " && ../../isearch2/bin/Isearch -d " + thrq->in_db + " -q -infix '" + thrq->find + "'";
 	
-#ifdef DEBUG
-	cout << command << endl;
-#endif
+        printf("[%i] executing: \"%s\"\n", getpid(), command.c_str());
 	if ( !(fpipe = (FILE*) popen(command.c_str(),"r")) ) {
 		perror("Problems with pipe");
 		exit(1);
@@ -40,6 +38,7 @@ int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 		if (in)
 			getline(in, line);
 	}
+        int count = 0;
 	while (in)
 	{
 		getline(in, line);
@@ -57,7 +56,9 @@ int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 		string filename = line_split[2];
 
 		out << "erc: (:unav) | (:unav) | (:unav) | " << filename << endl << endl;
+                count++;
 	}
+        printf("[%i] returned %i records\n", getpid(), count);
 
 	pclose(fpipe);
 

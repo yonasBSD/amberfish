@@ -19,9 +19,7 @@ int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 	string command;
 	command = "cd " + datadir + "/" + thrq->in_db + " && ../../amberfish/bin/af -s -d " + thrq->in_db + " -Q '" + thrq->find + "'";
 	
-#ifdef DEBUG
-	cout << command << endl;
-#endif
+        printf("[%i] executing: \"%s\"\n", getpid(), command.c_str());
 	if ( !(fpipe = (FILE*) popen(command.c_str(),"r")) ) {
 		perror("Problems with pipe");
 		exit(1);
@@ -36,6 +34,7 @@ int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 	istream in(&inb);
 
 	string line;
+        int count = 0;
 	while (in)
 	{
 		getline(in, line);
@@ -56,7 +55,9 @@ int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 
 		out << "erc: (:unav) | (:unav) | (:unav) | " << filename << endl;
 		out << "note: " << begin << " " << end << endl << endl;
+                count++;
 	}
+        printf("[%i] returned %i records\n", getpid(), count);
 
 	pclose(fpipe);
 
