@@ -70,7 +70,9 @@ void acount()
 			}
 
 ":or"                    { acount(); return(OR_OP); }
+"%3aor"                    { acount(); return(OR_OP); }
 ":and"                    { acount(); return(AND_OP); }
+"%3aand"                    { acount(); return(AND_OP); }
 
 "%7C%7C"                    { acount(); return(OR_OP); }
 "%26%26"                    { acount(); return(AND_OP); }
@@ -127,7 +129,7 @@ void acount()
 
 "@"                     { acount(); return('/'); }
 
-([ \t\v\r\n\f]|"%20")   { acount(); }
+([ \t\v\r\n\f]|"%20"|[+])   { acount(); }
 .                       { acount(); }
 
 %%
