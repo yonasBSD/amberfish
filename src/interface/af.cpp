@@ -17,7 +17,7 @@ int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 {
 	FILE *fpipe;
 	string command;
-	command = "cd " + datadir + "/" + thrq->in_db + " && ../../amberfish/bin/af -s -d " + thrq->in_db + " -Q '" + thrq->find + "'";
+	command = "cd " + datadir + "/" + thrq->in_db + " && af -s -d " + thrq->in_db + " -Q '" + thrq->find + "'";
 	
         printf("[%i] executing: \"%s\"\n", getpid(), command.c_str());
 	if ( !(fpipe = (FILE*) popen(command.c_str(),"r")) ) {
