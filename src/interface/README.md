@@ -72,3 +72,11 @@ http://localhost:8660/?in(aftest)find(ludwig :or van :or beethoven)
 http://localhost:8660/?in(istest)find(ludwig :or van :or beethoven)
 ```
 
+Or using curl:
+
+```
+curl --get --data-urlencode 'in(aftest)find(ludwig :or van :or beethoven)' 'http://localhost:8660/'
+
+curl --get --data-urlencode 'in(istest)find(ludwig :or van :or beethoven)' 'http://localhost:8660/'
+```
+
