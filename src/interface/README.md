@@ -37,8 +37,8 @@ gmake        # or "make"
 cd ..
 ```
 
-Make sure that the `af` and `Isearch` executables are in the PATH.
-This can be done using `gmake install` for both packages.
+Make sure the `af` and `Isearch` executables are in the PATH, or use
+`gmake install` for both packages.
 
 Create Amberfish and/or Isearch indexes in directories under `index/`.
 Note that the directory name and the database name should match.
@@ -62,7 +62,8 @@ cd amberfish/src/interface
 ```
 
 The `cd` above is necessary to set the current working directory to
-`amberfish/src/interface`, so that `thumpd` can find everything.
+`amberfish/src/interface`, so that `thumpd` will find the `index/`
+directory.
 
 Using a web browser, run Boolean queries:
 
