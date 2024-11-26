@@ -37,17 +37,20 @@ gmake        # or "make"
 cd ..
 ```
 
+Make sure that the `af` and `Isearch` executables are in the PATH.
+This can be done using `gmake install` for both packages.
+
 Create Amberfish and/or Isearch indexes in directories under `index/`.
 Note that the directory name and the database name should match.
 
 ```
 mkdir index/aftest
 
-./amberfish/bin/af -i -d index/aftest/aftest -C -v *.txt
+af -i -d index/aftest/aftest -C -v *.txt
 
 mkdir index/istest
 
-./isearch2/bin/Iindex -d index/istest/istest *.txt
+Iindex -d index/istest/istest *.txt
 ```
 
 Start the THUMP server:
