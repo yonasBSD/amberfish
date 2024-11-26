@@ -16,12 +16,11 @@ namespace io = boost::iostreams;
 int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 {
 	FILE *fpipe;
-	string command;
-	command = "cd " + datadir + "/" + thrq->in_db + " && af -s -d " + thrq->in_db + " -Q '" + thrq->find + "'";
+	string cmd = "cd " + datadir + "/" + thrq->in_db + " && af -s -d " + thrq->in_db + " -Q '" + thrq->find + "'";
 	
-        printf("[%i] executing: \"%s\"\n", getpid(), command.c_str());
-	if ( !(fpipe = (FILE*) popen(command.c_str(),"r")) ) {
-		perror("Problems with pipe");
+        printf("[%i] executing: \"%s\"\n", getpid(), cmd.c_str());
+	if ( !(fpipe = (FILE*) popen(cmd.c_str(), "r")) ) {
+		printf("[%i] popen: %s\n", getpid(), strerror(errno));
 		exit(1);
 	}
 
