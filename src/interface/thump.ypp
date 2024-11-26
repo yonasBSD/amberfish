@@ -1166,11 +1166,13 @@ void yycompile(FILE *fin, FILE *fout)
 		exit(0);
 	}
 
-	printf("[%i] request: \"", getpid());
-	p = ayytext;
-	while (!isspace(*p)) {
-		printf("%c", *p);
-		p++;
+	if (ayytext[0] == '?') {
+		printf("[%i] request: \"", getpid());
+		p = ayytext;
+		while (!isspace(*p)) {
+			printf("%c", *p);
+			p++;
+		}
+		printf("\"\n");
 	}
-	printf("\"\n");
 }
