@@ -518,13 +518,19 @@ static int server_start(int listen_port)
 		if ((child_socket = accept(main_socket,
 					   (struct sockaddr *) &addr,
 					   (socklen_t *) &addr_size)) < 0) {
-			if (errno == EINTR)
+			if (errno == EINTR) {
 				continue;
-			else 
+			} else {
+				printf("accept: %s\n", strerror(errno));
 				return -1;
+			}
 		}
+#ifdef DEBUG_SINGLE_PROCESS
+		f = 0;
+#else
 		if ((f = fork()) < 0)
 			return -1;
+#endif
 		if (f == 0) {  /* child */
 			int e;
 			close(main_socket);
@@ -543,7 +549,11 @@ static int server_start(int listen_port)
 			printf("[%i] Connection closed normally\n",
 			       getpid());
 #endif
+#ifdef DEBUG_SINGLE_PROCESS
+			exit(0);
+#else
 			exit(e);
+#endif
 		} else {  /* parent; f == child's PID */
 			close(child_socket);
 		}
@@ -578,8 +588,7 @@ int main(int argc, char *argv[])
 	if (opt.port == 0)
 		opt.port = 8660;
 	if (server_start(opt.port) < 0) {
-		fprintf(stderr, "%s: unable to listen on port %i\n", prgname,
-			opt.port);
+		printf("unable to listen on port %i\n", opt.port);
 		return -1;
 	}
 
