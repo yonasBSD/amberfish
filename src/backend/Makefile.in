@@ -64,7 +64,7 @@ strip:
 install: all
 	make strip
 	mkdir -p ${PREFIXBIN}
-	cp ${BIN} ${PREFIXBIN}/.
+	cp ${BIN} ${PREFIXBIN}/
 
 uninstall:
 	if [ -d ${PREFIXBIN} ] ; then \

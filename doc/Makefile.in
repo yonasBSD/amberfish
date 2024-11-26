@@ -27,9 +27,9 @@ install: all
 		rm -f ${MANDIR}/man1/af.1 ; \
         fi
 	mkdir -p ${MANDIR}/man1
-	cp ${MAN1} ${MANDIR}/man1/.
+	cp ${MAN1} ${MANDIR}/man1/
 	mkdir -p ${MANDIR}/man3
-	cp ${MAN3} ${MANDIR}/man3/.
+	cp ${MAN3} ${MANDIR}/man3/
 
 uninstall:
 	if [ -d ${MANDIR}/man1 ] ; then \
