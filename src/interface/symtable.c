@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "symtable.h"
 #include "strtol.h"
 
@@ -24,7 +25,7 @@ void decode_url(char **url)
 	long hexc;
 
 	hex[2] = '\0';
-	ns = malloc(strlen(*url) * 2);
+	ns = malloc(strlen(*url) + 1);
 	nsp = ns;
 	p = *url;
 	while (1) {
@@ -108,14 +109,11 @@ void str_to_sql(char **str)
 /* locate symbol or add it to table */
 static int addsym(char *sym, int string)
 {
-	int x;
-
 	if (symtn == SYMTSIZE) {
-		/* error */
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
-	for (x = 0; x < symtn; x++) {
+	for (int x = 0; x < symtn; x++) {
 		if (!strcmp(symt[x].name, sym)) {
 			symt[x].isnew = 0;
 			return x;
@@ -153,7 +151,7 @@ void dumpsymt()
 
 	fprintf(yyout, "\n;  Symbol table\n");
 	for (x = 0; x < symtn; x++) {
-		fprintf(yyout, ";  (%d) \"%s\"\tV=%i\n", x, symt[x].name, symt[x].var);
+		fprintf(yyout, ";  (%d) \"%s\"\tV=%d\n", x, symt[x].name, symt[x].var);
 	}
 }
 */

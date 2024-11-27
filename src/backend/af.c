@@ -243,7 +243,7 @@ static int process_opt(int argc, char *argv[])
 		case 'd':
 			if (dbname_n == MAX_DBS) {
 				fprintf(stderr,
-					"%s: too many databases (maximum is %i)\n",
+					"%s: too many databases (maximum is %d)\n",
 					argv[0], MAX_DBS);
 				return -1;
 			}
@@ -290,23 +290,23 @@ static int process_opt(int argc, char *argv[])
 static void dump_opt()
 {
 	int x;
-	printf("cmd_index = %i\n", cmd_index);
-	printf("index_create = %i\n", index_create);
-	printf("index_phrase = %i\n", index_phrase);
-	printf("index_stem = %i\n", index_stem);
-	printf("index_memory = %i\n", index_memory);
-	printf("index_dlevel = %i\n", index_dlevel);
+	printf("cmd_index = %d\n", cmd_index);
+	printf("index_create = %d\n", index_create);
+	printf("index_phrase = %d\n", index_phrase);
+	printf("index_stem = %d\n", index_stem);
+	printf("index_memory = %d\n", index_memory);
+	printf("index_dlevel = %d\n", index_dlevel);
 	printf("index_doctype = %s\n", index_doctype);
 	printf("index_split = %s\n", index_split);
-	printf("index_files_stdin = %i\n", index_files_stdin);
-	printf("cmd_search = %i\n", cmd_search);
+	printf("index_files_stdin = %d\n", index_files_stdin);
+	printf("cmd_search = %d\n", cmd_search);
 	printf("search_query_boolean = %s\n", search_query_boolean);
-	printf("search_style = %i\n", search_style);
-	printf("cmd_list = %i\n", cmd_list);
-	printf("cmd_version = %i\n", cmd_version);
+	printf("search_style = %d\n", search_style);
+	printf("cmd_list = %d\n", cmd_list);
+	printf("cmd_version = %d\n", cmd_version);
 	for (x = 0; x < dbname_n; x++)
 		printf("db: %s\n", dbname[x]);
-	printf("verbose = %i\n", verbose);
+	printf("verbose = %d\n", verbose);
 	if (nonopt_argv) {
 	for (x = 0; x < nonopt_argv_n; x++)
 		printf("nonopt_argv: %s\n", nonopt_argv[x]);
@@ -379,7 +379,7 @@ void ses_presult(AFSEARCH_RESULT *res)
 		printf("D");
 	else
 		printf("+");
-	printf(" %i %s %i %i %s %ld %ld\n",
+	printf(" %d %s %d %d %s %ld %ld\n",
 	       res->score,
 	       res->dbname,
 	       res->doc_id,
@@ -469,7 +469,7 @@ static int exec_search()
 	
 	if (r != -1) {
 		if (search_totalhits)
-			printf("%i\n", ser.resultn);
+			printf("%d\n", ser.resultn);
 	}
 	
 	if (r != -1 && search_numhits) {
@@ -579,7 +579,7 @@ static int exec_search()
 				rtree_head->child = 0;
 				while (rtree_head->r.parent) {
 					/*
-					printf("Back... (db_id=%i)\n",
+					printf("Back... (db_id=%d)\n",
 					       rtree_head->r.db_id);
 					*/
 					results->dbid = rtree_head->r.db_id;

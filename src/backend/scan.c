@@ -364,7 +364,7 @@ static int debugpagel(Afscanst *t)
 			while (t->upostp) {
 				if (readupost(t) < 0)
 					return -1;
-				printf(" %i", t->upost.doc_id);
+				printf(" %d", t->upost.doc_id);
 				t->upostp = t->upost.next;
 			}
 		}

@@ -16,11 +16,11 @@ namespace io = boost::iostreams;
 int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 {
 	FILE *fpipe;
-	string cmd = "cd " + datadir + "/" + thrq->in_db + " && Isearch -d " + thrq->in_db + " -q -infix '" + thrq->find + "'";
+	string cmd = "Isearch -d " + datadir + "/" + thrq->in_db + "/" + thrq->in_db + " -q -infix '" + thrq->find + "'";
 	
-        printf("[%i] executing: \"%s\"\n", getpid(), cmd.c_str());
+        printf("[%d] executing: \"%s\"\n", getpid(), cmd.c_str());
 	if ( !(fpipe = (FILE*) popen(cmd.c_str(), "r")) ) {
-		printf("[%i] popen: %s\n", getpid(), strerror(errno));
+		printf("[%d] popen: %s\n", getpid(), strerror(errno));
 		exit(1);
 	}
 
@@ -57,7 +57,7 @@ int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 		out << "erc: (:unav) | (:unav) | (:unav) | " << filename << endl << endl;
                 count++;
 	}
-        printf("[%i] returned %i records\n", getpid(), count);
+        printf("[%d] returned %d records\n", getpid(), count);
 
 	pclose(fpipe);
 

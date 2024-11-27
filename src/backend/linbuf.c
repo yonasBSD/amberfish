@@ -63,7 +63,7 @@ int aflinbuf(FILE *f, int mem)
 
 	afgetfsize(f, &fsize);
 	bufsize = ((size_t) mem) * 1048576;
-/*	printf("aflinbuf: %i %lu %lu\n", mem, (unsigned long) fsize,
+/*	printf("aflinbuf: %d %lu %lu\n", mem, (unsigned long) fsize,
 	(unsigned long) bufsize);*/
 	bufsize = fsize < bufsize ? fsize : bufsize;
 	fbuf = f;

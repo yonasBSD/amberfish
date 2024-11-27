@@ -16,11 +16,11 @@ namespace io = boost::iostreams;
 int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 {
 	FILE *fpipe;
-	string cmd = "cd " + datadir + "/" + thrq->in_db + " && af -s -d " + thrq->in_db + " -Q '" + thrq->find + "'";
+	string cmd = "af -s -d " + datadir + "/" + thrq->in_db + '/' + thrq->in_db + " -Q '" + thrq->find + "'";
 	
-        printf("[%i] executing: \"%s\"\n", getpid(), cmd.c_str());
+        printf("[%d] executing: \"%s\"\n", getpid(), cmd.c_str());
 	if ( !(fpipe = (FILE*) popen(cmd.c_str(), "r")) ) {
-		printf("[%i] popen: %s\n", getpid(), strerror(errno));
+		printf("[%d] popen: %s\n", getpid(), strerror(errno));
 		exit(1);
 	}
 
@@ -56,7 +56,7 @@ int af_query(ostream& out, const Thumprq* thrq, const string& datadir)
 		out << "note: " << begin << " " << end << endl << endl;
                 count++;
 	}
-        printf("[%i] returned %i records\n", getpid(), count);
+        printf("[%d] returned %d records\n", getpid(), count);
 
 	pclose(fpipe);
 

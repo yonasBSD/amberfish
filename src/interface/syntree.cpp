@@ -51,7 +51,7 @@ Syntree *makeop(int oper, int opn, Syntree *opa0, Syntree *opa1, Syntree *opa2)
 static void indent(int ind)
 {
 	int x;
-	printf("[%i] ", getpid());
+	printf("[%d] ", getpid());
 	for (x = 0; x < ind; x++) {
 		printf(" ");
 	}
@@ -84,9 +84,9 @@ static void dumpsubtree(Syntree *p, int ind)
 			if (isprint(p->u.op.op))
 				printf("'%c'", p->u.op.op);
 			else
-				printf("%i", p->u.op.op);
+				printf("%d", p->u.op.op);
 		}
-		printf(" [%i] {\n", p->u.op.opn);
+		printf(" [%d] {\n", p->u.op.opn);
 		for (x = 0; x < p->u.op.opn; x++) {
 			dumpsubtree(p->u.op.opa[x], ind + 4);
 		}

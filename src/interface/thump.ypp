@@ -1167,7 +1167,7 @@ void yycompile(FILE *fin, FILE *fout)
 	}
 
 	if (ayytext[0] == '?') {
-		printf("[%i] request: \"", getpid());
+		printf("[%d] request: \"", getpid());
 		p = ayytext;
 		while (!isspace(*p)) {
 			printf("%c", *p);

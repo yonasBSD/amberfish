@@ -116,7 +116,7 @@ void etymon_db_list(ETYMON_DB_OPTIONS* opt) {
 		default:
 			printf("? ");
 		}
-		printf("%i %i %s %ld %ld ",
+		printf("%d %d %s %ld %ld ",
 		       x + 1,
 		       doctable.parent,
 		       doctable.filename,

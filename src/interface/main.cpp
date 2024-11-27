@@ -402,7 +402,7 @@ int process(ostream &out)
 	default:
 		out << crlf;
 		string e = "unknown database \""+ thrq.in_db + "\"";
-                printf("[%i] %s\n", getpid(), e.c_str());
+                printf("[%d] %s\n", getpid(), e.c_str());
 		return err_status_code(e.c_str(), 500, out);
 	}
 
@@ -537,23 +537,19 @@ static int server_start(int listen_port)
                         /* Decode address to string */
                         char addr_str[INET_ADDRSTRLEN];
                         inet_ntop(AF_INET, &(addr.sin_addr), addr_str, INET_ADDRSTRLEN);
-                        printf("[%i] connection received from address \"%s\"\n", getpid(), addr_str);
+                        printf("[%d] connection received from address \"%s\"\n", getpid(), addr_str);
 #ifdef DEBUG
-			printf("[%i] *** Connected ***\n",
+			printf("[%d] *** Connected ***\n",
 			       getpid());
 #endif
 /*			if ((e = connect_debug(child_socket)) < 0)*/
 			if ((e = socket_connect(child_socket)) < 0)
-				printf("Child exiting abnormally (%i)\n", e);
+				printf("Child exiting abnormally (%d)\n", e);
 #ifdef DEBUG
-			printf("[%i] Connection closed normally\n",
+			printf("[%d] Connection closed normally\n",
 			       getpid());
 #endif
-#ifdef DEBUG_SINGLE_PROCESS
-			exit(0);
-#else
-			exit(e);
-#endif
+			exit(EXIT_SUCCESS);
 		} else {  /* parent; f == child's PID */
 			close(child_socket);
 		}
@@ -575,22 +571,22 @@ int main(int argc, char *argv[])
 	prgname = argv[0];
 
 	if (evalopt(argc, argv, &opt) < 0)
-		return -1;
+		return EXIT_FAILURE;
 
 	if (opt.help)
 		return help();
 
 	if (opt.interactive) {
 		server_connect(stdin, stdout);
-		return 0;
+		return EXIT_SUCCESS;
 	}
 
 	if (opt.port == 0)
 		opt.port = 8660;
 	if (server_start(opt.port) < 0) {
-		printf("unable to listen on port %i\n", opt.port);
-		return -1;
+		printf("unable to listen on port %d\n", opt.port);
+		return EXIT_FAILURE;
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }

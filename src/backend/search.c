@@ -629,7 +629,7 @@ int etymon_af_search_term(ETYMON_AF_SEARCH_STATE* state, unsigned char* term, in
 			postp = page_l.post[insertion];
 /*			printf("page_l.post_n[insertion] %lu\n", (unsigned long) page_l.post_n[insertion]);*/
 			for (x_r = 0; x_r < page_l.post_n[insertion]; x_r++) {
-/*				printf("x_r %i\n", x_r);*/
+/*				printf("x_r %d\n", x_r);*/
 				
 				/* read a result */
 /*				printf("Read a result\n");*/
