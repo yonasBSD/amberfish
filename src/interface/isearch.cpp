@@ -18,7 +18,7 @@ int isearch_query(ostream& out, const Thumprq* thrq, const string& datadir)
 	FILE *fpipe;
 	string cmd = "Isearch -d " + datadir + "/" + thrq->in_db + "/" + thrq->in_db + " -q -infix '" + thrq->find + "'";
 	
-        printf("[%d] executing: \"%s\"\n", getpid(), cmd.c_str());
+        printf("[%d] exec: %s\n", getpid(), cmd.c_str());
 	if ( !(fpipe = (FILE*) popen(cmd.c_str(), "r")) ) {
 		printf("[%d] popen: %s\n", getpid(), strerror(errno));
 		exit(1);

@@ -15,6 +15,7 @@ typedef struct {
 extern Symbol symt[];
 extern int symtn;
 
+char *decode_url(char *url);
 int symadd(char *sym);
 int symaddstr(char *sym);
 void cleanup_symt();

@@ -17,7 +17,7 @@ int symtn = 0;
 extern FILE *yyout;
 extern void comp_error();
 
-void decode_url(char **url)
+char *decode_url(char *url)
 {
 	char *ns, *nsp;
 	char *p;
@@ -25,39 +25,36 @@ void decode_url(char **url)
 	long hexc;
 
 	hex[2] = '\0';
-	ns = malloc(strlen(*url) + 1);
+	ns = malloc(strlen(url) + 1);
 	nsp = ns;
-	p = *url;
+	p = url;
 	while (1) {
 		switch (*p) {
 		case '\0':
-			free(*url);
 			*nsp = '\0';
-			*url = ns;
-			return;
+			return ns;
 		case '%':
 			hex[0] = *(++p);
 			if (!hex[0]) {
 				comp_error();
 				fprintf(yyout, "Invalid URL encoding: %%\r\n");
-				exit(-1);
+				exit(EXIT_FAILURE);
 			}
 			hex[1] = *(++p);
 			if (!hex[1]) {
 				comp_error();
-				fprintf(yyout,
-					"Invalid URL encoding: %%%c\r\n",
-					hex[0]);
-				exit(-1);
+				fprintf(yyout, "Invalid URL encoding: %%%c\r\n", hex[0]);
+				exit(EXIT_FAILURE);
 			}
 			if (str_to_long(hex, &hexc, 16) < 0) {
 				comp_error();
-				fprintf(yyout,
-					"Invalid URL encoding: %%%c%c\r\n",
-					hex[0], hex[1]);
-				exit(-1);
+				fprintf(yyout, "Invalid URL encoding: %%%c%c\r\n", hex[0], hex[1]);
+				exit(EXIT_FAILURE);
 			}
 			*(nsp++) = (char) hexc;
+			break;
+		case '+':
+			*(nsp++) = ' ';
 			break;
 		default:
 			*(nsp++) = *p;
@@ -66,13 +63,13 @@ void decode_url(char **url)
 	}
 }
 
+/*
 void str_to_sql(char **str)
 {
 	char *ns, *nsp;
 	char *p;
 
 	ns = malloc(strlen(*str) * 2);
-/*	strcpy(ns, "E'"); */
 	strcpy(ns, " '");
 	nsp = ns + 2;
 	p = *str + 1;
@@ -105,24 +102,30 @@ void str_to_sql(char **str)
 		p++;
 	}
 }
+*/
 
-/* locate symbol or add it to table */
+/**
+ * Look up and return the index of a symbol in the symbol table,
+ * adding it if the table does not contain it.
+ */
 static int addsym(char *sym, int string)
 {
 	if (symtn == SYMTSIZE) {
+		printf("[%d] symbol table overflow\n", getpid());
 		exit(EXIT_FAILURE);
 	}
-
 	for (int x = 0; x < symtn; x++) {
-		if (!strcmp(symt[x].name, sym)) {
+		if (strcmp(symt[x].name, sym) == 0) {
 			symt[x].isnew = 0;
 			return x;
 		}
 	}
-	symt[symtn].name = strdup(sym);
-	decode_url(&(symt[symtn].name));
-	if (string)
-		str_to_sql(&(symt[symtn].name));
+	symt[symtn].name = decode_url(sym);
+	if (string) {
+		/*str_to_sql(&(symt[symtn].name));*/
+		printf("[%d] string type unsupported in symbol: %s\n", getpid(), sym);
+		exit(EXIT_FAILURE);
+	}
 	symt[symtn].isnew = 1;
 	return symtn++;
 }
